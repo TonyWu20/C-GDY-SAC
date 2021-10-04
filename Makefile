@@ -130,17 +130,17 @@ main.o/fast:
 .PHONY : main.o/fast
 
 #=============================================================================
-# Target rules for targets named parse_mol
+# Target rules for targets named msiParser
 
 # Build rule for target.
-parse_mol: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 parse_mol
-.PHONY : parse_mol
+msiParser: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 msiParser
+.PHONY : msiParser
 
 # fast build rule for target.
-parse_mol/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/parse_mol.dir/build.make CMakeFiles/parse_mol.dir/build
-.PHONY : parse_mol/fast
+msiParser/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/build
+.PHONY : msiParser/fast
 
 # target to build an object file
 src/main.o:
@@ -158,19 +158,19 @@ src/main.s:
 .PHONY : src/main.s
 
 # target to build an object file
-src/parse_mol.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/parse_mol.dir/build.make CMakeFiles/parse_mol.dir/src/parse_mol.o
-.PHONY : src/parse_mol.o
+src/msiParser/parse_mol.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.o
+.PHONY : src/msiParser/parse_mol.o
 
 # target to preprocess a source file
-src/parse_mol.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/parse_mol.dir/build.make CMakeFiles/parse_mol.dir/src/parse_mol.i
-.PHONY : src/parse_mol.i
+src/msiParser/parse_mol.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.i
+.PHONY : src/msiParser/parse_mol.i
 
 # target to generate assembly for a file
-src/parse_mol.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/parse_mol.dir/build.make CMakeFiles/parse_mol.dir/src/parse_mol.s
-.PHONY : src/parse_mol.s
+src/msiParser/parse_mol.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.s
+.PHONY : src/msiParser/parse_mol.s
 
 # Help Target
 help:
@@ -181,13 +181,13 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... main.o"
-	@echo "... parse_mol"
+	@echo "... msiParser"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... src/parse_mol.o"
-	@echo "... src/parse_mol.i"
-	@echo "... src/parse_mol.s"
+	@echo "... src/msiParser/parse_mol.o"
+	@echo "... src/msiParser/parse_mol.i"
+	@echo "... src/msiParser/parse_mol.s"
 .PHONY : help
 
 

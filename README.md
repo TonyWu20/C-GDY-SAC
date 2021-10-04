@@ -8,9 +8,13 @@
 ## Goals/Structures
 
 1. Place the adsorbate molecule into the base model.
+
    1. Parse .msi file
+
       1. molecule
+
          - [x] struct ATOM
+
          ```C
          typedef struct {
             char *element;
@@ -20,10 +24,15 @@
             double z;
          }
          ```
-         2. The coordinates should be reset to set the coordinated atom as the origin.
+
+         - [x] The coordinates should be reset to set the coordinated atom as the origin.
+           - done by commenting the actual coordinated atom in molecule's .msi file at the line "ACL".
+
       1. base model
          1. parse all atoms with struct ATOM.
          2. Get the last atom itemId.
+         3. Get lattice vectors.
+
    2. Compute coordinates
       1. align the coordinate site of adsorbate to the adsorption site.
       2. Rotate the molecule to align with the selected
@@ -31,6 +40,7 @@
    3. Attach adsorbate molecule atoms into base model.
       1. Calculate the next itemId for the inserted adsorbate molecule atoms.
       2. Insert the text into .msi files.
+
 2. Write castep input files.
    1. Create folder named by the structure.
    1. .cell file
