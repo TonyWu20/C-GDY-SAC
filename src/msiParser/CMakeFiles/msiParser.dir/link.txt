@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmsiParser.a CMakeFiles/msiParser.dir/parse_mol.o
+/usr/bin/ranlib libmsiParser.a
