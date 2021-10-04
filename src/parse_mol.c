@@ -28,6 +28,8 @@ void scanAtom(FILE *file)
         char *RegexStr[] = {
             "ACL \"([0-9]{1,}) ([a-zA-Z]{1,})\"",
             "XYZ \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)"};
+
+        char cdStr[] = "# cd";
         /* Walkthrough lines */
         if (blockFlag == 0) /* Out of atom blocks or start of new atom block*/
         {
@@ -44,6 +46,17 @@ void scanAtom(FILE *file)
                 ads[atomCount].elm = strdup((const char *)buffer);
                 /* Free match_data memory */
                 pcre2_match_data_free(match_data);
+                /* Check if it is the coordination site atom */
+                if ((rc = reMatch(cdStr, (PCRE2_SPTR)line, &match_data,
+                                  &ovector)) == 1)
+                {
+                    printf("Found cd_atom at Atom %d\n", ads[atomCount].itemId);
+                    ads[atomCount].bCdSite = 1;
+                }
+                else
+                {
+                    ads[atomCount].bCdSite = 0;
+                }
                 blockFlag = 1; /* inside the atom block now */
             }
             else
@@ -74,6 +87,30 @@ void scanAtom(FILE *file)
             }
         }
     }
+}
+
+void resetXYZ()
+{
+    int cd_atom;
+    for (cd_atom = 0; cd_atom < atomCount && ads[cd_atom].bCdSite == 0;
+         ++cd_atom)
+    {
+        ;
+    }
+    if (!ads[cd_atom].bCdSite)
+    {
+        printf("No cd_atom is commented. Default to first atom.\n");
+        cd_atom = 0;
+        ads[cd_atom].bCdSite = 1;
+    }
+    for (int i = 0; i < atomCount; i++)
+    {
+        /* Set the cd_atom as the origin */
+        ads[i].x -= ads[cd_atom].x;
+        ads[i].y -= ads[cd_atom].y;
+        ads[i].z -= ads[cd_atom].z;
+    }
+    printf("The %d atom is coord site\n", ads[cd_atom].itemId);
 }
 
 /**We want to direct the pointer of *match_data and *ovector

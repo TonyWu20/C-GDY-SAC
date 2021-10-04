@@ -1,17 +1,12 @@
 [
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/usr/bin/llvm-gcc   -Wall -lpcre2-8 -I/opt/homebrew/include -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.00 -o CMakeFiles/main.o.dir/src/main.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
-  "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c"
-},
-{
-  "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/usr/bin/llvm-gcc   -Wall -lpcre2-8 -I/opt/homebrew/include -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.00 -o CMakeFiles/main.o.dir/src/file.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/file.c\"",
-  "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/file.c"
-},
-{
-  "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/usr/bin/llvm-gcc   -Wall -lpcre2-8 -I/opt/homebrew/include -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.00 -o CMakeFiles/main.o.dir/src/parse_mol.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parse_mol.c\"",
+  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.00 -o CMakeFiles/parse_mol.dir/src/parse_mol.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parse_mol.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parse_mol.c"
+},
+{
+  "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
+  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.00 -o CMakeFiles/main.o.dir/src/main.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
+  "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c"
 }
 ]

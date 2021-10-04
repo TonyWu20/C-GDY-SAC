@@ -13,6 +13,12 @@ int main(int argc, char *argv[])
         return 1;
     }
     scanAtom(file);
-    printf("%d Atom: %s, XYZ: %lf, %lf, %lf\n", ads[3].itemId, ads[3].elm,
-           ads[3].x, ads[3].y, ads[3].z);
+    printf("Parse molecule file %s successfully!\n", fileName);
+    resetXYZ();
+    printf("Reset coordinates\n");
+    for (int i = 0; i < atomCount; i++)
+    {
+        printf("Atom %d %s XYZ: %lf, %lf, %lf\n", ads[i].itemId, ads[i].elm,
+               ads[i].x, ads[i].y, ads[i].z);
+    }
 }

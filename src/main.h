@@ -8,9 +8,11 @@ typedef struct {
 		double x,y,z;
 		char *elm;
 		int itemId;
+        int bCdSite; /* boolean for coordination site*/
 } ATOM_BLOCK;
 extern int atomCount;
 long int countLines(FILE *file);
 int returnLines(char *lineptr[], FILE *file);
 void scanAtom(FILE *file);
+void resetXYZ(void);
 //int reMatch(char *, PCRE2_SPTR , pcre2_match_data **, PCRE2_SIZE**);

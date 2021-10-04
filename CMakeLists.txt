@@ -1,5 +1,10 @@
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 project (C-GDY-SAC)
 
-add_executable(main.o src/main.c src/file.c src/parse_mol.c)
-set (CMAKE_C_FLAGS "-Wall -lpcre2-8 -I/opt/homebrew/include -g")
-set (CC gcc-11)
+add_library(parse_mol src/parse_mol.c)
+target_link_libraries(parse_mol -lpcre2-8)
+add_executable(main.o src/main.c)
+target_link_libraries(main.o parse_mol)
+set (CMAKE_C_FLAGS "-Wall -I/opt/homebrew/include -g")

@@ -10,7 +10,7 @@
 1. Place the adsorbate molecule into the base model.
    1. Parse .msi file
       1. molecule
-         1. struct ATOM
+         - [x] struct ATOM
          ```C
          typedef struct {
             char *element;
@@ -18,10 +18,9 @@
             double x;
             double y;
             double z;
-            char *text;
          }
          ```
-         2. The coordinates should be reset to set the first element as the origin.
+         2. The coordinates should be reset to set the coordinated atom as the origin.
       1. base model
          1. parse all atoms with struct ATOM.
          2. Get the last atom itemId.

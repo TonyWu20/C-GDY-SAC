@@ -129,77 +129,48 @@ main.o/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/build
 .PHONY : main.o/fast
 
-src/file.o: src/file.c.o
-.PHONY : src/file.o
+#=============================================================================
+# Target rules for targets named parse_mol
+
+# Build rule for target.
+parse_mol: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 parse_mol
+.PHONY : parse_mol
+
+# fast build rule for target.
+parse_mol/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parse_mol.dir/build.make CMakeFiles/parse_mol.dir/build
+.PHONY : parse_mol/fast
 
 # target to build an object file
-src/file.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/file.c.o
-.PHONY : src/file.c.o
-
-src/file.i: src/file.c.i
-.PHONY : src/file.i
-
-# target to preprocess a source file
-src/file.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/file.c.i
-.PHONY : src/file.c.i
-
-src/file.s: src/file.c.s
-.PHONY : src/file.s
-
-# target to generate assembly for a file
-src/file.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/file.c.s
-.PHONY : src/file.c.s
-
-src/main.o: src/main.c.o
+src/main.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.o
 .PHONY : src/main.o
 
-# target to build an object file
-src/main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.c.o
-.PHONY : src/main.c.o
-
-src/main.i: src/main.c.i
+# target to preprocess a source file
+src/main.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.i
 .PHONY : src/main.i
 
-# target to preprocess a source file
-src/main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.c.i
-.PHONY : src/main.c.i
-
-src/main.s: src/main.c.s
+# target to generate assembly for a file
+src/main.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.s
 .PHONY : src/main.s
 
-# target to generate assembly for a file
-src/main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.c.s
-.PHONY : src/main.c.s
-
-src/parse_mol.o: src/parse_mol.c.o
+# target to build an object file
+src/parse_mol.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parse_mol.dir/build.make CMakeFiles/parse_mol.dir/src/parse_mol.o
 .PHONY : src/parse_mol.o
 
-# target to build an object file
-src/parse_mol.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/parse_mol.c.o
-.PHONY : src/parse_mol.c.o
-
-src/parse_mol.i: src/parse_mol.c.i
+# target to preprocess a source file
+src/parse_mol.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parse_mol.dir/build.make CMakeFiles/parse_mol.dir/src/parse_mol.i
 .PHONY : src/parse_mol.i
 
-# target to preprocess a source file
-src/parse_mol.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/parse_mol.c.i
-.PHONY : src/parse_mol.c.i
-
-src/parse_mol.s: src/parse_mol.c.s
-.PHONY : src/parse_mol.s
-
 # target to generate assembly for a file
-src/parse_mol.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/parse_mol.c.s
-.PHONY : src/parse_mol.c.s
+src/parse_mol.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parse_mol.dir/build.make CMakeFiles/parse_mol.dir/src/parse_mol.s
+.PHONY : src/parse_mol.s
 
 # Help Target
 help:
@@ -210,9 +181,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... main.o"
-	@echo "... src/file.o"
-	@echo "... src/file.i"
-	@echo "... src/file.s"
+	@echo "... parse_mol"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
