@@ -53,3 +53,5 @@ dkms.conf
 CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
+.cache
+*.msi
