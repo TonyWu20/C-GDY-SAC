@@ -7,71 +7,14 @@
 static int reMatch(char *RegexStr, PCRE2_SPTR subject,
                    pcre2_match_data **match_data, PCRE2_SIZE **ovector);
 static int atomBlockWalk(int blockFlag, char *line, ATOM_BLOCK *atom);
-extern ATOM_BLOCK ads[]; /* defined in main.c */
 
 /** scan atoms in .msi file
  * args:
  * 		FILE *file
- * process:
- * 		ATOM_BLOCK ads
+ * 		ATOM_BLOCK *atom
+ * returns:
+ * 		int atomCount
  */
-static int atomBlockWalk(int blockFlag, char *line, ATOM_BLOCK *atom)
-{
-    /* Declaration and initialization variables for pcre2 */
-    pcre2_match_data *match_data = NULL; /* pointer for match_data */
-    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
-    PCRE2_UCHAR8 *buffer; /* pointer to buffer to get substring */
-    PCRE2_SIZE size;      /* pointer to store size of substring */
-
-    char *RegexStr[] = {"ACL \"([0-9]{1,}) ([a-zA-Z]{1,})\"",
-                        "XYZ \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)"};
-
-    char cdStr[] = "# cd";
-    if (blockFlag == OUT &&
-        (reMatch(RegexStr[0], (PCRE2_SPTR)line, &match_data, &ovector) >
-         1)) /* Out of atom blocks or start of new atom block*/
-    {
-        /* Get itemId */
-        pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-        atom->itemId = atoi((const char *)buffer);
-
-        /* Get element */
-        pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
-        atom->elm = strdup((const char *)buffer);
-        /* Free match_data memory */
-        pcre2_match_data_free(match_data);
-        /* Check if it is the coordination site atom */
-        if ((reMatch(cdStr, (PCRE2_SPTR)line, &match_data, &ovector)) == 1)
-        {
-            printf("Found cd_atom at Atom %d\n", atom->itemId);
-            atom->bCdSite = 1;
-        }
-        else
-        {
-            atom->bCdSite = 0;
-        }
-        return INBLOCK; /* inside the atom block now */
-    }
-    else if (blockFlag == INBLOCK && (reMatch(RegexStr[1], (PCRE2_SPTR)line,
-                                              &match_data, &ovector) > 1))
-    {
-        /* Stored x, y, z*/
-        for (int j = 0; j < 3; j++)
-        {
-            pcre2_substring_get_bynumber(match_data, j + 1, &buffer, &size);
-            atom->coord[j] = atof((const char *)buffer);
-        }
-        pcre2_match_data_free(match_data);
-        return NEXT; /* Complete a block, now next */
-    }
-    else
-    {
-        pcre2_match_data_free(match_data); /* free memory */
-        return blockFlag; /* keep the state (OUT/INBLOCK) if the above condition
-                             does not fully meet */
-    }
-}
-
 int scanAtom(FILE *file, ATOM_BLOCK *atoms)
 {
     char line[256];      /* buffer for fgets */
@@ -152,4 +95,68 @@ static int reMatch(char *RegexStr, PCRE2_SPTR subject,
     }
     pcre2_code_free(re);
     return rc;
+}
+/** Walk every line of .msi file to parse atoms
+ *  args:
+ *  	 int blockFlag: OUT, INBLOCK, NEXT
+ *  	 char *line: string pointer of the line from fgets
+ *  	 ATOM_BLOCK *atom: pointer dereferenced from ATOM_BLOCK atom[atomCount]
+ *  returns:
+ *  	 int blockFlag
+ */
+static int atomBlockWalk(int blockFlag, char *line, ATOM_BLOCK *atom)
+{
+    /* Declaration and initialization variables for pcre2 */
+    pcre2_match_data *match_data = NULL; /* pointer for match_data */
+    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
+    PCRE2_UCHAR8 *buffer; /* pointer to buffer to get substring */
+    PCRE2_SIZE size;      /* pointer to store size of substring */
+
+    char *RegexStr[] = {"ACL \"([0-9]{1,}) ([a-zA-Z]{1,})\"",
+                        "XYZ \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)"};
+
+    char cdStr[] = "# cd";
+    if (blockFlag == OUT &&
+        (reMatch(RegexStr[0], (PCRE2_SPTR)line, &match_data, &ovector) >
+         1)) /* Out of atom blocks or start of new atom block*/
+    {
+        /* Get itemId */
+        pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
+        atom->itemId = atoi((const char *)buffer);
+
+        /* Get element */
+        pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
+        atom->elm = strdup((const char *)buffer);
+        /* Free match_data memory */
+        pcre2_match_data_free(match_data);
+        /* Check if it is the coordination site atom */
+        if ((reMatch(cdStr, (PCRE2_SPTR)line, &match_data, &ovector)) == 1)
+        {
+            printf("Found cd_atom at Atom %d\n", atom->itemId);
+            atom->bCdSite = 1;
+        }
+        else
+        {
+            atom->bCdSite = 0;
+        }
+        return INBLOCK; /* inside the atom block now */
+    }
+    else if (blockFlag == INBLOCK && (reMatch(RegexStr[1], (PCRE2_SPTR)line,
+                                              &match_data, &ovector) > 1))
+    {
+        /* Stored x, y, z*/
+        for (int j = 0; j < 3; j++)
+        {
+            pcre2_substring_get_bynumber(match_data, j + 1, &buffer, &size);
+            atom->coord[j] = atof((const char *)buffer);
+        }
+        pcre2_match_data_free(match_data);
+        return NEXT; /* Complete a block, now next */
+    }
+    else
+    {
+        pcre2_match_data_free(match_data); /* free memory */
+        return blockFlag; /* keep the state (OUT/INBLOCK) if the above condition
+                             does not fully meet */
+    }
 }
