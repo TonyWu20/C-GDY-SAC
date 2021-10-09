@@ -158,19 +158,19 @@ src/main.s:
 .PHONY : src/main.s
 
 # target to build an object file
-src/msiParser/parse_mol.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.o
-.PHONY : src/msiParser/parse_mol.o
+src/msiParser/parse_msi.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.o
+.PHONY : src/msiParser/parse_msi.o
 
 # target to preprocess a source file
-src/msiParser/parse_mol.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.i
-.PHONY : src/msiParser/parse_mol.i
+src/msiParser/parse_msi.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.i
+.PHONY : src/msiParser/parse_msi.i
 
 # target to generate assembly for a file
-src/msiParser/parse_mol.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.s
-.PHONY : src/msiParser/parse_mol.s
+src/msiParser/parse_msi.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.s
+.PHONY : src/msiParser/parse_msi.s
 
 # Help Target
 help:
@@ -185,9 +185,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... src/msiParser/parse_mol.o"
-	@echo "... src/msiParser/parse_mol.i"
-	@echo "... src/msiParser/parse_mol.s"
+	@echo "... src/msiParser/parse_msi.o"
+	@echo "... src/msiParser/parse_msi.i"
+	@echo "... src/msiParser/parse_msi.s"
 .PHONY : help
 
 

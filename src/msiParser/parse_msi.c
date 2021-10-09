@@ -22,10 +22,18 @@ int countAtoms(FILE *file)
     return atomNum;
 }
 
+MOLECULE *init_mol(int atomNum)
+{
+    MOLECULE *mol;
+    mol = malloc(sizeof(MOLECULE) + atomNum * sizeof(ATOM_BLOCK));
+    mol->atomNum = atomNum;
+    return mol;
+}
 BASE_LATTICE *init_lattice(int atomNum)
 {
     BASE_LATTICE *lattice;
     lattice = malloc(sizeof(BASE_LATTICE) + atomNum * sizeof(ATOM_BLOCK));
+    lattice->atomNum = atomNum;
     return lattice;
 }
 
@@ -68,16 +76,6 @@ BASE_LATTICE parseBase(FILE *file)
     lattice = init_lattice(atomNum);
     get_LatVector(file, lattice->latVector);
     scanAtom(file, lattice->totalAtoms);
-    /* for test */
-    for (int i = 0; i < atomNum; i++)
-    {
-        printf("%d Atom Element: %s ", lattice->totalAtoms[i].itemId - 1,
-               lattice->totalAtoms[i].elm);
-        printf("coord: %lf, %lf, %lf\n", lattice->totalAtoms[i].coord[0],
-               lattice->totalAtoms[i].coord[1],
-               lattice->totalAtoms[i].coord[2]);
-    }
-
     printf("%d atoms\n", atomNum);
     return *lattice;
 }
