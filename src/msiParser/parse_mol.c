@@ -1,14 +1,4 @@
 #include "msiParser.h"
-#include "pcre2.h"
-#include <stdio.h>
-#include <stdlib.h>
-#define MAXLINE 128
-#define OUT 0
-#define INBLOCK 1
-#define GETXYZ 2
-#define NEXT 3
-#define LATTICE 10
-#define ATOMS 11
 static int reMatch(char *RegexStr, PCRE2_SPTR subject,
                    pcre2_match_data **match_data, PCRE2_SIZE **ovector);
 static int atomBlockWalk(int blockFlag, char *line, ATOM_BLOCK *atom);

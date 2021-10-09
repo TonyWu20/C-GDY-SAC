@@ -1,5 +1,12 @@
 #include "../main.h"
 #define MAX_ELEMENTS 4
+#define MAXLINE 128
+#define OUT 0
+#define INBLOCK 1
+#define GETXYZ 2
+#define NEXT 3
+#define LATTICE 10
+#define ATOMS 11
 typedef struct {
 		double coord[3];
 		char *elm;
