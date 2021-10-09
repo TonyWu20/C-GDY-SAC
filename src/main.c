@@ -13,16 +13,19 @@ int main(int argc, char *argv[])
         printf("Cannot open file.\n");
         return 1;
     }
-    ATOM_BLOCK atoms[10];
     int atomCount;
-    atomCount = scanAtom(file, atoms);
-    printf("Parse molecule file %s successfully!\n", fileName);
-    resetXYZ(atomCount, atoms);
+    atomCount = countAtoms(file);
+    MOLECULE *mol = init_mol(atomCount);
+    scanAtom(file, mol->molAtoms);
+    printf("Parse molecule file %s successfully! Has %d atoms.\n", fileName,
+           mol->atomNum);
+    resetXYZ(atomCount, mol->molAtoms);
     printf("Reset coordinates\n");
     for (int i = 0; i < atomCount; i++)
     {
-        printf("Atom %d %s XYZ: %lf, %lf, %lf\n", atoms[i].itemId, atoms[i].elm,
-               atoms[i].coord[0], atoms[i].coord[1], atoms[i].coord[2]);
+        printf("Atom %d %s XYZ: %lf, %lf, %lf\n", mol->molAtoms[i].itemId,
+               mol->molAtoms[i].elm, mol->molAtoms[i].coord[0],
+               mol->molAtoms[i].coord[1], mol->molAtoms[i].coord[2]);
     }
     fclose(file);
     BASE_LATTICE model;
