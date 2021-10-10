@@ -158,6 +158,21 @@ src/main.s:
 .PHONY : src/main.s
 
 # target to build an object file
+src/msiParser/mod_msi.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/mod_msi.o
+.PHONY : src/msiParser/mod_msi.o
+
+# target to preprocess a source file
+src/msiParser/mod_msi.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/mod_msi.i
+.PHONY : src/msiParser/mod_msi.i
+
+# target to generate assembly for a file
+src/msiParser/mod_msi.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/mod_msi.s
+.PHONY : src/msiParser/mod_msi.s
+
+# target to build an object file
 src/msiParser/parse_msi.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.o
 .PHONY : src/msiParser/parse_msi.o
@@ -185,6 +200,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/msiParser/mod_msi.o"
+	@echo "... src/msiParser/mod_msi.i"
+	@echo "... src/msiParser/mod_msi.s"
 	@echo "... src/msiParser/parse_msi.o"
 	@echo "... src/msiParser/parse_msi.i"
 	@echo "... src/msiParser/parse_msi.s"

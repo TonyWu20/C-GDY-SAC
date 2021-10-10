@@ -68,7 +68,7 @@ int scanAtom(FILE *file, ATOM_BLOCK *atoms)
     return atomCount;
 }
 
-BASE_LATTICE parseBase(FILE *file)
+BASE_LATTICE *parseBase(FILE *file)
 {
     int atomNum = 0;
     atomNum = countAtoms(file);
@@ -77,7 +77,7 @@ BASE_LATTICE parseBase(FILE *file)
     get_LatVector(file, lattice->latVector);
     scanAtom(file, lattice->totalAtoms);
     printf("%d atoms\n", atomNum);
-    return *lattice;
+    return lattice;
 }
 
 int get_LatVector(FILE *file, double (*v)[3])

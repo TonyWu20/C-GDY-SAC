@@ -21,21 +21,32 @@ int main(int argc, char *argv[])
            mol->atomNum);
     resetXYZ(atomCount, mol->molAtoms);
     printf("Reset coordinates\n");
-    for (int i = 0; i < atomCount; i++)
-    {
-        printf("Atom %d %s XYZ: %lf, %lf, %lf\n", mol->molAtoms[i].itemId,
-               mol->molAtoms[i].elm, mol->molAtoms[i].coord[0],
-               mol->molAtoms[i].coord[1], mol->molAtoms[i].coord[2]);
-    }
     fclose(file);
-    BASE_LATTICE model;
+    BASE_LATTICE *model;
     fileName = "SAC_GDY_V.msi";
     file = fopen(fileName, "r");
     model = parseBase(file);
+    fclose(file);
+    BASE_LATTICE *ads_model;
+    ads_model = init_adsorbed_lat(model, mol);
     for (int i = 0; i < 3; i++)
     {
-        printf("Vector: %lf, %lf, %lf\n", model.latVector[i][0],
-               model.latVector[i][1], model.latVector[i][2]);
+        printf("Vector: %lf, %lf, %lf\n", ads_model->latVector[i][0],
+               ads_model->latVector[i][1], ads_model->latVector[i][2]);
     }
-    fclose(file);
+    appendMolAtoms(model, mol, ads_model);
+    for (int i = model->atomNum; i < ads_model->atomNum; i++)
+    {
+        printf("  (%d Atom\n    (A C ACL \"%d %s\")\n    (A C Label \"%s\")\n  "
+               "  (A D XYZ (%15.13lf %15.13lf %15.13lf))\n    (A I Id %d)\n)\n",
+               ads_model->totalAtoms[i].itemId, ads_model->totalAtoms[i].elmId,
+               ads_model->totalAtoms[i].elm, ads_model->totalAtoms[i].elm,
+               ads_model->totalAtoms[i].coord[0],
+               ads_model->totalAtoms[i].coord[1],
+               ads_model->totalAtoms[i].coord[2],
+               ads_model->totalAtoms[i].itemId - 1);
+    }
+    free(mol);
+    free(ads_model);
+    free(model);
 }

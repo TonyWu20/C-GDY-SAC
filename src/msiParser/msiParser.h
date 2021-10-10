@@ -38,9 +38,12 @@ int scanAtom(FILE *file, ATOM_BLOCK *atom);
 int countAtoms(FILE *file);
 void resetXYZ(int atomCount, ATOM_BLOCK *atoms);
 BASE_LATTICE *init_lattice(int atomNum);
-BASE_LATTICE parseBase(FILE *file);
-void appendAtoms(BASE_LATTICE source, ATOM_BLOCK add_atoms,
-                 BASE_LATTICE *target);
+BASE_LATTICE *parseBase(FILE *file);
+
+/* mod_msi */
+BASE_LATTICE *init_adsorbed_lat(BASE_LATTICE *, MOLECULE *);
+void appendMolAtoms(BASE_LATTICE *source, MOLECULE *add_mol,
+                    BASE_LATTICE *target);
 
 /* basic functions */
 
