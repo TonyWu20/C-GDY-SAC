@@ -180,11 +180,18 @@ void resetXYZ(int atomCount, ATOM_BLOCK *atoms)
     }
     for (int i = 0; i < atomCount; i++) /* reset each atom coordinate */
     {
-        /* Set the cd_atom as the origin */
-        for (int j = 0; j < 3; j++)
+        if (i != cd_atom)
         {
-            atoms[i].coord[j] -= atoms[cd_atom].coord[j];
+            /* Set the cd_atom as the origin */
+            for (int j = 0; j < 3; j++)
+            {
+                atoms[i].coord[j] -= atoms[cd_atom].coord[j];
+            }
         }
+    }
+    for (int j = 0; j < 3; j++)
+    {
+        atoms[cd_atom].coord[j] -= atoms[cd_atom].coord[j];
     }
     printf("The %d atom is coord site\n", atoms[cd_atom].itemId);
 }

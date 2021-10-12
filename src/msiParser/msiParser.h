@@ -45,6 +45,14 @@ BASE_LATTICE *init_adsorbed_lat(BASE_LATTICE *, MOLECULE *);
 void appendMolAtoms(BASE_LATTICE *source, MOLECULE *add_mol,
                     BASE_LATTICE *target);
 
+void alignMol(BASE_LATTICE *s, MOLECULE *add_mol, BASE_LATTICE *t);
+
+void rotMol(MOLECULE *, double angle, char axis);
+
+void get_CoordMat(MOLECULE *s,
+                  double[][3]); /* define the n-1 dimension when you want to
+                                   pass the array as a pointer */
+void assignCoordtoMol(double[][3], MOLECULE *);
 /* basic functions */
 
 int saveItemId(char *, ATOM_BLOCK *);

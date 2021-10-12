@@ -130,6 +130,19 @@ main.o/fast:
 .PHONY : main.o/fast
 
 #=============================================================================
+# Target rules for targets named MyMaths
+
+# Build rule for target.
+MyMaths: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 MyMaths
+.PHONY : MyMaths
+
+# fast build rule for target.
+MyMaths/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/build
+.PHONY : MyMaths/fast
+
+#=============================================================================
 # Target rules for targets named msiParser
 
 # Build rule for target.
@@ -156,6 +169,21 @@ src/main.i:
 src/main.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.s
 .PHONY : src/main.s
+
+# target to build an object file
+src/maths/MyMaths.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/src/maths/MyMaths.o
+.PHONY : src/maths/MyMaths.o
+
+# target to preprocess a source file
+src/maths/MyMaths.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/src/maths/MyMaths.i
+.PHONY : src/maths/MyMaths.i
+
+# target to generate assembly for a file
+src/maths/MyMaths.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/src/maths/MyMaths.s
+.PHONY : src/maths/MyMaths.s
 
 # target to build an object file
 src/msiParser/mod_msi.o:
@@ -195,11 +223,15 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... MyMaths"
 	@echo "... main.o"
 	@echo "... msiParser"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/maths/MyMaths.o"
+	@echo "... src/maths/MyMaths.i"
+	@echo "... src/maths/MyMaths.s"
 	@echo "... src/msiParser/mod_msi.o"
 	@echo "... src/msiParser/mod_msi.i"
 	@echo "... src/msiParser/mod_msi.s"
