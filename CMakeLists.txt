@@ -3,7 +3,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 project (C-GDY-SAC)
 
-add_library(msiParser src/msiParser/parse_msi.c src/msiParser/mod_msi.c)
+add_library(msiParser src/msiParser/parse_msi.c src/msiParser/mod_msi.c src/msiParser/parse_mol.c src/msiParser/parse_base.c)
 add_library(MyMaths src/maths/MyMaths.c)
 target_link_libraries(msiParser -lpcre2-8)
 add_executable(main.o src/main.c)

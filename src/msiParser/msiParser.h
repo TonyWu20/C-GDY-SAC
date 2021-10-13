@@ -14,11 +14,14 @@ typedef struct
     int elmId;
     int itemId;
     int bCdSite; /* boolean for coordination site*/
+    int bStem;   /* boolean for stem */
 } ATOM_BLOCK;
 
 typedef struct
 {
     int atomNum;
+    int CdSiteId;
+    int StemId;
     ATOM_BLOCK molAtoms[];
 } MOLECULE;
 
@@ -32,11 +35,20 @@ typedef struct
     ATOM_BLOCK totalAtoms[];
 } BASE_LATTICE;
 
+/* basic pcre2 match */
+int reMatch(char *RegexStr, PCRE2_SPTR subject, pcre2_match_data **match_data,
+            PCRE2_SIZE **ovector);
+
+/* basic walkthrough .msi */
+int atomBlockWalk(int blockFlag, char *line, ATOM_BLOCK *atom);
+int scanAtom(FILE *file, ATOM_BLOCK *atom);
+void resetXYZ(int atomCount, ATOM_BLOCK *atoms);
 /* parse_mol */
 MOLECULE *init_mol(int atomNum);
-int scanAtom(FILE *file, ATOM_BLOCK *atom);
+
+/* parse_base */
 int countAtoms(FILE *file);
-void resetXYZ(int atomCount, ATOM_BLOCK *atoms);
+int get_LatVector(FILE *file, double (*v)[3]);
 BASE_LATTICE *init_lattice(int atomNum);
 BASE_LATTICE *parseBase(FILE *file);
 
@@ -54,11 +66,11 @@ void get_CoordMat(MOLECULE *s,
                   double[][3]); /* define the n-1 dimension when you want to
                                    pass the array as a pointer */
 void assignCoordtoMol(double[][3], MOLECULE *);
+
 /* basic functions */
 
 int saveItemId(char *, ATOM_BLOCK *);
 int saveElmInfo(char *, ATOM_BLOCK *);
 int checkCdSite(char *);
 int saveCoord(char *, ATOM_BLOCK *);
-
-int get_LatVector(FILE *file, double (*v)[3]);
+int checkStem(char *line);

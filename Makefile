@@ -201,6 +201,36 @@ src/msiParser/mod_msi.s:
 .PHONY : src/msiParser/mod_msi.s
 
 # target to build an object file
+src/msiParser/parse_base.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_base.o
+.PHONY : src/msiParser/parse_base.o
+
+# target to preprocess a source file
+src/msiParser/parse_base.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_base.i
+.PHONY : src/msiParser/parse_base.i
+
+# target to generate assembly for a file
+src/msiParser/parse_base.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_base.s
+.PHONY : src/msiParser/parse_base.s
+
+# target to build an object file
+src/msiParser/parse_mol.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.o
+.PHONY : src/msiParser/parse_mol.o
+
+# target to preprocess a source file
+src/msiParser/parse_mol.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.i
+.PHONY : src/msiParser/parse_mol.i
+
+# target to generate assembly for a file
+src/msiParser/parse_mol.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.s
+.PHONY : src/msiParser/parse_mol.s
+
+# target to build an object file
 src/msiParser/parse_msi.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.o
 .PHONY : src/msiParser/parse_msi.o
@@ -235,6 +265,12 @@ help:
 	@echo "... src/msiParser/mod_msi.o"
 	@echo "... src/msiParser/mod_msi.i"
 	@echo "... src/msiParser/mod_msi.s"
+	@echo "... src/msiParser/parse_base.o"
+	@echo "... src/msiParser/parse_base.i"
+	@echo "... src/msiParser/parse_base.s"
+	@echo "... src/msiParser/parse_mol.o"
+	@echo "... src/msiParser/parse_mol.i"
+	@echo "... src/msiParser/parse_mol.s"
 	@echo "... src/msiParser/parse_msi.o"
 	@echo "... src/msiParser/parse_msi.i"
 	@echo "... src/msiParser/parse_msi.s"
