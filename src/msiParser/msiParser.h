@@ -45,7 +45,8 @@ BASE_LATTICE *init_adsorbed_lat(BASE_LATTICE *, MOLECULE *);
 void appendMolAtoms(BASE_LATTICE *source, MOLECULE *add_mol,
                     BASE_LATTICE *target);
 
-void alignMol(BASE_LATTICE *s, MOLECULE *add_mol, BASE_LATTICE *t);
+void placeMol(MOLECULE *mol, BASE_LATTICE *lat, int destId,
+              BASE_LATTICE *target);
 
 void rotMol(MOLECULE *, double angle, char axis);
 

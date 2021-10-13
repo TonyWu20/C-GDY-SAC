@@ -71,3 +71,20 @@ double NormVector(double u[], int size)
     norm = sqrt(norm);
     return norm;
 }
+
+/** Add Matrix by vector u
+ *  Args:
+ *  	double **Mat; arrays of coords
+ *  	double *u; vector
+ *  	int ElmNum; number of elements in Mat;
+ */
+void moveMatrix(double Mat[][3], double *u, int ElmNum)
+{
+    for (int i = 0; i < ElmNum; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            Mat[i][j] += u[j];
+        }
+    }
+}

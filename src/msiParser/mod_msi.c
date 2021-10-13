@@ -75,7 +75,6 @@ void rotMol(MOLECULE *mol, double angle, char axis)
     get_CoordMat(mol, matrix);
     double theta;
     theta = (angle * M_PI) / 180;
-    printf("theta = %lf\n", theta);
     double cos_theta;
     double sin_theta;
     cos_theta = (((int)(angle * 1000000) % 90000000 == 0) &&
@@ -83,7 +82,6 @@ void rotMol(MOLECULE *mol, double angle, char axis)
                     ? 0
                     : cos(theta);
     sin_theta = ((int)(angle * 1000000) % 180000000 == 0) ? 0 : sin(theta);
-    printf("cos(theta): %lf, sin(theta): %lf\n", cos_theta, sin_theta);
     double rotated_coord[mol->atomNum][3];
     double rot_x[3][3] = {{1.0, 0, 0},
                           {0, cos_theta, -1.0 * sin_theta},
@@ -110,4 +108,17 @@ void rotMol(MOLECULE *mol, double angle, char axis)
         perror("Wrong axis.\n");
         break;
     }
+}
+
+void placeMol(MOLECULE *mol, BASE_LATTICE *lat, int destId,
+              BASE_LATTICE *target)
+{
+    double *u;
+    u = lat->totalAtoms[destId].coord;
+    double coord[mol->atomNum][3];
+    get_CoordMat(mol, coord);
+    u[2] += 1.54221;
+    moveMatrix(coord, u, mol->atomNum);
+    assignCoordtoMol(coord, mol);
+    appendMolAtoms(lat, mol, target);
 }
