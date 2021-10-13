@@ -45,6 +45,9 @@ int scanAtom(FILE *file, ATOM_BLOCK *atom);
 void resetXYZ(int atomCount, ATOM_BLOCK *atoms);
 /* parse_mol */
 MOLECULE *init_mol(int atomNum);
+int find_CdAtom(MOLECULE *);
+int find_Stem(MOLECULE *);
+MOLECULE *parseMol(FILE *file);
 
 /* parse_base */
 int countAtoms(FILE *file);

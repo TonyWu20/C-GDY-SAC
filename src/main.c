@@ -12,14 +12,8 @@ int main(int argc, char *argv[])
         printf("Cannot open file.\n");
         return 1;
     }
-    int atomCount;
-    atomCount = countAtoms(file);
-    MOLECULE *mol = init_mol(atomCount);
-    scanAtom(file, mol->molAtoms);
-    printf("Parse molecule file %s successfully! Has %d atoms.\n", fileName,
-           mol->atomNum);
-    resetXYZ(atomCount, mol->molAtoms);
-    printf("Reset coordinates\n");
+    MOLECULE *mol;
+    mol = parseMol(file);
     fclose(file);
     BASE_LATTICE *model;
     fileName = argv[2];
