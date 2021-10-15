@@ -7,7 +7,7 @@
 typedef struct
 {
     double coord[3];
-    char *elm;
+    char elm[2];
     int elmId;
     int itemId;
     int bCdSite; /* boolean for coordination site*/

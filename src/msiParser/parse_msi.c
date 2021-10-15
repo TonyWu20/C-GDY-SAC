@@ -194,7 +194,6 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
         /* Get element */
         PCRE2_UCHAR8 elm[2];
         pcre2_substring_copy_bynumber(match_data, 2, elm, &size);
-        atom->elm = malloc(2 * sizeof(char));
         strcpy(atom->elm, (const char *)elm);
         atom->bCdSite = checkCdSite(line);
         atom->bStem = checkStem(line);
