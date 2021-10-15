@@ -199,11 +199,13 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
         atom->bCdSite = checkCdSite(line);
         atom->bStem = checkStem(line);
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return GETXYZ;
     }
     else
     {
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return INBLOCK;
     }
 }
