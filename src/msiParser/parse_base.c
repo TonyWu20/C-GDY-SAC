@@ -1,5 +1,6 @@
 #include "../maths/MyMaths.h"
 #include "msiParser.h"
+#include "pcre2.h"
 
 static int matchAtomId(char *line);
 static char
@@ -87,16 +88,23 @@ static char scanLatVector(char *line, double *vector)
         /* Get vector name */
         pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
         VecName = strdup((const char *)buffer);
+        pcre2_substring_free(buffer);
         /* convert groups of coords to double vector[3] */
         for (int i = 0; i < 3; i++)
         {
             pcre2_substring_get_bynumber(match_data, i + 2, &buffer, &size);
             vector[i] = atof((const char *)buffer);
+            pcre2_substring_free(buffer);
         }
+        pcre2_match_data_free(match_data);
+        pcre2_substring_free(buffer);
         return *VecName;
     }
     else
+    {
+        pcre2_match_data_free(match_data);
         return fail;
+    }
 }
 
 /** Match "A I Id [0-9]{1.}" to get id of atom
@@ -112,6 +120,7 @@ static int matchAtomId(char *line)
     char RegexStr[] = "A I Id [0-9]{1,}";
     int rc = 0;
     rc = reMatch(RegexStr, (PCRE2_SPTR)line, &match_data, &ovector);
+    pcre2_match_data_free(match_data);
     return rc; /* -1 or 1 */
 }
 
