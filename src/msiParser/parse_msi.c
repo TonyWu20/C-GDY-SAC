@@ -207,11 +207,19 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
 int saveCoord(char *line, ATOM_BLOCK *atom)
 {
     /* Declaration and initialization variables for pcre2 */
-    pcre2_match_data *match_data = NULL; /* pointer for match_data */
-    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
-    char *RegexStr = "XYZ \\(([0-9.e-]{1,}) ([0-9.e-]{1,}) ([0-9.e-]{1,})\\)";
+    int errornumber;
+    PCRE2_SIZE erroroffset;
     int rc;
-    rc = reMatch(RegexStr, (PCRE2_SPTR8)line, &match_data, &ovector);
+    pcre2_code *re;
+    char *RegexStr = "XYZ \\(([0-9.e-]{1,}) ([0-9.e-]{1,}) ([0-9.e-]{1,})\\)";
+    PCRE2_SPTR pattern = (PCRE2_SPTR)RegexStr;
+    re = pcre2_compile(pattern, PCRE2_ZERO_TERMINATED, 0, &errornumber,
+                       &erroroffset, NULL);
+    pcre2_match_data *match_data; /* pointer for match_data */
+    match_data = pcre2_match_data_create_from_pattern(re, NULL);
+    rc = pcre2_match(re, (PCRE2_SPTR)line,
+                     (PCRE2_SIZE)strlen((const char *)line), 0, 0, match_data,
+                     NULL);
     if (rc == 4)
     {
         /* Stored x, y, z*/
