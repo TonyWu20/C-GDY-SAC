@@ -1,4 +1,5 @@
 #include "msiParser.h"
+#include "pcre2.h"
 
 /** scan atoms in .msi file
  * args:
@@ -171,11 +172,20 @@ int saveItemId(char *line, ATOM_BLOCK *atom)
 int saveElmInfo(char *line, ATOM_BLOCK *atom)
 {
     /* Declaration and initialization variables for pcre2 */
-    pcre2_match_data *match_data = NULL; /* pointer for match_data */
-    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
+    int errornumber;
+    PCRE2_SIZE erroroffset;
+    int rc;
+    pcre2_code *re;
     PCRE2_SIZE size; /* pointer to store size of substring */
-    char *RegexStr = "ACL \"([0-9]{1,}) ([a-zA-Z]{1,})\"";
-    if (reMatch(RegexStr, (PCRE2_SPTR8)line, &match_data, &ovector) == 3)
+    PCRE2_SPTR RegexStr = (PCRE2_SPTR) "ACL \"([0-9]{1,}) ([a-zA-Z]{1,})\"";
+    re = pcre2_compile(RegexStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
+                       &erroroffset, NULL);
+    pcre2_match_data *match_data =
+        pcre2_match_data_create_from_pattern(re, NULL);
+    rc = pcre2_match(re, (PCRE2_SPTR)line,
+                     (PCRE2_SIZE)strlen((const char *)line), 0, 0, match_data,
+                     NULL);
+    if (rc == 3)
     {
         /* Get elmId */
         PCRE2_UCHAR8 elmId[3];
@@ -184,7 +194,8 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
         /* Get element */
         PCRE2_UCHAR8 elm[2];
         pcre2_substring_copy_bynumber(match_data, 2, elm, &size);
-        atom->elm = strdup((const char *)elm);
+        atom->elm = malloc(2 * sizeof(char));
+        strcpy(atom->elm, (const char *)elm);
         atom->bCdSite = checkCdSite(line);
         atom->bStem = checkStem(line);
         pcre2_match_data_free(match_data);
@@ -211,9 +222,9 @@ int saveCoord(char *line, ATOM_BLOCK *atom)
     PCRE2_SIZE erroroffset;
     int rc;
     pcre2_code *re;
-    char *RegexStr = "XYZ \\(([0-9.e-]{1,}) ([0-9.e-]{1,}) ([0-9.e-]{1,})\\)";
-    PCRE2_SPTR pattern = (PCRE2_SPTR)RegexStr;
-    re = pcre2_compile(pattern, PCRE2_ZERO_TERMINATED, 0, &errornumber,
+    PCRE2_SPTR RegexStr =
+        (PCRE2_SPTR) "XYZ \\(([0-9.e-]{1,}) ([0-9.e-]{1,}) ([0-9.e-]{1,})\\)";
+    re = pcre2_compile(RegexStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
                        &erroroffset, NULL);
     pcre2_match_data *match_data; /* pointer for match_data */
     match_data = pcre2_match_data_create_from_pattern(re, NULL);
