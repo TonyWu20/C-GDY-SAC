@@ -14,8 +14,7 @@ int main(int argc, char *argv[])
         printf("Cannot open file.\n");
         return 1;
     }
-    BASE_LATTICE *lat = parseBase(file);
-    free(lat);
+    init_mol_direction(file);
     fclose(file);
 }
 
