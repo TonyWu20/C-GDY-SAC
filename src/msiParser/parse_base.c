@@ -97,7 +97,6 @@ static char scanLatVector(char *line, double *vector)
             pcre2_substring_free(buffer);
         }
         pcre2_match_data_free(match_data);
-        pcre2_substring_free(buffer);
         return *VecName;
     }
     else

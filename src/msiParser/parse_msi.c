@@ -173,21 +173,21 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
     /* Declaration and initialization variables for pcre2 */
     pcre2_match_data *match_data = NULL; /* pointer for match_data */
     PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
-    PCRE2_UCHAR8 *buffer; /* pointer to buffer to get substring */
-    PCRE2_SIZE size;      /* pointer to store size of substring */
+    PCRE2_SIZE size; /* pointer to store size of substring */
     char *RegexStr = "ACL \"([0-9]{1,}) ([a-zA-Z]{1,})\"";
     if (reMatch(RegexStr, (PCRE2_SPTR8)line, &match_data, &ovector) == 3)
     {
         /* Get elmId */
-        pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-        atom->elmId = atoi((const char *)buffer);
+        PCRE2_UCHAR8 elmId[3];
+        pcre2_substring_copy_bynumber(match_data, 1, elmId, &size);
+        atom->elmId = atoi((const char *)elmId);
         /* Get element */
-        pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
-        atom->elm = strdup((const char *)buffer);
+        PCRE2_UCHAR8 elm[2];
+        pcre2_substring_copy_bynumber(match_data, 2, elm, &size);
+        atom->elm = strdup((const char *)elm);
         atom->bCdSite = checkCdSite(line);
         atom->bStem = checkStem(line);
         pcre2_match_data_free(match_data);
-        pcre2_substring_free(buffer);
         return GETXYZ;
     }
     else
