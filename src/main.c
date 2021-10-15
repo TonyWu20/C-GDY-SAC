@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
         return 1;
     }
     init_mol_direction(file);
-    fclose(file);
 }
 
 void init_mol_direction(FILE *file)
@@ -39,7 +38,8 @@ void init_mol_direction(FILE *file)
     free(mol);
     for (int i = 0; i < rotated_mol->ItemNum; i++)
     {
-        fprintf(stdout, "%s", rotated_mol->lines[i]);
+        printf("%s", rotated_mol->lines[i]);
     }
     free(rotated_mol);
+    fclose(file);
 }
