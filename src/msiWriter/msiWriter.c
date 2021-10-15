@@ -17,10 +17,13 @@ MSI_FILE *build_MolMsi(MOLECULE *mol)
     mol_file->lines[1] = begin;
     for (int i = 0; i < mol->atomNum; i++)
     {
-        char *buffer = write_atomBlock(mol->molAtoms[i]);
-        mol_file->lines[i + 2] = malloc(strlen(buffer) + 1);
-        strcpy(mol_file->lines[i + 2], buffer);
-        free(buffer);
+        asprintf(&mol_file->lines[i + 2],
+                 "  (%d Atom\n    (A C ACL \"%d %s\")\n    (A C Label "
+                 "\"%s\")\n    (A D XYZ (%f %f %f))\n    (A I Id %d)\n  )\n",
+                 mol->molAtoms[i].itemId, mol->molAtoms[i].elmId,
+                 mol->molAtoms[i].elm, mol->molAtoms[i].elm,
+                 mol->molAtoms[i].coord[0], mol->molAtoms[i].coord[1],
+                 mol->molAtoms[i].coord[2], mol->molAtoms[i].itemId - 1);
     }
     mol_file->lines[mol->atomNum + 2] = ")";
     return mol_file;
