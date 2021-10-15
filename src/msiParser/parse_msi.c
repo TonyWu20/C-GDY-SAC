@@ -171,7 +171,7 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
                      NULL);
     if (rc == 3)
     {
-        PCRE2_SIZE size; /* pointer to store size of substring */
+        PCRE2_SIZE size = 0; /* pointer to store size of substring */
         /* Get elmId */
         PCRE2_UCHAR8 elmId[3] = {0};
         pcre2_substring_copy_bynumber(match_data, 1, elmId, &size);
