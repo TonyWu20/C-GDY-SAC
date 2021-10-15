@@ -35,8 +35,8 @@ BASE_LATTICE *parseBase(FILE *file)
     lattice = init_lattice(atomNum);
     get_LatVector(file, lattice->latVector);
     scanAtom(file, lattice->totalAtoms);
-    assign_carbonVector(lattice, 41, lattice->carbon_chain_vec);
-    assign_carbonVector(lattice, 73, lattice->carbon_metal_vec);
+    /*assign_carbonVector(lattice, 41, lattice->carbon_chain_vec);*/
+    /*assign_carbonVector(lattice, 73, lattice->carbon_metal_vec);*/
     return lattice;
 }
 int get_LatVector(FILE *file, double (*v)[3])
@@ -80,14 +80,13 @@ static char scanLatVector(char *line, double *vector)
     PCRE2_SIZE size;      /* pointer to store size of substring */
 
     char VecStr[] = "([A-C])3 \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)";
-    char *VecName = NULL;
     char fail = 'N';
 
     if ((reMatch(VecStr, (PCRE2_SPTR)line, &match_data, &ovector)) > 1)
     {
         /* Get vector name */
         pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-        VecName = strdup((const char *)buffer);
+        char VecName = buffer[0];
         pcre2_substring_free(buffer);
         /* convert groups of coords to double vector[3] */
         for (int i = 0; i < 3; i++)
@@ -97,7 +96,7 @@ static char scanLatVector(char *line, double *vector)
             pcre2_substring_free(buffer);
         }
         pcre2_match_data_free(match_data);
-        return *VecName;
+        return VecName;
     }
     else
     {
