@@ -12,9 +12,9 @@ MSI_FILE *build_MolMsi(MOLECULE *mol)
 {
     int ItemNum = mol->atomNum + 3;
     MSI_FILE *mol_file = init_MSI_FILE(ItemNum);
-    mol_file->lines[0] = strdup("# MSI CERIUS2 DataModel File Version 4.0\n");
+    mol_file->lines[0] = "# MSI CERIUS2 DataModel File Version 4.0\n";
     char *begin = "(1 Model\n";
-    mol_file->lines[1] = strdup(begin);
+    mol_file->lines[1] = begin;
     for (int i = 0; i < mol->atomNum; i++)
     {
         mol_file->lines[i + 2] = strdup(write_atomBlock(mol->molAtoms[i]));
