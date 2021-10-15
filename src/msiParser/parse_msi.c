@@ -62,11 +62,11 @@ void resetXYZ(int atomCount, ATOM_BLOCK *atoms)
             }
         }
     }
+
     for (int j = 0; j < 3; j++)
     {
         atoms[cd_atom].coord[j] -= atoms[cd_atom].coord[j];
     }
-    printf("The %d atom is coord site\n", atoms[cd_atom].itemId);
 }
 
 /**We want to direct the pointer of *match_data and *ovector
@@ -207,16 +207,19 @@ int saveCoord(char *line, ATOM_BLOCK *atom)
     /* Declaration and initialization variables for pcre2 */
     pcre2_match_data *match_data = NULL; /* pointer for match_data */
     PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
-    PCRE2_UCHAR8 *buffer; /* pointer to buffer to get substring */
-    PCRE2_SIZE size;      /* pointer to store size of substring */
     char *RegexStr = "XYZ \\(([0-9.e-]{1,}) ([0-9.e-]{1,}) ([0-9.e-]{1,})\\)";
-    if (reMatch(RegexStr, (PCRE2_SPTR8)line, &match_data, &ovector) == 4)
+    int rc;
+    rc = reMatch(RegexStr, (PCRE2_SPTR8)line, &match_data, &ovector);
+    if (rc == 4)
     {
         /* Stored x, y, z*/
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < 3; ++j)
         {
+            PCRE2_UCHAR8 *buffer; /* pointer to buffer to get substring */
+            PCRE2_SIZE size;      /* pointer to store size of substring */
             pcre2_substring_get_bynumber(match_data, j + 1, &buffer, &size);
             atom->coord[j] = atof((const char *)buffer);
+            pcre2_substring_free(buffer);
         }
         pcre2_match_data_free(match_data);
         return NEXT;

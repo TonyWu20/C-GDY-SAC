@@ -48,10 +48,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/homebrew/Cellar/cmake/3.21.2/bin/cmake
+CMAKE_COMMAND = /opt/homebrew/Cellar/cmake/3.21.3_1/bin/cmake
 
 # The command to remove a file.
-RM = /opt/homebrew/Cellar/cmake/3.21.2/bin/cmake -E rm -f
+RM = /opt/homebrew/Cellar/cmake/3.21.3_1/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/P
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/opt/homebrew/Cellar/cmake/3.21.2/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/opt/homebrew/Cellar/cmake/3.21.3_1/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -117,19 +117,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named main.o
-
-# Build rule for target.
-main.o: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main.o
-.PHONY : main.o
-
-# fast build rule for target.
-main.o/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/build
-.PHONY : main.o/fast
-
-#=============================================================================
 # Target rules for targets named MyMaths
 
 # Build rule for target.
@@ -141,6 +128,32 @@ MyMaths: cmake_check_build_system
 MyMaths/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/build
 .PHONY : MyMaths/fast
+
+#=============================================================================
+# Target rules for targets named msiWriter
+
+# Build rule for target.
+msiWriter: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 msiWriter
+.PHONY : msiWriter
+
+# fast build rule for target.
+msiWriter/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiWriter.dir/build.make CMakeFiles/msiWriter.dir/build
+.PHONY : msiWriter/fast
+
+#=============================================================================
+# Target rules for targets named main.o
+
+# Build rule for target.
+main.o: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main.o
+.PHONY : main.o
+
+# fast build rule for target.
+main.o/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/build
+.PHONY : main.o/fast
 
 #=============================================================================
 # Target rules for targets named msiParser
@@ -245,6 +258,21 @@ src/msiParser/parse_msi.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.s
 .PHONY : src/msiParser/parse_msi.s
 
+# target to build an object file
+src/msiWriter/msiWriter.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiWriter.dir/build.make CMakeFiles/msiWriter.dir/src/msiWriter/msiWriter.o
+.PHONY : src/msiWriter/msiWriter.o
+
+# target to preprocess a source file
+src/msiWriter/msiWriter.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiWriter.dir/build.make CMakeFiles/msiWriter.dir/src/msiWriter/msiWriter.i
+.PHONY : src/msiWriter/msiWriter.i
+
+# target to generate assembly for a file
+src/msiWriter/msiWriter.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiWriter.dir/build.make CMakeFiles/msiWriter.dir/src/msiWriter/msiWriter.s
+.PHONY : src/msiWriter/msiWriter.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -256,6 +284,7 @@ help:
 	@echo "... MyMaths"
 	@echo "... main.o"
 	@echo "... msiParser"
+	@echo "... msiWriter"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
@@ -274,6 +303,9 @@ help:
 	@echo "... src/msiParser/parse_msi.o"
 	@echo "... src/msiParser/parse_msi.i"
 	@echo "... src/msiParser/parse_msi.s"
+	@echo "... src/msiWriter/msiWriter.o"
+	@echo "... src/msiWriter/msiWriter.i"
+	@echo "... src/msiWriter/msiWriter.s"
 .PHONY : help
 
 

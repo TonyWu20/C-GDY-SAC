@@ -1,4 +1,6 @@
+#include "../maths/MyMaths.h"
 #include "msiParser.h"
+
 static int matchAtomId(char *line);
 static char
 scanLatVector(char *line,
@@ -32,7 +34,8 @@ BASE_LATTICE *parseBase(FILE *file)
     lattice = init_lattice(atomNum);
     get_LatVector(file, lattice->latVector);
     scanAtom(file, lattice->totalAtoms);
-    printf("%d atoms\n", atomNum);
+    assign_carbonVector(lattice, 41, lattice->carbon_chain_vec);
+    assign_carbonVector(lattice, 73, lattice->carbon_metal_vec);
     return lattice;
 }
 int get_LatVector(FILE *file, double (*v)[3])
@@ -110,4 +113,12 @@ static int matchAtomId(char *line)
     int rc = 0;
     rc = reMatch(RegexStr, (PCRE2_SPTR)line, &match_data, &ovector);
     return rc; /* -1 or 1 */
+}
+
+void assign_carbonVector(BASE_LATTICE *lat, int bAtomId, double *vec)
+{
+    double *a, *b;
+    a = lat->totalAtoms[40].coord;
+    b = lat->totalAtoms[bAtomId].coord;
+    initVector(a, b, vec);
 }

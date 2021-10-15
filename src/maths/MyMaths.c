@@ -31,6 +31,12 @@ void initVector(double coord_a[3], double coord_b[3], double *result)
     }
 }
 
+void freeVector(double *u)
+{
+    if (u != NULL)
+        free(u);
+}
+
 double dotProduct(double u[], double v[], int size)
 {
     double result = 0.0;

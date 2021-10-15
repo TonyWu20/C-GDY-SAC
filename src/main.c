@@ -1,8 +1,10 @@
 #include "main.h"
 #include "maths/MyMaths.h"
 #include "msiParser/msiParser.h"
+#include "msiWriter/msiWriter.h"
 #include <stdio.h>
 
+void init_mol_direction(FILE *file);
 int main(int argc, char *argv[])
 {
     char *fileName = argv[1];
@@ -12,50 +14,32 @@ int main(int argc, char *argv[])
         printf("Cannot open file.\n");
         return 1;
     }
+    BASE_LATTICE *lat = parseBase(file);
+    free(lat);
+}
+
+void init_mol_direction(FILE *file)
+{
     MOLECULE *mol;
     mol = parseMol(file);
     fclose(file);
-    BASE_LATTICE *model;
-    fileName = argv[2];
-    file = fopen(fileName, "r");
-    if (file == NULL)
-    {
-        printf("Cannot open file.\n");
-        return 1;
-    }
-    model = parseBase(file);
-    fclose(file);
-    BASE_LATTICE *ads_model;
-    ads_model = init_adsorbed_lat(model, mol);
-    rotMol(mol, 149.9999, 'z');
-    rotMol(mol, 270.0, 'x');
-    double *u, *v, *a, *b;
-    u = mol->molAtoms[4].coord;
-    v = mol->molAtoms[5].coord;
-    a = malloc(3 * sizeof(double));
+    double *u, *v, *a;
+    u = mol->molAtoms[0].coord;
+    v = mol->molAtoms[1].coord;
+    a = malloc(sizeof(double) * 3);
     initVector(u, v, a);
-
-    u = model->totalAtoms[40].coord;
-    v = model->totalAtoms[41].coord;
-    b = malloc(3 * sizeof(double));
-    initVector(u, v, b);
+    double a_norm = NormVector(a, 3);
+    double b[] = {a_norm, 0, 0};
     double theta = VecAngle(a, b);
-    rotMol(mol, -1 * theta, 'z');
-    placeMol(mol, model, 40, ads_model);
-    for (int i = model->atomNum; i < ads_model->atomNum; i++)
-    {
-        printf(
-            "  (%d Atom\n    (A C ACL \"%d %s\")\n    (A C Label \"%s\")\n  "
-            "  (A D XYZ (%15.13lf %15.13lf %15.13lf))\n    (A I Id %d)\n  )\n",
-            ads_model->totalAtoms[i].itemId, ads_model->totalAtoms[i].elmId,
-            ads_model->totalAtoms[i].elm, ads_model->totalAtoms[i].elm,
-            ads_model->totalAtoms[i].coord[0],
-            ads_model->totalAtoms[i].coord[1],
-            ads_model->totalAtoms[i].coord[2],
-            ads_model->totalAtoms[i].itemId - 1);
-    }
-    free(mol);
-    free(ads_model);
-    free(model);
     free(a);
+    rotMol(mol, -theta, 'z');
+    rotMol(mol, -90, 'x');
+    MSI_FILE *rotated_mol;
+    rotated_mol = build_MolMsi(mol);
+    free(mol);
+    for (int i = 0; i < rotated_mol->ItemNum; i++)
+    {
+        fprintf(stdout, "%s", rotated_mol->lines[i]);
+    }
+    free(rotated_mol);
 }

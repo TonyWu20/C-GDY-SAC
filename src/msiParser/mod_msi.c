@@ -2,7 +2,8 @@
 #include "msiParser.h"
 #include <math.h>
 #include <stdio.h>
-#define PI 3.141592654
+
+static void rotationMatrix(double degree, char axis, double (*mat)[3]);
 
 /** Append passed ATOM_BLOCK to the source BASE_LATTICE, make changes to the
  * passed target BASE_LATTICE pointer
@@ -69,45 +70,60 @@ void assignCoordtoMol(double coords[][3], MOLECULE *mol)
     }
 }
 
-void rotMol(MOLECULE *mol, double angle, char axis)
+static void rotationMatrix(double degree, char axis, double (*mat)[3])
 {
-    double matrix[mol->atomNum][3];
-    get_CoordMat(mol, matrix);
     double theta;
-    theta = (angle * M_PI) / 180;
+    theta = (degree * M_PI) / 180;
     double cos_theta;
     double sin_theta;
-    cos_theta = (((int)(angle * 1000000) % 90000000 == 0) &&
-                 ((int)(angle * 1000000) % 180000000 != 0))
+    cos_theta = (((int)(degree * 1000000) % 90000000 == 0) &&
+                 ((int)(degree * 1000000) % 180000000 != 0))
                     ? 0
                     : cos(theta);
-    sin_theta = ((int)(angle * 1000000) % 180000000 == 0) ? 0 : sin(theta);
-    double rotated_coord[mol->atomNum][3];
+    sin_theta = ((int)(degree * 1000000) % 180000000 == 0) ? 0 : sin(theta);
     double rot_x[3][3] = {{1.0, 0, 0},
-                          {0, cos_theta, -1.0 * sin_theta},
+                          {0, cos_theta, -1 * sin_theta},
                           {0.0, sin_theta, cos_theta}};
     double rot_y[3][3] = {
         {cos_theta, 0, sin_theta}, {0, 1, 0}, {-1 * sin_theta, 0, cos_theta}};
-    double rot_z[3][3] = {
-        {cos_theta, -1 * sin_theta, 0}, {sin_theta, cos_theta, 0}, {0, 0, 1}};
+    double rot_z[3][3] = {{cos_theta, -1 * sin_theta, 0}, // line 1
+                          {sin_theta, cos_theta, 0},      // line 2
+                          {0, 0, 1}};
     switch (axis)
     {
     case 'x':
-        multiplyMatrices_mx3(matrix, rot_x, rotated_coord, mol->atomNum);
-        assignCoordtoMol(rotated_coord, mol);
+        for (int i = 0; i < 3; i++)
+        {
+            memcpy(mat[i], rot_x[i], sizeof(double) * 3);
+        }
         break;
     case 'y':
-        multiplyMatrices_mx3(matrix, rot_y, rotated_coord, mol->atomNum);
-        assignCoordtoMol(rotated_coord, mol);
+        for (int i = 0; i < 3; i++)
+        {
+            memcpy(mat[i], rot_y[i], sizeof(double) * 3);
+        }
         break;
     case 'z':
-        multiplyMatrices_mx3(matrix, rot_z, rotated_coord, mol->atomNum);
-        assignCoordtoMol(rotated_coord, mol);
+        for (int i = 0; i < 3; i++)
+        {
+            memcpy(mat[i], rot_z[i], sizeof(double) * 3);
+        }
         break;
     default:
-        perror("Wrong axis.\n");
+        perror("Wrong axis input.\n");
         break;
     }
+}
+
+void rotMol(MOLECULE *mol, double degree, char axis)
+{
+    double matrix[mol->atomNum][3];
+    double rotated_coord[mol->atomNum][3];
+    get_CoordMat(mol, matrix);
+    double rot_mat[3][3];
+    rotationMatrix(degree, axis, rot_mat);
+    multiplyMatrices_mx3(matrix, rot_mat, rotated_coord, mol->atomNum);
+    assignCoordtoMol(rotated_coord, mol);
 }
 
 void placeMol(MOLECULE *mol, BASE_LATTICE *lat, int destId,
@@ -121,4 +137,14 @@ void placeMol(MOLECULE *mol, BASE_LATTICE *lat, int destId,
     moveMatrix(coord, u, mol->atomNum);
     assignCoordtoMol(coord, mol);
     appendMolAtoms(lat, mol, target);
+}
+
+void align_carbon_chain(MOLECULE *mol, BASE_LATTICE *lat)
+{
+    double *mol_stem, *cc_vec; // cc_vec is carbon chain vector
+    double theta;
+    /*mol_stem = molStemVector(mol);*/
+    /*cc_vec = CC_ChainVector(lat);*/
+    theta = VecAngle(mol_stem, cc_vec);
+    rotMol(mol, theta, 'z');
 }

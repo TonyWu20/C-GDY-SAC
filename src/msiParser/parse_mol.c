@@ -26,6 +26,10 @@ int find_Stem(MOLECULE *mol)
     }
     return i;
 }
+
+/** parse .msi to MOLECULE pointer.
+ *  Attention! malloc is used
+ */
 MOLECULE *parseMol(FILE *file)
 {
     int atomNum = 0;
