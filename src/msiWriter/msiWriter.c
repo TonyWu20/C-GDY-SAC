@@ -17,9 +17,12 @@ MSI_FILE *build_MolMsi(MOLECULE *mol)
     mol_file->lines[1] = begin;
     for (int i = 0; i < mol->atomNum; i++)
     {
-        mol_file->lines[i + 2] = strdup(write_atomBlock(mol->molAtoms[i]));
+        char *buffer = write_atomBlock(mol->molAtoms[i]);
+        mol_file->lines[i + 2] = malloc(strlen(buffer) + 1);
+        strcpy(mol_file->lines[i + 2], buffer);
+        free(buffer);
     }
-    mol_file->lines[mol->atomNum + 2] = strdup(")");
+    mol_file->lines[mol->atomNum + 2] = ")";
     return mol_file;
 }
 
