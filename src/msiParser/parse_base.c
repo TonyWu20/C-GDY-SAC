@@ -74,33 +74,45 @@ int get_LatVector(FILE *file, double (*v)[3])
 static char scanLatVector(char *line, double *vector)
 {
     /* Declaration and initialization variables for pcre2 */
-    pcre2_match_data *match_data = NULL; /* pointer for match_data */
-    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
-    PCRE2_UCHAR8 *buffer; /* pointer to buffer to get substring */
-    PCRE2_SIZE size;      /* pointer to store size of substring */
+    int errornumber;
+    PCRE2_SIZE erroroffset;
+    int rc;
+    pcre2_code *re;
+    PCRE2_SIZE size; /* pointer to store size of substring */
 
-    char VecStr[] = "([A-C])3 \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)";
+    PCRE2_SPTR VecStr =
+        (PCRE2_SPTR) "([A-C])3 \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)";
     char fail = 'N';
+    re = pcre2_compile(VecStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
+                       &erroroffset, NULL);
+    pcre2_match_data *match_data =
+        pcre2_match_data_create_from_pattern(re, NULL);
+    rc = pcre2_match(re, (PCRE2_SPTR)line,
+                     (PCRE2_SIZE)strlen((const char *)line), 0, 0, match_data,
+                     NULL);
 
-    if ((reMatch(VecStr, (PCRE2_SPTR)line, &match_data, &ovector)) > 1)
+    if (rc > 1)
     {
         /* Get vector name */
-        pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-        char VecName = buffer[0];
-        pcre2_substring_free(buffer);
+        char VecName[1];
+        pcre2_substring_copy_bynumber(match_data, 1, (PCRE2_UCHAR8 *)VecName,
+                                      &size);
         /* convert groups of coords to double vector[3] */
         for (int i = 0; i < 3; i++)
         {
+            PCRE2_UCHAR8 *buffer;
             pcre2_substring_get_bynumber(match_data, i + 2, &buffer, &size);
             vector[i] = atof((const char *)buffer);
             pcre2_substring_free(buffer);
         }
         pcre2_match_data_free(match_data);
-        return VecName;
+        pcre2_code_free(re);
+        return VecName[0];
     }
     else
     {
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return fail;
     }
 }
@@ -113,12 +125,16 @@ static char scanLatVector(char *line, double *vector)
  * */
 static int matchAtomId(char *line)
 {
-    pcre2_match_data *match_data = NULL; /* pointer for match_data */
-    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
     char RegexStr[] = "A I Id [0-9]{1,}";
     int rc = 0;
-    rc = reMatch(RegexStr, (PCRE2_SPTR)line, &match_data, &ovector);
+    pcre2_code *re = init_re(RegexStr);
+    pcre2_match_data *match_data =
+        pcre2_match_data_create_from_pattern(re, NULL);
+    rc = pcre2_match(re, (PCRE2_SPTR)line,
+                     (PCRE2_SIZE)strlen((const char *)line), 0, 0, match_data,
+                     NULL);
     pcre2_match_data_free(match_data);
+    pcre2_code_free(re);
     return rc; /* -1 or 1 */
 }
 

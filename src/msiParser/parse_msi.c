@@ -1,6 +1,22 @@
 #include "msiParser.h"
 #include "pcre2.h"
 
+pcre2_code *init_re(char *RegexStr)
+{
+    int errornumber;
+    PCRE2_SIZE erroroffset;
+    pcre2_code *re;
+    re = pcre2_compile((PCRE2_SPTR)RegexStr, PCRE2_ZERO_TERMINATED, 0,
+                       &errornumber, &erroroffset, NULL);
+    if (re == NULL)
+    {
+        PCRE2_UCHAR buffer[256];
+        pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
+        printf("PCRE2 compilation failed at offset %d: %s\n", (int)erroroffset,
+               buffer);
+    }
+    return re;
+}
 /** scan atoms in .msi file
  * args:
  * 		FILE *file
@@ -70,41 +86,6 @@ void resetXYZ(int atomCount, ATOM_BLOCK *atoms)
     }
 }
 
-/**We want to direct the pointer of *match_data and *ovector
- * to the pointers created by pcre2 functions, so we need to pass
- * the address of our defined pointers into the function to direct them
- * to the pointers created by pcre2 functions.*/
-int reMatch(char *RegexStr, PCRE2_SPTR subject, pcre2_match_data **match_data,
-            PCRE2_SIZE **ovector)
-{
-    int errornumber;
-    PCRE2_SIZE erroroffset;
-    int rc;
-    pcre2_code *re;
-    PCRE2_SPTR pattern;
-    pattern = (PCRE2_SPTR)RegexStr;
-    re = pcre2_compile(pattern, PCRE2_ZERO_TERMINATED, 0, &errornumber,
-                       &erroroffset, NULL);
-    if (re == NULL) /* Failed*/
-    {
-        PCRE2_UCHAR buffer[256];
-        pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
-        printf("PCRE2 compilation failed at offset %d: %s\n", (int)erroroffset,
-               buffer);
-    }
-    /* direct the true match_data to the passed pointer to *match_data */
-    *match_data = pcre2_match_data_create_from_pattern(re, NULL);
-    rc = pcre2_match(re, subject, (PCRE2_SIZE)strlen((const char *)subject), 0,
-                     0, *match_data, NULL);
-    if (rc > 1)
-    {
-        /* direct the true ovector to the passed pointer to *ovector */
-        *ovector = pcre2_get_ovector_pointer(*match_data);
-    }
-    pcre2_code_free(re);
-    return rc;
-}
-
 /** Walk every line of .msi file to parse atoms
  *  args:
  *  	 int blockFlag: OUT, INBLOCK, NEXT
@@ -144,20 +125,28 @@ int atomBlockWalk(int blockFlag, char *line, ATOM_BLOCK *atom)
 int saveItemId(char *line, ATOM_BLOCK *atom)
 {
     /* Declaration and initialization variables for pcre2 */
-    pcre2_match_data *match_data = NULL; /* pointer for match_data */
-    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
-    PCRE2_UCHAR8 *buffer; /* pointer to buffer to get substring */
-    PCRE2_SIZE size;      /* pointer to store size of substring */
+    int rc;
+    pcre2_code *re;
     char *RegexStr = "([0-9]{1,}) Atom";
-    if (reMatch(RegexStr, (PCRE2_SPTR8)line, &match_data, &ovector) == 2)
+    re = init_re(RegexStr);
+    pcre2_match_data *match_data =
+        pcre2_match_data_create_from_pattern(re, NULL);
+    rc = pcre2_match(re, (PCRE2_SPTR)line,
+                     (PCRE2_SIZE)strlen((const char *)line), 0, 0, match_data,
+                     NULL);
+    if (rc == 2)
     {
+        PCRE2_UCHAR8 *buffer = NULL;
+        PCRE2_SIZE size; /* pointer to store size of substring */
         pcre2_substring_get_bynumber_8(match_data, 1, &buffer, &size);
         atom->itemId = atoi((const char *)buffer);
         pcre2_substring_free(buffer);
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return INBLOCK;
     }
     pcre2_match_data_free(match_data);
+    pcre2_code_free(re);
     return OUT;
 }
 
@@ -260,34 +249,56 @@ int saveCoord(char *line, ATOM_BLOCK *atom)
 int checkCdSite(char *line)
 {
     /* Declaration and initialization variables for pcre2 */
-    pcre2_match_data *match_data = NULL; /* pointer for match_data */
-    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
-    char cdStr[] = "# cd";
-    if ((reMatch(cdStr, (PCRE2_SPTR)line, &match_data, &ovector)) == 1)
+    int errornumber;
+    PCRE2_SIZE erroroffset;
+    int rc;
+    pcre2_code *re;
+    PCRE2_SPTR cdStr = (PCRE2_SPTR) "# cd";
+    re = pcre2_compile(cdStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
+                       &erroroffset, NULL);
+    pcre2_match_data *match_data; /* pointer for match_data */
+    match_data = pcre2_match_data_create_from_pattern(re, NULL);
+    rc = pcre2_match(re, (PCRE2_SPTR)line,
+                     (PCRE2_SIZE)strlen((const char *)line), 0, 0, match_data,
+                     NULL);
+    if (rc == 1)
     {
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return 1;
     }
     else
     {
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return 0;
     }
 }
 int checkStem(char *line)
 {
     /* Declaration and initialization variables for pcre2 */
-    pcre2_match_data *match_data = NULL; /* pointer for match_data */
-    PCRE2_SIZE *ovector = NULL;          /* pointer for ovector */
-    char cdStr[] = "# stem";
-    if ((reMatch(cdStr, (PCRE2_SPTR)line, &match_data, &ovector)) == 1)
+    int errornumber;
+    PCRE2_SIZE erroroffset;
+    int rc;
+    pcre2_code *re;
+    PCRE2_SPTR cdStr = (PCRE2_SPTR) "# stem";
+    re = pcre2_compile(cdStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
+                       &erroroffset, NULL);
+    pcre2_match_data *match_data; /* pointer for match_data */
+    match_data = pcre2_match_data_create_from_pattern(re, NULL);
+    rc = pcre2_match(re, (PCRE2_SPTR)line,
+                     (PCRE2_SIZE)strlen((const char *)line), 0, 0, match_data,
+                     NULL);
+    if (rc == 1)
     {
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return 1;
     }
     else
     {
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return 0;
     }
 }

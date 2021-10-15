@@ -11,8 +11,7 @@
 #define ATOMS 11
 
 /* basic pcre2 match */
-int reMatch(char *RegexStr, PCRE2_SPTR subject, pcre2_match_data **match_data,
-            PCRE2_SIZE **ovector);
+pcre2_code *init_re(char *RegexStr);
 
 /* basic walkthrough .msi */
 int atomBlockWalk(int blockFlag, char *line, ATOM_BLOCK *atom);
