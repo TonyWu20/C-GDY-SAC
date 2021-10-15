@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     }
     BASE_LATTICE *lat = parseBase(file);
     free(lat);
+    fclose(file);
 }
 
 void init_mol_direction(FILE *file)
