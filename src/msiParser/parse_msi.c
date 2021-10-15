@@ -232,11 +232,13 @@ int saveCoord(char *line, ATOM_BLOCK *atom)
             pcre2_substring_free(buffer);
         }
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return NEXT;
     }
     else
     {
         pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
         return GETXYZ;
     }
 }
