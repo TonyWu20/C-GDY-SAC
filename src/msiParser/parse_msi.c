@@ -161,14 +161,9 @@ int saveItemId(char *line, ATOM_BLOCK *atom)
 int saveElmInfo(char *line, ATOM_BLOCK *atom)
 {
     /* Declaration and initialization variables for pcre2 */
-    int errornumber;
-    PCRE2_SIZE erroroffset;
     int rc;
-    pcre2_code *re;
-    PCRE2_SIZE size; /* pointer to store size of substring */
-    PCRE2_SPTR RegexStr = (PCRE2_SPTR) "ACL \"([0-9]{1,}) ([a-zA-Z]{1,})\"";
-    re = pcre2_compile(RegexStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
-                       &erroroffset, NULL);
+    char *RegexStr = "ACL \"([0-9]{1,}) ([a-zA-Z]{1,})\"";
+    pcre2_code *re = init_re(RegexStr);
     pcre2_match_data *match_data =
         pcre2_match_data_create_from_pattern(re, NULL);
     rc = pcre2_match(re, (PCRE2_SPTR)line,
@@ -176,12 +171,13 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
                      NULL);
     if (rc == 3)
     {
+        PCRE2_SIZE size; /* pointer to store size of substring */
         /* Get elmId */
-        PCRE2_UCHAR8 elmId[3];
+        PCRE2_UCHAR8 elmId[3] = {0};
         pcre2_substring_copy_bynumber(match_data, 1, elmId, &size);
         atom->elmId = atoi((const char *)elmId);
         /* Get element */
-        PCRE2_UCHAR8 elm[2];
+        PCRE2_UCHAR8 elm[2] = {0};
         pcre2_substring_copy_bynumber(match_data, 2, elm, &size);
         strcpy(atom->elm, (const char *)elm);
         atom->bCdSite = checkCdSite(line);

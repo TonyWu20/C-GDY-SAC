@@ -75,7 +75,6 @@ static char scanLatVector(char *line, double *vector)
 {
     /* Declaration and initialization variables for pcre2 */
     int rc;
-    PCRE2_SIZE size; /* pointer to store size of substring */
     char *VecStr = "([A-C])3 \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)";
     pcre2_code *re = init_re(VecStr);
     char fail = 'N';
@@ -88,6 +87,7 @@ static char scanLatVector(char *line, double *vector)
     if (rc > 1)
     {
         /* Get vector name */
+        PCRE2_SIZE size = 0; /* pointer to store size of substring */
         char VecName[1] = "0";
         pcre2_substring_copy_bynumber(match_data, 1, (PCRE2_UCHAR8 *)VecName,
                                       &size);
