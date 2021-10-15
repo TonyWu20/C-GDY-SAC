@@ -173,13 +173,15 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
     {
         PCRE2_SIZE size = 0; /* pointer to store size of substring */
         /* Get elmId */
-        PCRE2_UCHAR8 elmId[3] = {0};
-        pcre2_substring_copy_bynumber(match_data, 1, elmId, &size);
+        PCRE2_UCHAR8 *elmId;
+        pcre2_substring_get_bynumber(match_data, 1, &elmId, &size);
         atom->elmId = atoi((const char *)elmId);
+        pcre2_substring_free(elmId);
         /* Get element */
-        PCRE2_UCHAR8 elm[2] = {0};
-        pcre2_substring_copy_bynumber(match_data, 2, elm, &size);
+        PCRE2_UCHAR8 *elm;
+        pcre2_substring_get_bynumber(match_data, 2, &elm, &size);
         strcpy(atom->elm, (const char *)elm);
+        pcre2_substring_free(elm);
         atom->bCdSite = checkCdSite(line);
         atom->bStem = checkStem(line);
         pcre2_match_data_free(match_data);
