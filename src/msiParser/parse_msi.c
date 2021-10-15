@@ -152,6 +152,7 @@ int saveItemId(char *line, ATOM_BLOCK *atom)
     {
         pcre2_substring_get_bynumber_8(match_data, 1, &buffer, &size);
         atom->itemId = atoi((const char *)buffer);
+        pcre2_substring_free(buffer);
         pcre2_match_data_free(match_data);
         return INBLOCK;
     }
@@ -186,6 +187,7 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
         atom->bCdSite = checkCdSite(line);
         atom->bStem = checkStem(line);
         pcre2_match_data_free(match_data);
+        pcre2_substring_free(buffer);
         return GETXYZ;
     }
     else
