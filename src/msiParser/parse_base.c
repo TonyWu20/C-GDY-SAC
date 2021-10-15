@@ -74,17 +74,11 @@ int get_LatVector(FILE *file, double (*v)[3])
 static char scanLatVector(char *line, double *vector)
 {
     /* Declaration and initialization variables for pcre2 */
-    int errornumber;
-    PCRE2_SIZE erroroffset;
     int rc;
-    pcre2_code *re;
     PCRE2_SIZE size; /* pointer to store size of substring */
-
-    PCRE2_SPTR VecStr =
-        (PCRE2_SPTR) "([A-C])3 \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)";
+    char *VecStr = "([A-C])3 \\(([0-9.-]{1,}) ([0-9.-]{1,}) ([0-9.-]{1,})\\)";
+    pcre2_code *re = init_re(VecStr);
     char fail = 'N';
-    re = pcre2_compile(VecStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
-                       &erroroffset, NULL);
     pcre2_match_data *match_data =
         pcre2_match_data_create_from_pattern(re, NULL);
     rc = pcre2_match(re, (PCRE2_SPTR)line,
@@ -94,7 +88,7 @@ static char scanLatVector(char *line, double *vector)
     if (rc > 1)
     {
         /* Get vector name */
-        char VecName[1];
+        char VecName[1] = "0";
         pcre2_substring_copy_bynumber(match_data, 1, (PCRE2_UCHAR8 *)VecName,
                                       &size);
         /* convert groups of coords to double vector[3] */
