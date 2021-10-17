@@ -13,11 +13,8 @@ MSI_FILE *build_MolMsi(MOLECULE *mol)
 {
     int ItemNum = mol->atomNum + 3;
     MSI_FILE *mol_file = init_MSI_FILE(ItemNum);
-    mol_file->lines[0] = "# MSI CERIUS2 DataModel File Version 4.0\n";
-    char *begin = "(1 Model\n";
-    mol_file->lines[1] = begin;
+    load_headers(mol_file);
     load_atoms(mol->totalAtoms, mol->atomNum, mol_file, 2);
-    mol_file->lines[mol->atomNum + 2] = ")";
     return mol_file;
 }
 
@@ -29,6 +26,8 @@ MSI_FILE *build_LatMsi(BASE_LATTICE *lat)
     MSI_FILE *lat_file = init_MSI_FILE(ItemNum);
     load_headers(lat_file);
     load_vectors(lat_file, lat);
+    load_atoms(lat->totalAtoms, lat->atomNum, lat_file, 8);
+    return lat_file;
 }
 
 void write_atomBlock(ATOM_BLOCK atom, char **line)
@@ -48,9 +47,11 @@ void load_atoms(ATOM_BLOCK *atoms, int atomNum, MSI_FILE *mfile, int startPos)
     }
 }
 
-void load_headers(MSI_FILE *lat_file)
+void load_headers(MSI_FILE *mfile)
 {
-    ;
+    mfile->lines[0] = "# MSI CERIUS2 DataModel File Version 4.0\n";
+    mfile->lines[1] = "(1 Model\n";
+    mfile->lines[mfile->ItemNum - 1] = ")";
 }
 void load_vectors(MSI_FILE *lat_file, BASE_LATTICE *lat)
 {
