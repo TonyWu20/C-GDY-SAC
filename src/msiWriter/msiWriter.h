@@ -9,4 +9,5 @@ typedef struct
 MSI_FILE *init_MSI_FILE(int ItemNum);
 MSI_FILE *build_MolMsi(MOLECULE *mol);
 
-char *write_atomBlock(ATOM_BLOCK);
+void write_atomBlock(ATOM_BLOCK, char **);
+void free_MSI_FILE(MSI_FILE *);

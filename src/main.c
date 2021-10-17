@@ -40,6 +40,5 @@ void init_mol_direction(FILE *file)
     {
         printf("%s", rotated_mol->lines[i]);
     }
-    free(rotated_mol);
-    fclose(file);
+    free_MSI_FILE(rotated_mol);
 }
