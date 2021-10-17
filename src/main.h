@@ -20,7 +20,7 @@ typedef struct
     int atomNum;
     int CdSiteId;
     int StemId;
-    ATOM_BLOCK molAtoms[];
+    ATOM_BLOCK totalAtoms[];
 } MOLECULE;
 
 typedef struct

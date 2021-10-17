@@ -40,7 +40,7 @@ void appendMolAtoms(BASE_LATTICE *source, MOLECULE *add_mol,
     {
         memcpy(t++, s++, sizeof(ATOM_BLOCK));
     }
-    s = add_mol->molAtoms;
+    s = add_mol->totalAtoms;
     for (int i = 0; i < add_mol->atomNum; i++)
     {
         memcpy(t, s++, sizeof(ATOM_BLOCK));
@@ -54,7 +54,7 @@ void get_CoordMat(MOLECULE *s, double matrix[][3])
     {
         for (int j = 0; j < 3; j++)
         {
-            memcpy(matrix[i], &s->molAtoms[i].coord, 3 * sizeof(double));
+            memcpy(matrix[i], &s->totalAtoms[i].coord, 3 * sizeof(double));
         }
     }
 }
@@ -65,7 +65,7 @@ void assignCoordtoMol(double coords[][3], MOLECULE *mol)
     {
         for (int j = 0; j < 3; j++)
         {
-            memcpy(&mol->molAtoms[i].coord, coords[i], 3 * sizeof(double));
+            memcpy(&mol->totalAtoms[i].coord, coords[i], 3 * sizeof(double));
         }
     }
 }

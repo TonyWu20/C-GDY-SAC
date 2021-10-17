@@ -23,8 +23,8 @@ void init_mol_direction(FILE *file)
     mol = parseMol(file);
     fclose(file);
     double *u, *v, *a;
-    u = mol->molAtoms[0].coord;
-    v = mol->molAtoms[1].coord;
+    u = mol->totalAtoms[0].coord;
+    v = mol->totalAtoms[1].coord;
     a = malloc(sizeof(double) * 3);
     initVector(u, v, a);
     double a_norm = NormVector(a, 3);
