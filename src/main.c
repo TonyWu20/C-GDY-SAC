@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 void init_mol_direction(FILE *file);
+void test_latMsi_writer(FILE *file);
 int main(int argc, char *argv[])
 {
     char *fileName = argv[1];
@@ -14,7 +15,7 @@ int main(int argc, char *argv[])
         printf("Cannot open file.\n");
         return 1;
     }
-    init_mol_direction(file);
+    test_latMsi_writer(file);
 }
 
 void init_mol_direction(FILE *file)
@@ -40,5 +41,20 @@ void init_mol_direction(FILE *file)
     {
         printf("%s", rotated_mol->lines[i]);
     }
-    free_MSI_FILE(rotated_mol);
+    free_MSI_MOL(rotated_mol);
+}
+
+void test_latMsi_writer(FILE *file)
+{
+    BASE_LATTICE *lat;
+    lat = parseBase(file);
+    fclose(file);
+    MSI_FILE *lat_file;
+    lat_file = build_LatMsi(lat);
+    free(lat);
+    for (int i = 0; i < lat_file->ItemNum; ++i)
+    {
+        printf("%s", lat_file->lines[i]);
+    }
+    free_MSI_LAT(lat_file);
 }

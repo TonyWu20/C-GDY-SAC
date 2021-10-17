@@ -45,7 +45,8 @@ int get_LatVector(FILE *file, double (*v)[3])
     int DONE = 0;
     while (fgets(line, sizeof(line), file))
     {
-        switch (scanLatVector(line, *v))
+        char vecName = scanLatVector(line, *v);
+        switch (vecName)
         {
         case 'A':
             v++;
@@ -55,6 +56,8 @@ int get_LatVector(FILE *file, double (*v)[3])
             break;
         case 'C':
             DONE = 1;
+            break;
+        case 'N':
             break;
         default:
             break;
@@ -88,9 +91,10 @@ static char scanLatVector(char *line, double *vector)
     {
         /* Get vector name */
         PCRE2_SIZE size = 0; /* pointer to store size of substring */
-        char VecName[1] = "0";
-        pcre2_substring_copy_bynumber(match_data, 1, (PCRE2_UCHAR8 *)VecName,
-                                      &size);
+        PCRE2_UCHAR *buf;
+        pcre2_substring_get_bynumber(match_data, 1, &buf, &size);
+        char vecName = buf[0];
+        pcre2_substring_free(buf);
         /* convert groups of coords to double vector[3] */
         for (int i = 0; i < 3; i++)
         {
@@ -101,7 +105,7 @@ static char scanLatVector(char *line, double *vector)
         }
         pcre2_match_data_free(match_data);
         pcre2_code_free(re);
-        return VecName[0];
+        return vecName;
     }
     else
     {

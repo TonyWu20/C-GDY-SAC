@@ -26,7 +26,7 @@ MSI_FILE *build_LatMsi(BASE_LATTICE *lat)
     MSI_FILE *lat_file = init_MSI_FILE(ItemNum);
     load_headers(lat_file);
     load_vectors(lat_file, lat);
-    load_atoms(lat->totalAtoms, lat->atomNum, lat_file, 8);
+    load_atoms(lat->totalAtoms, lat->atomNum, lat_file, 9);
     return lat_file;
 }
 
@@ -53,16 +53,51 @@ void load_headers(MSI_FILE *mfile)
     mfile->lines[1] = "(1 Model\n";
     mfile->lines[mfile->ItemNum - 1] = ")";
 }
+
+char *write_vector(double *coord, char VectorName)
+{
+    char *vector;
+    asprintf(&vector, "  (A D %c3 (%13.11lf %13.11lf %13.11lf))\n", VectorName,
+             coord[0], coord[1], coord[2]);
+    return vector;
+}
 void load_vectors(MSI_FILE *lat_file, BASE_LATTICE *lat)
 {
+    char *Avector, *Bvector, *Cvector;
+    Avector = write_vector(lat->latVector[0], 'A');
+    Bvector = write_vector(lat->latVector[1], 'B');
+    Cvector = write_vector(lat->latVector[2], 'C');
+    char *parameters[] = {"  (A I CRY/DISPLAY (192 256))\n",
+                          "  (A I PeriodicType 100)\n",
+                          "  (A C SpaceGroup \"1 1\")\n",
+                          Avector,
+                          Bvector,
+                          Cvector,
+                          "  (A D CRY/TOLERANCE 0.05)\n"};
     ;
+    for (int i = 0; i < 7; ++i)
+    {
+        lat_file->lines[i + 2] = parameters[i];
+    }
 }
 
-void free_MSI_FILE(MSI_FILE *mfile)
+void free_MSI_MOL(MSI_FILE *mfile)
 {
     for (int i = 0; i < mfile->ItemNum - 3; ++i)
     {
         free(mfile->lines[i + 2]);
+    }
+    free(mfile);
+}
+void free_MSI_LAT(MSI_FILE *mfile)
+{
+    for (int i = 0; i < 3; ++i)
+    {
+        free(mfile->lines[i + 5]);
+    }
+    for (int i = 0; i < mfile->ItemNum - 10; ++i)
+    {
+        free(mfile->lines[i + 9]);
     }
     free(mfile);
 }
