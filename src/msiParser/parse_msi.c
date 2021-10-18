@@ -106,7 +106,7 @@ int atomBlockWalk(int blockFlag, char *line, ATOM_BLOCK *atom)
         blockFlag = saveElmInfo(line, atom); /* INBLOCK or GETXYZ */
         break;
     case GETXYZ:
-        blockFlag = saveCoord(line, atom); /* GETXYZ or OUT */
+        blockFlag = saveCoord(line, atom); /* GETXYZ or NEXT */
         break;
     default:
         break;

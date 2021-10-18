@@ -23,7 +23,7 @@ void multiplyMatrices_mx3(double first[][3], double sec[][3],
         }
     }
 }
-void initVector(double coord_a[3], double coord_b[3], double *result)
+void initVector(double coord_a[3], double coord_b[3], double result[3])
 {
     for (int i = 0; i < 3; i++)
     {

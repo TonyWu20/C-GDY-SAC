@@ -35,8 +35,8 @@ BASE_LATTICE *parseBase(FILE *file)
     lattice = init_lattice(atomNum);
     get_LatVector(file, lattice->latVector);
     scanAtom(file, lattice->totalAtoms);
-    /*assign_carbonVector(lattice, 41, lattice->carbon_chain_vec);*/
-    /*assign_carbonVector(lattice, 73, lattice->carbon_metal_vec);*/
+    assign_carbonVector(lattice, 41, lattice->carbon_chain_vec);
+    assign_carbonVector(lattice, 73, lattice->carbon_metal_vec);
     return lattice;
 }
 int get_LatVector(FILE *file, double (*v)[3])
@@ -139,7 +139,7 @@ static int matchAtomId(char *line)
 void assign_carbonVector(BASE_LATTICE *lat, int bAtomId, double *vec)
 {
     double *a, *b;
-    a = lat->totalAtoms[40].coord;
-    b = lat->totalAtoms[bAtomId].coord;
+    a = lat->totalAtoms[39].coord;
+    b = lat->totalAtoms[bAtomId - 1].coord;
     initVector(a, b, vec);
 }

@@ -50,11 +50,11 @@ void test_latMsi_writer(FILE *file)
     lat = parseBase(file);
     fclose(file);
     MSI_FILE *lat_file;
+    printf("carbon chain vector = %lf, %lf, %lf\n", lat->carbon_chain_vec[0],
+           lat->carbon_chain_vec[1], lat->carbon_chain_vec[2]);
+    printf("carbon metal vector = %lf, %lf, %lf\n", lat->carbon_metal_vec[0],
+           lat->carbon_metal_vec[1], lat->carbon_metal_vec[2]);
     lat_file = build_LatMsi(lat);
     free(lat);
-    for (int i = 0; i < lat_file->ItemNum; ++i)
-    {
-        printf("%s", lat_file->lines[i]);
-    }
     free_MSI_LAT(lat_file);
 }
