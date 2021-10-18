@@ -29,14 +29,14 @@
            - done by commenting the actual coordinated atom in molecule's .msi file at the line "ACL".
 
       1. base model
-         1. parse all atoms with struct ATOM.
-         2. Get the last atom itemId.
-         3. Get lattice vectors.
+         - [x] parse all atoms with struct ATOM.
+         - [x] Get the last atom itemId.
+         - [x] Get lattice vectors.
 
    2. Compute coordinates
-      1. align the coordinate site of adsorbate to the adsorption site.
-      2. Rotate the molecule to align with the selected
-         two adsorption sites (for C2).
+      - [ ] align the coordinate site of adsorbate to the adsorption site.
+      - [x] Rotate the molecule to align with the selected
+            two adsorption sites (for C2).
    3. Attach adsorbate molecule atoms into base model.
       1. Calculate the next itemId for the inserted adsorbate molecule atoms.
       2. Insert the text into .msi files.
