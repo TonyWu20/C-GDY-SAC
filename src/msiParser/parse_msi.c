@@ -183,7 +183,7 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
         strcpy(atom->elm, (const char *)elm);
         pcre2_substring_free(elm);
         atom->bCdSite = checkCdSite(line);
-        atom->bStem = checkStem(line);
+        atom->StemInfo = checkStem(line);
         pcre2_match_data_free(match_data);
         pcre2_code_free(re);
         return GETXYZ;
@@ -206,14 +206,10 @@ int saveElmInfo(char *line, ATOM_BLOCK *atom)
 int saveCoord(char *line, ATOM_BLOCK *atom)
 {
     /* Declaration and initialization variables for pcre2 */
-    int errornumber;
-    PCRE2_SIZE erroroffset;
     int rc;
     pcre2_code *re;
-    PCRE2_SPTR RegexStr =
-        (PCRE2_SPTR) "XYZ \\(([0-9.e-]{1,}) ([0-9.e-]{1,}) ([0-9.e-]{1,})\\)";
-    re = pcre2_compile(RegexStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
-                       &erroroffset, NULL);
+    char *RegexStr = "XYZ \\(([0-9.e-]{1,}) ([0-9.e-]{1,}) ([0-9.e-]{1,})\\)";
+    re = init_re(RegexStr);
     pcre2_match_data *match_data; /* pointer for match_data */
     match_data = pcre2_match_data_create_from_pattern(re, NULL);
     rc = pcre2_match(re, (PCRE2_SPTR)line,
@@ -247,13 +243,10 @@ int saveCoord(char *line, ATOM_BLOCK *atom)
 int checkCdSite(char *line)
 {
     /* Declaration and initialization variables for pcre2 */
-    int errornumber;
-    PCRE2_SIZE erroroffset;
     int rc;
     pcre2_code *re;
-    PCRE2_SPTR cdStr = (PCRE2_SPTR) "# cd";
-    re = pcre2_compile(cdStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
-                       &erroroffset, NULL);
+    char *cdStr = "# cd";
+    re = init_re(cdStr);
     pcre2_match_data *match_data; /* pointer for match_data */
     match_data = pcre2_match_data_create_from_pattern(re, NULL);
     rc = pcre2_match(re, (PCRE2_SPTR)line,
@@ -275,23 +268,26 @@ int checkCdSite(char *line)
 int checkStem(char *line)
 {
     /* Declaration and initialization variables for pcre2 */
-    int errornumber;
-    PCRE2_SIZE erroroffset;
     int rc;
     pcre2_code *re;
-    PCRE2_SPTR cdStr = (PCRE2_SPTR) "# stem";
-    re = pcre2_compile(cdStr, PCRE2_ZERO_TERMINATED, 0, &errornumber,
-                       &erroroffset, NULL);
+    char *StemStr = "# stem ([1-2])";
+    re = init_re(StemStr);
     pcre2_match_data *match_data; /* pointer for match_data */
     match_data = pcre2_match_data_create_from_pattern(re, NULL);
     rc = pcre2_match(re, (PCRE2_SPTR)line,
                      (PCRE2_SIZE)strlen((const char *)line), 0, 0, match_data,
                      NULL);
-    if (rc == 1)
+    if (rc == 2)
     {
+        PCRE2_UCHAR8 *buf;
+        PCRE2_SIZE size;
+        int StemId;
+        pcre2_substring_get_bynumber(match_data, 1, &buf, &size);
+        StemId = atoi((const char *)buf);
         pcre2_match_data_free(match_data);
         pcre2_code_free(re);
-        return 1;
+        pcre2_substring_free(buf);
+        return StemId;
     }
     else
     {

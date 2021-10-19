@@ -22,7 +22,7 @@ MOLECULE *init_mol(int atomNum);
 int find_CdAtom(MOLECULE *);
 int find_Stem(MOLECULE *);
 MOLECULE *parseMol(FILE *file);
-double *molStemVector(MOLECULE *);
+void load_StemVector(MOLECULE *, double *);
 
 /* parse_base */
 int countAtoms(FILE *file);
@@ -50,4 +50,4 @@ int saveItemId(char *, ATOM_BLOCK *);
 int saveElmInfo(char *, ATOM_BLOCK *);
 int checkCdSite(char *);
 int saveCoord(char *, ATOM_BLOCK *);
-int checkStem(char *line);
+int checkStem(char *);

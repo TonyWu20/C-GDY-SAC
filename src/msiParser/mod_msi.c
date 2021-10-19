@@ -145,6 +145,7 @@ void align_carbon_chain(MOLECULE *mol, BASE_LATTICE *lat)
     double theta;
     /*mol_stem = molStemVector(mol);*/
     /*cc_vec = CC_ChainVector(lat);*/
+    cc_vec = lat->carbon_chain_vec;
     theta = VecAngle(mol_stem, cc_vec);
     rotMol(mol, theta, 'z');
 }

@@ -11,15 +11,15 @@ typedef struct
     char elm[2];
     int elmId;
     int itemId;
-    int bCdSite; /* boolean for coordination site*/
-    int bStem;   /* boolean for stem */
+    int bCdSite;  /* boolean for coordination site*/
+    int StemInfo; /* boolean for stem */
 } ATOM_BLOCK;
 
 typedef struct
 {
     int atomNum;
     int CdSiteId;
-    int StemId;
+    int StemAtomId[2];
     ATOM_BLOCK totalAtoms[];
 } MOLECULE;
 
