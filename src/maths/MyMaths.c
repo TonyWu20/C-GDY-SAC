@@ -80,8 +80,8 @@ double NormVector(double u[], int size)
 
 /** Add Matrix by vector u
  *  Args:
- *  	double **Mat; arrays of coords
- *  	double *u; vector
+ *  	double **Mat; arrays of coords,
+ *  	double *u; vector,
  *  	int ElmNum; number of elements in Mat;
  */
 void moveMatrix(double Mat[][3], double *u, int ElmNum)
