@@ -23,15 +23,7 @@ void init_mol_direction(FILE *file)
     MOLECULE *mol;
     mol = parseMol(file);
     fclose(file);
-    double *a;
-    a = malloc(3 * sizeof(double));
-    load_StemVector(mol, a);
-    double a_norm = NormVector(a, 3);
-    double b[] = {a_norm, 0, 0};
-    double theta = VecAngle(a, b);
-    free(a);
-    rotMol(mol, -theta, 'z');
-    /*rotMol(mol, 90, 'x');*/
+    init_xz_plane(mol);
     MSI_FILE *rotated_mol;
     rotated_mol = build_MolMsi(mol);
     free(mol);

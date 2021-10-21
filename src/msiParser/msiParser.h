@@ -23,6 +23,8 @@ int find_CdAtom(MOLECULE *);
 int find_Stem(MOLECULE *);
 MOLECULE *parseMol(FILE *file);
 void load_StemVector(MOLECULE *, double *);
+void init_xz_plane(MOLECULE *); /* init the stem direction and turn molecule
+                                   from xy plane to xz plane */
 
 /* parse_base */
 int countAtoms(FILE *file);

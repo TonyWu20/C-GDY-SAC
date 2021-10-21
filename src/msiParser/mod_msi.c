@@ -143,9 +143,10 @@ void align_carbon_chain(MOLECULE *mol, BASE_LATTICE *lat)
 {
     double *mol_stem, *cc_vec; // cc_vec is carbon chain vector
     double theta;
-    /*mol_stem = molStemVector(mol);*/
-    /*cc_vec = CC_ChainVector(lat);*/
+    mol_stem = malloc(3 * sizeof(double));
+    load_StemVector(mol, mol_stem);
     cc_vec = lat->carbon_chain_vec;
     theta = VecAngle(mol_stem, cc_vec);
+    free(mol_stem);
     rotMol(mol, theta, 'z');
 }

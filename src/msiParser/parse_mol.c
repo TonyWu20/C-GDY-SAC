@@ -81,3 +81,14 @@ void load_StemVector(MOLECULE *mol, double *stemRes)
     b = mol->totalAtoms[Stem_b].coord;
     initVector(a, b, stemRes);
 }
+
+void init_xz_plane(MOLECULE *mol)
+{
+    double *stem = malloc(3 * sizeof(double));
+    load_StemVector(mol, stem);
+    double x_axis[3] = {1, 0, 0};
+    double theta = VecAngle(stem, x_axis);
+    free(stem);
+    rotMol(mol, -theta, 'z'); /* align stem to x-axis */
+    rotMol(mol, 270, 'x');    /* rotate mol to xz plane */
+}
