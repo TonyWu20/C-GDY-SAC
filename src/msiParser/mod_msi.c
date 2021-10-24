@@ -122,31 +122,52 @@ void rotMol(MOLECULE *mol, double degree, char axis)
     get_CoordMat(mol, matrix);
     double rot_mat[3][3];
     rotationMatrix(degree, axis, rot_mat);
+    double *center = mol->totalAtoms[mol->StemAtomId[1]].coord;
+    for (int i = 0; i < 3; ++i)
+    {
+        center[i] /= -2;
+    }
+    moveMatrix(matrix, center, mol->atomNum);
+    for (int i = 0; i < 3; ++i)
+    {
+        center[i] *= -1;
+    }
     multiplyMatrices_mx3(matrix, rot_mat, rotated_coord, mol->atomNum);
+    moveMatrix(matrix, center, mol->atomNum);
     assignCoordtoMol(rotated_coord, mol);
 }
 
 void placeMol(MOLECULE *mol, BASE_LATTICE *lat, int destId,
               BASE_LATTICE *target)
 {
-    double *u;
-    u = lat->totalAtoms[destId].coord;
+    double *u = malloc(3 * sizeof(double));
+    memcpy(u, lat->totalAtoms[destId].coord, 3 * sizeof(double));
     double coord[mol->atomNum][3];
     get_CoordMat(mol, coord);
     u[2] += 1.54221;
     moveMatrix(coord, u, mol->atomNum);
     assignCoordtoMol(coord, mol);
     appendMolAtoms(lat, mol, target);
+    free(u);
 }
 
-void align_carbon_chain(MOLECULE *mol, BASE_LATTICE *lat)
+void align_carbon_chain(MOLECULE *mol, double *chain_vec)
 {
-    double *mol_stem, *cc_vec; // cc_vec is carbon chain vector
+    double *mol_stem; // cc_vec is carbon chain vector
     double theta;
     mol_stem = malloc(3 * sizeof(double));
     load_StemVector(mol, mol_stem);
-    cc_vec = lat->carbon_chain_vec;
-    theta = VecAngle(mol_stem, cc_vec);
+    theta = VecAngle(mol_stem, chain_vec);
     free(mol_stem);
-    rotMol(mol, theta, 'z');
+    rotMol(mol, 180 - theta, 'z');
+    /*resetXYZ(mol->atomNum, mol->totalAtoms);*/
+}
+
+void attach_carbon_chain(MOLECULE *mol, BASE_LATTICE *lat, int carbonId)
+{
+    double coord[mol->atomNum][3];
+    align_carbon_chain(mol, lat->carbon_chain_vec);
+    get_CoordMat(mol, coord);
+    moveMatrix(coord, lat->totalAtoms[carbonId - 1].coord, mol->atomNum);
+    assignCoordtoMol(coord, mol);
 }

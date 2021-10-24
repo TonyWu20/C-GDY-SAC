@@ -91,4 +91,9 @@ void init_xz_plane(MOLECULE *mol)
     free(stem);
     rotMol(mol, -theta, 'z'); /* align stem to x-axis */
     rotMol(mol, 270, 'x');    /* rotate mol to xz plane */
+    if (mol->totalAtoms[mol->CdSiteId].coord[2] > 0)
+    {
+        rotMol(mol, 180, 'x');
+    }
+    resetXYZ(mol->atomNum, mol->totalAtoms);
 }

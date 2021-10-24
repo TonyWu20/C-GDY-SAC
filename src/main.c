@@ -6,6 +6,7 @@
 
 void init_mol_direction(FILE *file);
 void test_latMsi_writer(FILE *file);
+void test_attach_mol(FILE *mol, FILE *lat);
 int main(int argc, char *argv[])
 {
     char *fileName = argv[1];
@@ -15,7 +16,14 @@ int main(int argc, char *argv[])
         printf("Cannot open file.\n");
         return 1;
     }
-    init_mol_direction(file);
+    char *latName = argv[2];
+    FILE *flat = fopen(latName, "r");
+    if (file == NULL)
+    {
+        printf("Cannot open file.\n");
+        return 1;
+    }
+    test_attach_mol(file, flat);
 }
 
 void init_mol_direction(FILE *file)
@@ -43,4 +51,25 @@ void test_latMsi_writer(FILE *file)
     lat_file = build_LatMsi(lat);
     free(lat);
     free_MSI_LAT(lat_file);
+}
+
+void test_attach_mol(FILE *fmol, FILE *flat)
+{
+    MOLECULE *mol = parseMol(fmol);
+    BASE_LATTICE *lat = parseBase(flat);
+    BASE_LATTICE *added_lat = init_adsorbed_lat(lat, mol);
+    fclose(fmol);
+    fclose(flat);
+    init_xz_plane(mol);
+    align_carbon_chain(mol, lat->carbon_chain_vec);
+    placeMol(mol, lat, 39, added_lat);
+    MSI_FILE *new_flat = build_LatMsi(added_lat);
+    for (int i = 0; i < new_flat->ItemNum; ++i)
+    {
+        printf("%s", new_flat->lines[i]);
+    }
+    free(mol);
+    free(lat);
+    free(added_lat);
+    free_MSI_LAT(new_flat);
 }

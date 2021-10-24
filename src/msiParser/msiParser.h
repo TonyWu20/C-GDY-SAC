@@ -44,7 +44,8 @@ void get_CoordMat(MOLECULE *s,
                   double[][3]); /* define the n-1 dimension when you want to
                                    pass the array as a pointer */
 void assignCoordtoMol(double[][3], MOLECULE *);
-void align_carbon_chain(MOLECULE *, BASE_LATTICE *);
+void align_carbon_chain(MOLECULE *, double *chain_vec);
+void attach_carbon_chain(MOLECULE *, BASE_LATTICE *, int carbonId);
 
 /* basic functions */
 
