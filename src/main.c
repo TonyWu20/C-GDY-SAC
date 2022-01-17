@@ -57,19 +57,23 @@ void test_attach_mol(FILE *fmol, FILE *flat)
 {
     MOLECULE *mol = parseMol(fmol);
     BASE_LATTICE *lat = parseBase(flat);
-    BASE_LATTICE *added_lat = init_adsorbed_lat(lat, mol);
     fclose(fmol);
     fclose(flat);
     init_xz_plane(mol);
     align_carbon_chain(mol, lat->carbon_chain_vec);
-    placeMol(mol, lat, 39, added_lat);
-    MSI_FILE *new_flat = build_LatMsi(added_lat);
-    for (int i = 0; i < new_flat->ItemNum; ++i)
+    int cand[] = {0, 1, 2, 14, 13};
+    for (int i = 0; i < 5; ++i)
     {
-        printf("%s", new_flat->lines[i]);
+        BASE_LATTICE *added_lat = init_adsorbed_lat(lat, mol);
+        placeMol(mol, lat, 39 + cand[i], added_lat);
+        MSI_FILE *new_flat = build_LatMsi(added_lat);
+        for (int j = 0; j < new_flat->ItemNum; ++j)
+        {
+            printf("%s", new_flat->lines[j]);
+        }
+        free(added_lat);
+        free_MSI_LAT(new_flat);
     }
     free(mol);
     free(lat);
-    free(added_lat);
-    free_MSI_LAT(new_flat);
 }

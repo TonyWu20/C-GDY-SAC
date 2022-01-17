@@ -1,5 +1,4 @@
-#ifndef MAIN_H
-#define MAIN_H
+#pragma once
 #include <ctype.h>
 #define __GNU_SOURCE
 #include <stdio.h>
@@ -34,4 +33,3 @@ typedef struct
     int atomNum;
     ATOM_BLOCK totalAtoms[];
 } BASE_LATTICE;
-#endif
