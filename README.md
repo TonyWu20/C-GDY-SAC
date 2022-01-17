@@ -2,44 +2,12 @@
 
 ## Usage
 
-1. Construct adsorption models for C1 pathway intermediates.
+1. Construct adsorption models for C1 pathway intermediates. _Not First goal_
 1. Construct adsorption models for C2 pathway intermediates.
 
 ## Goals/Structures
 
 1. Place the adsorbate molecule into the base model.
-
-   1. Parse .msi file
-
-      1. molecule
-
-         - [x] struct ATOM
-
-         ```C
-         typedef struct {
-            char *element;
-            int itemId;
-            double x;
-            double y;
-            double z;
-         }
-         ```
-
-         - [x] The coordinates should be reset to set the coordinated atom as the origin.
-           - done by commenting the actual coordinated atom in molecule's .msi file at the line "ACL".
-
-      1. base model
-         - [x] parse all atoms with struct ATOM.
-         - [x] Get the last atom itemId.
-         - [x] Get lattice vectors.
-
-   2. Compute coordinates
-      - [ ] align the coordinate site of adsorbate to the adsorption site.
-      - [x] Rotate the molecule to align with the selected
-            two adsorption sites (for C2).
-   3. Attach adsorbate molecule atoms into base model.
-      1. Calculate the next itemId for the inserted adsorbate molecule atoms.
-      2. Insert the text into .msi files.
 
 2. Write castep input files.
    1. Create folder named by the structure.
@@ -57,3 +25,33 @@
    1. copy SMCastep_Extensions
    1. copy .xsd and .msi files into folder.
 3. Write pbs execution scripts.
+
+## Design of codes
+
+To achieve the generation of an adsorbate-attached SAC_GDY_Metal_Ads_Pos.msi
+file, we need to do the following:
+
+1. Design proper data structure to handle the lattice and adsorbate
+   1. Basic unit: a data structure for atom
+      - Element
+      - ACL Label (**read from file for the time being** or generate by myself?)
+      - XYZ coordinate
+      - Atom Id
+      - Id in msi tree
+   2. Second level unit: a data structure for adsorbate and a structure for
+      lattice
+      - Adsorbate
+        - name
+        - array of `struct Atom`
+        - coord atom number
+        - array of coord atom id (check a hardcoded table for info)
+        - array of stem atom id (to determine the direction of the molecule)
+        - array of plane atom id (to determine the desired "plane" of the
+          molecule to rotate it)
+      - Lattice
+        - name
+        - array of `struct Atom`
+        - array of carbon sites ids (known)
+1. Parse the current base-lattice file and adsorbate file into memory
+1. Prepare the adsorbate molecule to be ready for placement
+1. Assemble the adsorbate and lattice together
