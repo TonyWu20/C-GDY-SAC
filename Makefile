@@ -117,161 +117,144 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named msiParser
+# Target rules for targets named my_maths
 
 # Build rule for target.
-msiParser: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 msiParser
-.PHONY : msiParser
+my_maths: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 my_maths
+.PHONY : my_maths
 
 # fast build rule for target.
-msiParser/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/build
-.PHONY : msiParser/fast
+my_maths/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/build
+.PHONY : my_maths/fast
 
 #=============================================================================
-# Target rules for targets named MyMaths
+# Target rules for targets named atom
 
 # Build rule for target.
-MyMaths: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 MyMaths
-.PHONY : MyMaths
+atom: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 atom
+.PHONY : atom
 
 # fast build rule for target.
-MyMaths/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/build
-.PHONY : MyMaths/fast
+atom/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/atom.dir/build.make CMakeFiles/atom.dir/build
+.PHONY : atom/fast
 
 #=============================================================================
-# Target rules for targets named msiWriter
+# Target rules for targets named mol
 
 # Build rule for target.
-msiWriter: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 msiWriter
-.PHONY : msiWriter
+mol: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mol
+.PHONY : mol
 
 # fast build rule for target.
-msiWriter/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiWriter.dir/build.make CMakeFiles/msiWriter.dir/build
-.PHONY : msiWriter/fast
+mol/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mol.dir/build.make CMakeFiles/mol.dir/build
+.PHONY : mol/fast
 
 #=============================================================================
-# Target rules for targets named main.o
+# Target rules for targets named parser
 
 # Build rule for target.
-main.o: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main.o
-.PHONY : main.o
+parser: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 parser
+.PHONY : parser
 
 # fast build rule for target.
-main.o/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/build
-.PHONY : main.o/fast
+parser/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser.dir/build.make CMakeFiles/parser.dir/build
+.PHONY : parser/fast
+
+#=============================================================================
+# Target rules for targets named test.o
+
+# Build rule for target.
+test.o: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test.o
+.PHONY : test.o
+
+# fast build rule for target.
+test.o/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/build
+.PHONY : test.o/fast
+
+# target to build an object file
+src/atom.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/atom.dir/build.make CMakeFiles/atom.dir/src/atom.o
+.PHONY : src/atom.o
+
+# target to preprocess a source file
+src/atom.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/atom.dir/build.make CMakeFiles/atom.dir/src/atom.i
+.PHONY : src/atom.i
+
+# target to generate assembly for a file
+src/atom.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/atom.dir/build.make CMakeFiles/atom.dir/src/atom.s
+.PHONY : src/atom.s
 
 # target to build an object file
 src/main.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.o
 .PHONY : src/main.o
 
 # target to preprocess a source file
 src/main.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.i
 .PHONY : src/main.i
 
 # target to generate assembly for a file
 src/main.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.s
 .PHONY : src/main.s
 
 # target to build an object file
-src/maths/MyMaths.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/src/maths/MyMaths.o
-.PHONY : src/maths/MyMaths.o
+src/molecule.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mol.dir/build.make CMakeFiles/mol.dir/src/molecule.o
+.PHONY : src/molecule.o
 
 # target to preprocess a source file
-src/maths/MyMaths.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/src/maths/MyMaths.i
-.PHONY : src/maths/MyMaths.i
+src/molecule.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mol.dir/build.make CMakeFiles/mol.dir/src/molecule.i
+.PHONY : src/molecule.i
 
 # target to generate assembly for a file
-src/maths/MyMaths.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MyMaths.dir/build.make CMakeFiles/MyMaths.dir/src/maths/MyMaths.s
-.PHONY : src/maths/MyMaths.s
+src/molecule.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mol.dir/build.make CMakeFiles/mol.dir/src/molecule.s
+.PHONY : src/molecule.s
 
 # target to build an object file
-src/msiParser/mod_msi.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/mod_msi.o
-.PHONY : src/msiParser/mod_msi.o
+src/my_maths.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.o
+.PHONY : src/my_maths.o
 
 # target to preprocess a source file
-src/msiParser/mod_msi.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/mod_msi.i
-.PHONY : src/msiParser/mod_msi.i
+src/my_maths.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.i
+.PHONY : src/my_maths.i
 
 # target to generate assembly for a file
-src/msiParser/mod_msi.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/mod_msi.s
-.PHONY : src/msiParser/mod_msi.s
+src/my_maths.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.s
+.PHONY : src/my_maths.s
 
 # target to build an object file
-src/msiParser/parse_base.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_base.o
-.PHONY : src/msiParser/parse_base.o
+src/parser.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser.dir/build.make CMakeFiles/parser.dir/src/parser.o
+.PHONY : src/parser.o
 
 # target to preprocess a source file
-src/msiParser/parse_base.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_base.i
-.PHONY : src/msiParser/parse_base.i
+src/parser.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser.dir/build.make CMakeFiles/parser.dir/src/parser.i
+.PHONY : src/parser.i
 
 # target to generate assembly for a file
-src/msiParser/parse_base.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_base.s
-.PHONY : src/msiParser/parse_base.s
-
-# target to build an object file
-src/msiParser/parse_mol.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.o
-.PHONY : src/msiParser/parse_mol.o
-
-# target to preprocess a source file
-src/msiParser/parse_mol.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.i
-.PHONY : src/msiParser/parse_mol.i
-
-# target to generate assembly for a file
-src/msiParser/parse_mol.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_mol.s
-.PHONY : src/msiParser/parse_mol.s
-
-# target to build an object file
-src/msiParser/parse_msi.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.o
-.PHONY : src/msiParser/parse_msi.o
-
-# target to preprocess a source file
-src/msiParser/parse_msi.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.i
-.PHONY : src/msiParser/parse_msi.i
-
-# target to generate assembly for a file
-src/msiParser/parse_msi.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiParser.dir/build.make CMakeFiles/msiParser.dir/src/msiParser/parse_msi.s
-.PHONY : src/msiParser/parse_msi.s
-
-# target to build an object file
-src/msiWriter/msiWriter.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiWriter.dir/build.make CMakeFiles/msiWriter.dir/src/msiWriter/msiWriter.o
-.PHONY : src/msiWriter/msiWriter.o
-
-# target to preprocess a source file
-src/msiWriter/msiWriter.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiWriter.dir/build.make CMakeFiles/msiWriter.dir/src/msiWriter/msiWriter.i
-.PHONY : src/msiWriter/msiWriter.i
-
-# target to generate assembly for a file
-src/msiWriter/msiWriter.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msiWriter.dir/build.make CMakeFiles/msiWriter.dir/src/msiWriter/msiWriter.s
-.PHONY : src/msiWriter/msiWriter.s
+src/parser.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser.dir/build.make CMakeFiles/parser.dir/src/parser.s
+.PHONY : src/parser.s
 
 # Help Target
 help:
@@ -281,31 +264,26 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... MyMaths"
-	@echo "... main.o"
-	@echo "... msiParser"
-	@echo "... msiWriter"
+	@echo "... atom"
+	@echo "... mol"
+	@echo "... my_maths"
+	@echo "... parser"
+	@echo "... test.o"
+	@echo "... src/atom.o"
+	@echo "... src/atom.i"
+	@echo "... src/atom.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... src/maths/MyMaths.o"
-	@echo "... src/maths/MyMaths.i"
-	@echo "... src/maths/MyMaths.s"
-	@echo "... src/msiParser/mod_msi.o"
-	@echo "... src/msiParser/mod_msi.i"
-	@echo "... src/msiParser/mod_msi.s"
-	@echo "... src/msiParser/parse_base.o"
-	@echo "... src/msiParser/parse_base.i"
-	@echo "... src/msiParser/parse_base.s"
-	@echo "... src/msiParser/parse_mol.o"
-	@echo "... src/msiParser/parse_mol.i"
-	@echo "... src/msiParser/parse_mol.s"
-	@echo "... src/msiParser/parse_msi.o"
-	@echo "... src/msiParser/parse_msi.i"
-	@echo "... src/msiParser/parse_msi.s"
-	@echo "... src/msiWriter/msiWriter.o"
-	@echo "... src/msiWriter/msiWriter.i"
-	@echo "... src/msiWriter/msiWriter.s"
+	@echo "... src/molecule.o"
+	@echo "... src/molecule.i"
+	@echo "... src/molecule.s"
+	@echo "... src/my_maths.o"
+	@echo "... src/my_maths.i"
+	@echo "... src/my_maths.s"
+	@echo "... src/parser.o"
+	@echo "... src/parser.i"
+	@echo "... src/parser.s"
 .PHONY : help
 
 
