@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
     Matrix *rot_mat = rotationMatrix(PI, 'Z');
     print_matrix(rot_mat);
     destroy_matrix(rot_mat);
+    free(rot_mat);
     FILE *file = fopen("COCHOH.msi", "rb");
     fseek(file, 0, SEEK_END);
     long fsize = ftell(file);

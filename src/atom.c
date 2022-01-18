@@ -30,6 +30,7 @@ void destroyAtom(Atom *atomPtr)
     free(atomPtr->element);
     free(atomPtr->ACL_Label);
     destroy_matrix(atomPtr->coord);
+    free(atomPtr->coord);
     free(atomPtr);
 }
 

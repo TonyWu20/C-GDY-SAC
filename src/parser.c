@@ -56,10 +56,12 @@ Atom **atom_block(char *subject, int *returnSize)
     PCRE2_SIZE *ovector = pcre2_get_ovector_pointer(match_data);
     PCRE2_SPTR substring_start = (PCRE2_SPTR)subject + ovector[0];
     PCRE2_SIZE substring_length = ovector[1] - ovector[0];
-    char *substring = strndup((const char *)substring_start, substring_length);
+    char *substring = NULL;
+    substring = strndup((const char *)substring_start, substring_length);
     (*returnSize)++;
     ret = realloc(ret, sizeof(Atom *) * (*returnSize));
     ret[*returnSize - 1] = parse_atom(substring);
+
     // Loop for second and subsequent matches
     for (;;)
     {
@@ -84,8 +86,8 @@ Atom **atom_block(char *subject, int *returnSize)
         if (rc == 0)
             printf("ovector was not big enough for all the captured "
                    "substrings\n");
-        PCRE2_SPTR substring_start = (PCRE2_SPTR)subject + ovector[0];
-        size_t substring_length = ovector[1] - ovector[0];
+        substring_start = (PCRE2_SPTR)subject + ovector[0];
+        substring_length = ovector[1] - ovector[0];
         (*returnSize)++;
         substring = strndup((const char *)substring_start, substring_length);
         ret = realloc(ret, sizeof(Atom *) * (*returnSize));
@@ -133,15 +135,19 @@ Atom *parse_atom(char *atom_block)
     // Tree Id
     pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
     int treeId = atoi((const char *)buffer);
+    pcre2_substring_free(buffer);
     pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
     char *label = strdup((const char *)buffer);
+    pcre2_substring_free(buffer);
     pcre2_substring_get_bynumber(match_data, 3, &buffer, &size);
     char *element = strdup((const char *)buffer);
+    pcre2_substring_free(buffer);
     Matrix *coord = create_matrix(1, 4);
     for (int i = 0; i < 3; ++i)
     {
         pcre2_substring_get_bynumber(match_data, i + 4, &buffer, &size);
         coord->value[0][i] = atof((const char *)buffer);
+        pcre2_substring_free(buffer);
     }
     coord->value[0][3] = 1;
     pcre2_substring_get_bynumber(match_data, 7, &buffer, &size);
