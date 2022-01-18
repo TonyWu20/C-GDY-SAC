@@ -156,6 +156,5 @@ Atom *parse_atom(char *atom_block)
     free(element);
     free(label);
     destroy_matrix(coord);
-
     return new;
 }

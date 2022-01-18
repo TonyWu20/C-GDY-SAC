@@ -29,5 +29,10 @@ int main(int argc, char *argv[])
     {
         print_matrix(Atom_get_coord(atom_blocks[i]));
     }
+    for (int i = 0; i < atom_block_size; ++i)
+    {
+        destroyAtom(atom_blocks[i]);
+    }
+    free(atom_blocks);
     return 0;
 }
