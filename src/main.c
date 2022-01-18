@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     {
         destroyAtom(atom_blocks[i]);
     }
+    free(content);
     free(atom_blocks);
     return 0;
 }
