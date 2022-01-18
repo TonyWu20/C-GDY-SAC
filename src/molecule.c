@@ -54,21 +54,26 @@ Atom *Molecule_get_Atom_by_Id(Molecule *mPtr, int treeId)
     return mPtr->atom_arr[treeId];
 }
 
-Matrix **Molecule_get_coords(Molecule *mPtr)
+Matrix *Molecule_get_coords(Molecule *mPtr)
 {
-    Matrix **MolCoords = calloc(mPtr->atomNum, sizeof(Matrix *));
+    Matrix *MolCoords = create_matrix(mPtr->atomNum, 4);
     for (int i = 0; i < mPtr->atomNum; ++i)
     {
-        MolCoords[i] = Atom_get_coord(mPtr->atom_arr[i]);
+        Matrix *atom_coord = Atom_get_coord(mPtr->atom_arr[i]);
+        for (int j = 0; j < 4; ++j)
+        {
+            MolCoords->value[i][j] = atom_coord->value[0][j];
+        }
     }
     return MolCoords;
 }
 
-void Molecule_update_Atom_coords(Molecule *mPtr, Matrix **MolCoords)
+void Molecule_update_Atom_coords(Molecule *mPtr, Matrix *MolCoords)
 {
     for (int i = 0; i < mPtr->atomNum; ++i)
     {
-        Atom_update_coord(mPtr->atom_arr[i], MolCoords[i]);
+        Atom_update_coord(mPtr->atom_arr[i], MolCoords->value[i][0],
+                          MolCoords->value[i][1], MolCoords->value[i][2]);
     }
 }
 

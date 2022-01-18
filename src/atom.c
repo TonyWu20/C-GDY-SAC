@@ -19,7 +19,7 @@ Atom *createAtom(char *element, char *label, Matrix *coord, int atomId,
     Atom *newAtom = malloc(sizeof(Atom));
     newAtom->element = strdup(element);
     newAtom->ACL_Label = strdup(label);
-    newAtom->coord = create_matrix(4, 4);
+    newAtom->coord = create_matrix(1, 4);
     copy_matrix(coord, &newAtom->coord);
     newAtom->atomId = atomId;
     newAtom->treeId = treeId;
@@ -39,9 +39,11 @@ Matrix *Atom_get_coord(Atom *aPtr)
     return coord;
 }
 
-void Atom_update_coord(Atom *aPtr, Matrix *newCoord)
+void Atom_update_coord(Atom *aPtr, double x, double y, double z)
 {
-    copy_matrix(newCoord, &aPtr->coord);
+    aPtr->coord->value[0][0] = x;
+    aPtr->coord->value[0][1] = y;
+    aPtr->coord->value[0][2] = z;
 }
 
 int Atom_get_atomId(Atom *aPtr)

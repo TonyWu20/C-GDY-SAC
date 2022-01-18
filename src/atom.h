@@ -11,6 +11,6 @@ void destroyAtom(Atom *);
 
 // Methods
 Matrix *Atom_get_coord(Atom *);
-void Atom_update_coord(Atom *, Matrix *);
+void Atom_update_coord(Atom *, double x, double y, double z);
 int Atom_get_atomId(Atom *);
 int Atom_get_treeId(Atom *);

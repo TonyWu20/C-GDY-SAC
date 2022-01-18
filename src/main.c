@@ -24,10 +24,10 @@ int main(int argc, char *argv[])
     content[fsize] = 0;
     printf("%s\n", content);
     int atom_block_size = 0;
-    char **atom_blocks = atom_block(content, &atom_block_size);
+    Atom **atom_blocks = atom_block(content, &atom_block_size);
     for (int i = 0; i < atom_block_size; ++i)
     {
-        printf("%s\n", atom_blocks[i]);
+        print_matrix(Atom_get_coord(atom_blocks[i]));
     }
     return 0;
 }
