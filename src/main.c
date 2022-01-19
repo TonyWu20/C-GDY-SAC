@@ -26,11 +26,11 @@ int main(int argc, char *argv[])
     printf("%s\n", content);
     Molecule *mol =
         parse_molecule_from_file("C2_pathways_ads/C2H4.msi", "C2H4");
-    Matrix *all_cd = Molecule_get_coords(mol);
-    print_matrix(all_cd);
+    Matrix *stem_vect = Molecule_get_stem_vector(mol);
+    print_matrix(stem_vect);
     free(content);
-    destroy_matrix(all_cd);
-    free(all_cd);
+    destroy_matrix(stem_vect);
+    free(stem_vect);
     destroyMolecule(mol);
     return 0;
 }

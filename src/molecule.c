@@ -45,9 +45,9 @@ void destroyMolecule(Molecule *molPtr)
 }
 
 // Methods
-Atom *Molecule_get_Atom_by_Id(Molecule *mPtr, int treeId)
+Atom *Molecule_get_Atom_by_Id(Molecule *mPtr, int atomId)
 {
-    return mPtr->atom_arr[treeId];
+    return mPtr->atom_arr[atomId - 1];
 }
 
 Matrix *Molecule_get_coords(Molecule *mPtr)
@@ -85,6 +85,7 @@ Matrix *Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
     Matrix *res;
     add_matrices(a_coord, minus_b, &res);
     destroy_matrix(minus_b);
+    free(minus_b);
     res->value[0][3] = 1;
     return res;
 }
