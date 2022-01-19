@@ -23,8 +23,7 @@ Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr,
     Molecule *newMol = malloc(sizeof(Molecule));
     newMol->name = strdup(name);
     newMol->atomNum = atomNum;
-    newMol->atom_arr = calloc(atomNum, sizeof(Atom *));
-    memcpy(newMol->atom_arr, atom_arr, sizeof(Atom *) * atomNum);
+    newMol->atom_arr = atom_arr;
     newMol->coordAtomNum = coordAtomNum;
     newMol->coordAtomIds = malloc(coordAtomNum * sizeof(int));
     memcpy(newMol->coordAtomIds, coordAtomIds, sizeof(int) * coordAtomNum);
