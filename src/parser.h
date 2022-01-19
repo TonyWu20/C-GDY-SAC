@@ -1,19 +1,17 @@
 #pragma once
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include "atom.h"
+#include "molecule.h"
+#include "uthash.h"
 #include <pcre2.h>
 #include <stdio.h>
 #include <string.h>
 
-#define MAXLINE 1000
-enum
-{
-    OUT,
-    INBLOCK,
-    GETXYZ,
-    NEXT
-};
-
 pcre2_code *init_re(char *RegexStr);
-Atom **atom_block(char *text, int *returnSize);
+Atom **get_all_atoms(char *text, int *returnSize);
+void get_cd_num(char *subject, int *cd_num);
+void get_cd_info(char *subject, int *cd_num, int **cd_ids);
+void get_stem_arr(char *subject, int *stem_arr);
+void get_plane_arr(char *subject, int *plane_arr);
 Atom *parse_atom(char *atom_block);
+Molecule *parse_molecule_from_file(char *fileName, char *name);

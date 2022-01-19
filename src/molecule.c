@@ -11,8 +11,8 @@ struct _Molecule
     Atom **atom_arr;
     int coordAtomNum;
     int *coordAtomIds;
-    int *stemAtomIds;
-    int *planeAtomIds;
+    int stemAtomIds[2];
+    int planeAtomIds[3];
 };
 
 Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr,
@@ -27,9 +27,7 @@ Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr,
     newMol->coordAtomNum = coordAtomNum;
     newMol->coordAtomIds = malloc(coordAtomNum * sizeof(int));
     memcpy(newMol->coordAtomIds, coordAtomIds, sizeof(int) * coordAtomNum);
-    newMol->stemAtomIds = malloc(2 * sizeof(int));
     memcpy(newMol->stemAtomIds, stemAtomIds, 2 * sizeof(int));
-    newMol->planeAtomIds = malloc(3 * sizeof(int));
     memcpy(newMol->planeAtomIds, planeAtomIds, 3 * sizeof(int));
     return newMol;
 }
@@ -43,8 +41,6 @@ void destroyMolecule(Molecule *molPtr)
     }
     free(molPtr->atom_arr);
     free(molPtr->coordAtomIds);
-    free(molPtr->stemAtomIds);
-    free(molPtr->planeAtomIds);
     free(molPtr);
 }
 

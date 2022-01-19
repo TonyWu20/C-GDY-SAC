@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     print_matrix(rot_mat);
     destroy_matrix(rot_mat);
     free(rot_mat);
-    FILE *file = fopen("COCHOH.msi", "rb");
+    FILE *file = fopen("C2_pathways_ads/C2H4.msi", "rb");
     fseek(file, 0, SEEK_END);
     long fsize = ftell(file);
     rewind(file);
@@ -24,17 +24,13 @@ int main(int argc, char *argv[])
     fclose(file);
     content[fsize] = 0;
     printf("%s\n", content);
-    int atom_block_size = 0;
-    Atom **atom_blocks = atom_block(content, &atom_block_size);
-    for (int i = 0; i < atom_block_size; ++i)
-    {
-        print_matrix(Atom_get_coord(atom_blocks[i]));
-    }
-    for (int i = 0; i < atom_block_size; ++i)
-    {
-        destroyAtom(atom_blocks[i]);
-    }
+    Molecule *mol =
+        parse_molecule_from_file("C2_pathways_ads/C2H4.msi", "C2H4");
+    Matrix *all_cd = Molecule_get_coords(mol);
+    print_matrix(all_cd);
     free(content);
-    free(atom_blocks);
+    destroy_matrix(all_cd);
+    free(all_cd);
+    destroyMolecule(mol);
     return 0;
 }

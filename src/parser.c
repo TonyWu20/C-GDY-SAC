@@ -1,9 +1,15 @@
 #include "parser.h"
-#include "atom.h"
 #include "matrix.h"
+#include "molecule.h"
 #include "pcre2.h"
-#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
+// Table
+
+// UThash
+
+// [>regex<]
 pcre2_code *init_re(char *RegexStr)
 {
     int errornumber;
@@ -21,7 +27,177 @@ pcre2_code *init_re(char *RegexStr)
     return re;
 }
 
-Atom **atom_block(char *subject, int *returnSize)
+void get_cd_num(char *subject, int *cd_num)
+{
+    char RegexStr[] = "# cd_num: ([0-9])";
+    pcre2_code *re = init_re(RegexStr);
+    if (!re)
+    {
+        printf("Failed initializing re pattern");
+        return;
+    }
+    pcre2_match_data *match_data =
+        pcre2_match_data_create_from_pattern(re, NULL);
+    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
+                         match_data, NULL);
+    if (rc < 0)
+    {
+        switch (rc)
+        {
+        case PCRE2_ERROR_NOMATCH:
+            printf("No match.\n");
+            break;
+        default:
+            printf("Matching error%d\n", rc);
+            break;
+        }
+        pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
+        return;
+    }
+    PCRE2_UCHAR8 *buffer = NULL;
+    PCRE2_SIZE size = 0;
+    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
+    *cd_num = atoi((const char *)buffer);
+    pcre2_substring_free(buffer);
+    pcre2_match_data_free(match_data);
+    pcre2_code_free(re);
+}
+
+void get_cd_info(char *subject, int *cd_num, int **cd_ids)
+{
+    get_cd_num(subject, cd_num);
+    char RegexStr[] = "# cd_ids: ([0-9,]+)";
+    pcre2_code *re = init_re(RegexStr);
+    if (!re)
+    {
+        printf("Failed initializing re pattern");
+        return;
+    }
+    pcre2_match_data *match_data =
+        pcre2_match_data_create_from_pattern(re, NULL);
+    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
+                         match_data, NULL);
+    if (rc < 0)
+    {
+        switch (rc)
+        {
+        case PCRE2_ERROR_NOMATCH:
+            printf("No match.\n");
+            break;
+        default:
+            printf("Matching error%d\n", rc);
+            break;
+        }
+        pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
+        return;
+    }
+    PCRE2_UCHAR8 *buffer = NULL;
+    PCRE2_SIZE size = 0;
+    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
+    char *rest = NULL;
+    char *token;
+    *cd_ids = realloc(*cd_ids, sizeof(int) * (*cd_num));
+    int count = 0;
+    for (token = strtok_r((char *)buffer, ",", &rest); token;
+         token = strtok_r(NULL, ",", &rest))
+    {
+        (*cd_ids)[count++] = atoi(token);
+    }
+    pcre2_code_free(re);
+    pcre2_substring_free(buffer);
+    pcre2_match_data_free(match_data);
+}
+
+void get_stem_arr(char *subject, int *stem_arr)
+{
+    char rg[] = "# stem_ids: ([0-9,]+)";
+    pcre2_code *re = init_re(rg);
+    if (!re)
+    {
+        printf("Failed initializing re pattern");
+        return;
+    }
+    pcre2_match_data *match_data =
+        pcre2_match_data_create_from_pattern(re, NULL);
+    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
+                         match_data, NULL);
+    if (rc < 0)
+    {
+        switch (rc)
+        {
+        case PCRE2_ERROR_NOMATCH:
+            printf("No match.\n");
+            break;
+        default:
+            printf("Matching error%d\n", rc);
+            break;
+        }
+        pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
+        return;
+    }
+    PCRE2_UCHAR8 *buffer = NULL;
+    PCRE2_SIZE size = 0;
+    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
+    char *rest = NULL;
+    char *token;
+    int i = 0;
+    for (token = strtok_r((char *)buffer, ",", &rest); token && i < 2;
+         token = strtok_r(NULL, ",", &rest), ++i)
+    {
+        stem_arr[i] = atoi((const char *)token);
+    }
+    pcre2_code_free(re);
+    pcre2_substring_free(buffer);
+    pcre2_match_data_free(match_data);
+}
+void get_plane_arr(char *subject, int *plane_arr)
+{
+    char rg[] = "# stem_ids: ([0-9,]+)";
+    pcre2_code *re = init_re(rg);
+    if (!re)
+    {
+        printf("Failed initializing re pattern");
+        return;
+    }
+    pcre2_match_data *match_data =
+        pcre2_match_data_create_from_pattern(re, NULL);
+    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
+                         match_data, NULL);
+    if (rc < 0)
+    {
+        switch (rc)
+        {
+        case PCRE2_ERROR_NOMATCH:
+            printf("No match.\n");
+            break;
+        default:
+            printf("Matching error%d\n", rc);
+            break;
+        }
+        pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
+        return;
+    }
+    PCRE2_UCHAR8 *buffer = NULL;
+    PCRE2_SIZE size = 0;
+    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
+    char *rest = NULL;
+    char *token;
+    int i = 0;
+    for (token = strtok_r((char *)buffer, ",", &rest); token && i < 3;
+         token = strtok_r(NULL, ",", &rest), ++i)
+    {
+        plane_arr[i] = atoi((const char *)token);
+    }
+    pcre2_code_free(re);
+    pcre2_substring_free(buffer);
+    pcre2_match_data_free(match_data);
+}
+
+Atom **get_all_atoms(char *subject, int *returnSize)
 {
     char RegexStr[] =
         "\\(([0-9]+) Atom\r\n.*ACL \"([0-9]+) ([a-zA-Z]+).*\r\n.*\r\n.*"
@@ -167,4 +343,29 @@ Atom *parse_atom(char *atom_block)
     destroy_matrix(coord);
     free(coord);
     return new;
+}
+
+Molecule *parse_molecule_from_file(char *fileName, char *name)
+{
+    FILE *f = fopen(fileName, "r");
+    fseek(f, 0, SEEK_END);
+    long fsize = ftell(f);
+    rewind(f);
+    char *body = malloc(fsize + 1);
+    fread(body, fsize, 1, f);
+    fclose(f);
+    body[fsize] = 0;
+    int atom_nums = 0;
+    Atom **atom_arr = get_all_atoms(body, &atom_nums);
+    Molecule *mol = NULL;
+    int cd_num = 0;
+    int *cd_arr = NULL;
+    int stem_arr[2];
+    int plane_arr[3];
+    get_cd_info(body, &cd_num, &cd_arr);
+    get_stem_arr(body, stem_arr);
+    get_plane_arr(body, plane_arr);
+    mol = createMolecule(name, atom_nums, atom_arr, cd_num, cd_arr, stem_arr,
+                         plane_arr);
+    return mol;
 }
