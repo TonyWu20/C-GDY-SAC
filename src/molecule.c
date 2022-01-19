@@ -1,4 +1,5 @@
 #include "molecule.h"
+#include "atom.h"
 #include "matrix.h"
 #include <stdlib.h>
 #include <string.h>
