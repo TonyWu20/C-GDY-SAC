@@ -56,8 +56,9 @@ Atom **atom_block(char *subject, int *returnSize)
     PCRE2_SIZE *ovector = pcre2_get_ovector_pointer(match_data);
     PCRE2_SPTR substring_start = (PCRE2_SPTR)subject + ovector[0];
     PCRE2_SIZE substring_length = ovector[1] - ovector[0];
-    char *substring = NULL;
-    substring = strndup((const char *)substring_start, substring_length);
+    char *substring = malloc(substring_length + 1);
+    substring = memcpy(substring, substring_start, substring_length);
+    substring[substring_length] = 0;
     (*returnSize)++;
     ret = realloc(ret, sizeof(Atom *) * (*returnSize));
     ret[*returnSize - 1] = parse_atom(substring);
@@ -89,7 +90,9 @@ Atom **atom_block(char *subject, int *returnSize)
         substring_start = (PCRE2_SPTR)subject + ovector[0];
         substring_length = ovector[1] - ovector[0];
         (*returnSize)++;
-        substring = strndup((const char *)substring_start, substring_length);
+        substring = realloc(substring, substring_length + 1);
+        memcpy(substring, substring_start, substring_length);
+        substring[substring_length] = 0;
         ret = realloc(ret, sizeof(Atom *) * (*returnSize));
         ret[*returnSize - 1] = parse_atom(substring);
     }
