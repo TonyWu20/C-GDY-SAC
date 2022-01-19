@@ -2,7 +2,6 @@
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include "atom.h"
 #include "molecule.h"
-#include "uthash.h"
 #include <pcre2.h>
 #include <stdio.h>
 #include <string.h>
