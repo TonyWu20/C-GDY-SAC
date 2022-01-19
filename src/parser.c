@@ -367,5 +367,7 @@ Molecule *parse_molecule_from_file(char *fileName, char *name)
     get_plane_arr(body, plane_arr);
     mol = createMolecule(name, atom_nums, atom_arr, cd_num, cd_arr, stem_arr,
                          plane_arr);
+    free(cd_arr);
+    free(body);
     return mol;
 }
