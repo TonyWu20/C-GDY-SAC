@@ -58,7 +58,7 @@ Matrix *Molecule_get_coords(Molecule *mPtr)
         Matrix *atom_coord = Atom_get_coord(mPtr->atom_arr[i]);
         for (int j = 0; j < 4; ++j)
         {
-            MolCoords->value[i][j] = atom_coord->value[0][j];
+            MolCoords->value[j][i] = atom_coord->value[j][0];
         }
     }
     return MolCoords;
@@ -68,8 +68,8 @@ void Molecule_update_Atom_coords(Molecule *mPtr, Matrix *MolCoords)
 {
     for (int i = 0; i < mPtr->atomNum; ++i)
     {
-        Atom_update_coord(mPtr->atom_arr[i], MolCoords->value[i][0],
-                          MolCoords->value[i][1], MolCoords->value[i][2]);
+        Atom_update_coord(mPtr->atom_arr[i], MolCoords->value[0][i],
+                          MolCoords->value[1][i], MolCoords->value[2][i]);
     }
 }
 
@@ -86,7 +86,7 @@ Matrix *Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
     add_matrices(a_coord, minus_b, &res);
     destroy_matrix(minus_b);
     free(minus_b);
-    res->value[0][3] = 1;
+    res->value[3][0] = 1;
     return res;
 }
 

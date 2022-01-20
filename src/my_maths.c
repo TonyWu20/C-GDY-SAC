@@ -11,7 +11,7 @@ double norm_of_vector(Matrix *m)
     double res = 0;
     for (int i = 0; i < 3; ++i)
     {
-        res += pow(m->value[0][i], 2);
+        res += pow(m->value[i][0], 2);
     }
     norm = sqrt(res);
     return norm;
@@ -27,7 +27,7 @@ double dot_product(Matrix *u, Matrix *v)
     double res = 0.0;
     for (int i = 0; i < 3; ++i)
     {
-        res += u->value[0][i] * v->value[0][i];
+        res += u->value[i][0] * v->value[i][0];
     }
     return res;
 }
@@ -97,4 +97,8 @@ Matrix *rotationMatrix(double rad, char axis)
         break;
     }
     return rotMat;
+}
+
+double cross_product(Matrix *u, Matrix *v)
+{
 }

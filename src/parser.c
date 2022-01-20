@@ -321,14 +321,14 @@ Atom *parse_atom(char *atom_block)
     pcre2_substring_get_bynumber(match_data, 3, &buffer, &size);
     char *element = strdup((const char *)buffer);
     pcre2_substring_free(buffer);
-    Matrix *coord = create_matrix(1, 4);
+    Matrix *coord = create_matrix(4, 1);
     for (int i = 0; i < 3; ++i)
     {
         pcre2_substring_get_bynumber(match_data, i + 4, &buffer, &size);
-        coord->value[0][i] = atof((const char *)buffer);
+        coord->value[i][0] = atof((const char *)buffer);
         pcre2_substring_free(buffer);
     }
-    coord->value[0][3] = 1;
+    coord->value[3][0] = 1;
     pcre2_substring_get_bynumber(match_data, 7, &buffer, &size);
     int atomId = atoi((const char *)buffer);
     // Create new Atom object
