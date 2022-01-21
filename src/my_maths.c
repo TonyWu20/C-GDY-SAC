@@ -155,6 +155,7 @@ Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
     multiply_matrices(c_a, b, &cross_product);
     for (int i = 0; i < 3; ++i)
     {
+        printf("%d\n", i);
         printf("%f\n", cross_product->value[i][0]);
     }
     double norm_cross = norm_of_vector(cross_product);
