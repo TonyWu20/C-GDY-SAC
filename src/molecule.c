@@ -110,5 +110,9 @@ Matrix *Molecule_get_plane_normal(Molecule *mPtr)
     Matrix *normal = cross_product(ba, ca);
     double rot_angle = vector_angle(normal, y_base);
     printf("%f\n", rot_angle * 180 / PI);
+    free(ba);
+    free(ca);
+    free(normal);
+    free(y_base);
     return NULL;
 }
