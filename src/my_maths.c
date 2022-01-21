@@ -35,7 +35,7 @@ double norm_of_vector(Matrix *m)
     double res = 0;
     for (int i = 0; i < 3; ++i)
     {
-        res += pow(m->value[i][0], 2);
+        res += m->value[i][0] * m->value[i][0];
     }
     norm = sqrt(res);
     return norm;
