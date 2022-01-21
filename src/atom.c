@@ -19,8 +19,7 @@ Atom *createAtom(char *element, char *label, Matrix *coord, int atomId,
     Atom *newAtom = malloc(sizeof(Atom));
     newAtom->element = element;
     newAtom->ACL_Label = label;
-    newAtom->coord = create_matrix(4, 1);
-    copy_matrix(coord, &newAtom->coord);
+    newAtom->coord = coord;
     newAtom->atomId = atomId;
     newAtom->treeId = treeId;
     return newAtom;

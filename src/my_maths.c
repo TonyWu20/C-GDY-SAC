@@ -151,7 +151,7 @@ Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
     double tmp_ca[][4] = {
         {0, -a3, a2, 0}, {a3, 0, -a1, 0}, {-a2, a1, 0, 0}, {0, 0, 0, 1}};
     Matrix *c_a = matrix_view_array(tmp_ca, 4, 4);
-    Matrix *cross_product;
+    Matrix *cross_product = NULL;
     multiply_matrices(c_a, b, &cross_product);
     double norm_cross = norm_of_vector(cross_product);
     multiply_matrix_with_scalar(cross_product, 1 / norm_cross);
