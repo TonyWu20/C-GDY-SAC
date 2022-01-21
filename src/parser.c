@@ -155,7 +155,7 @@ void get_stem_arr(char *subject, int *stem_arr)
 }
 void get_plane_arr(char *subject, int *plane_arr)
 {
-    char rg[] = "# stem_ids: ([0-9,]+)";
+    char rg[] = "# plane_ids: ([0-9,]+)";
     pcre2_code *re = init_re(rg);
     if (!re)
     {
@@ -333,15 +333,12 @@ Atom *parse_atom(char *atom_block)
     int atomId = atoi((const char *)buffer);
     // Create new Atom object
     Atom *new = createAtom(element, label, coord, atomId, treeId);
-
     // Free memory
     pcre2_substring_free(buffer);
     pcre2_match_data_free(match_data);
     pcre2_code_free(re);
     free(element);
     free(label);
-    destroy_matrix(coord);
-    free(coord);
     return new;
 }
 

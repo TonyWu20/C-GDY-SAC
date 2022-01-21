@@ -1,6 +1,8 @@
 #include "molecule.h"
 #include "atom.h"
 #include "matrix.h"
+#include "my_maths.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -47,12 +49,13 @@ void destroyMolecule(Molecule *molPtr)
 // Methods
 Atom *Molecule_get_Atom_by_Id(Molecule *mPtr, int atomId)
 {
+    printf("%d\n", atomId);
     return mPtr->atom_arr[atomId - 1];
 }
 
 Matrix *Molecule_get_coords(Molecule *mPtr)
 {
-    Matrix *MolCoords = create_matrix(mPtr->atomNum, 4);
+    Matrix *MolCoords = create_matrix(4, mPtr->atomNum);
     for (int i = 0; i < mPtr->atomNum; ++i)
     {
         Matrix *atom_coord = Atom_get_coord(mPtr->atom_arr[i]);
@@ -96,10 +99,16 @@ Matrix *Molecule_get_stem_vector(Molecule *mPtr)
                                   mPtr->stemAtomIds[1]);
 }
 
-/*Matrix *Molecule_get_plane_normal(Molecule *mPtr)*/
-/*{*/
-/*Matrix *ba = Molecule_get_vector_ab(mPtr, mPtr->planeAtomIds[0],*/
-/*mPtr->planeAtomIds[1]);*/
-/*Matrix *ca = Molecule_get_vector_ab(mPtr, mPtr->planeAtomIds[0],*/
-/*mPtr->planeAtomIds[2]);*/
-/*}*/
+Matrix *Molecule_get_plane_normal(Molecule *mPtr)
+{
+    Matrix *ba = Molecule_get_vector_ab(mPtr, mPtr->planeAtomIds[0],
+                                        mPtr->planeAtomIds[1]);
+    Matrix *ca = Molecule_get_vector_ab(mPtr, mPtr->planeAtomIds[0],
+                                        mPtr->planeAtomIds[2]);
+    double y_axis[] = {0, 1, 0, 1};
+    Matrix *y_base = col_vector_view_array((double *)y_axis, 4);
+    Matrix *normal = cross_product(ba, ca);
+    double rot_angle = vector_angle(normal, y_base);
+    printf("%f\n", rot_angle * 180 / PI);
+    return NULL;
+}

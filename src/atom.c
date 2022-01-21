@@ -36,8 +36,7 @@ void destroyAtom(Atom *atomPtr)
 
 Matrix *Atom_get_coord(Atom *aPtr)
 {
-    Matrix *coord = aPtr->coord;
-    return coord;
+    return aPtr->coord;
 }
 
 void Atom_update_coord(Atom *aPtr, double x, double y, double z)

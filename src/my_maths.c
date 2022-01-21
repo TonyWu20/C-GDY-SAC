@@ -6,7 +6,7 @@
 #include <string.h>
 #define PI (atan(1) * 4)
 
-Matrix *matrix_view_array(double **base, int m, int n)
+Matrix *matrix_view_array(double base[][4], int m, int n)
 {
     Matrix *ret = create_matrix(m, n);
     for (int i = 0; i < m; ++i)
@@ -19,7 +19,7 @@ Matrix *matrix_view_array(double **base, int m, int n)
     return ret;
 }
 
-Matrix *col_vector_view_array(double *base, int m)
+Matrix *col_vector_view_array(double base[], int m)
 {
     Matrix *ret = create_matrix(m, 1);
     for (int i = 0; i < m; ++i)
@@ -86,14 +86,14 @@ Matrix *rotationMatrix(double rad, char axis)
     {
     case 'X':
     {
-        rotMat = matrix_view_array((double **)rot_x, 4, 4);
+        rotMat = matrix_view_array(rot_x, 4, 4);
         break;
     }
     case 'Y':
-        rotMat = matrix_view_array((double **)rot_y, 4, 4);
+        rotMat = matrix_view_array(rot_y, 4, 4);
         break;
     case 'Z':
-        rotMat = matrix_view_array((double **)rot_z, 4, 4);
+        rotMat = matrix_view_array(rot_z, 4, 4);
         break;
     default:
         rotMat = NULL;
@@ -145,19 +145,12 @@ void rotate_around_origin(Matrix *coords, double rad, char axis,
     free(trans_mat);
 }
 
-Matrix *cross_product(Matrix *a, Matrix *b)
+Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
 {
-    Matrix *c_a = create_matrix(4, 4);
     double a1 = a->value[0][0], a2 = a->value[1][0], a3 = a->value[2][0];
     double tmp_ca[][4] = {
         {0, -a3, a2, 0}, {a3, 0, -a1, 0}, {-a2, a1, 0, 0}, {0, 0, 0, 1}};
-    for (int i = 0; i < 4; ++i)
-    {
-        for (int j = 0; j < 4; ++j)
-        {
-            c_a->value[i][j] = tmp_ca[i][j];
-        }
-    }
+    Matrix *c_a = matrix_view_array(tmp_ca, 4, 4);
     Matrix *cross_product;
     multiply_matrices(c_a, b, &cross_product);
     double norm_cross = norm_of_vector(cross_product);
