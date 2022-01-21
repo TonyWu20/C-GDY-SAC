@@ -26,8 +26,9 @@ int main(int argc, char *argv[])
     printf("%s\n", content);
     Molecule *mol =
         parse_molecule_from_file("C2_pathways_ads/C2H4.msi", "C2H4");
-    Molecule_get_plane_normal(mol);
+    Matrix *a = Molecule_get_plane_normal(mol);
     free(content);
     destroyMolecule(mol);
+    free(a);
     return 0;
 }
