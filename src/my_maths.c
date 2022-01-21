@@ -145,7 +145,7 @@ void rotate_around_origin(Matrix *coords, double rad, char axis,
     free(trans_mat);
 }
 
-double cross_product(Matrix *a, Matrix *b)
+Matrix *cross_product(Matrix *a, Matrix *b)
 {
     Matrix *c_a = create_matrix(4, 4);
     double a1 = a->value[0][0], a2 = a->value[1][0], a3 = a->value[2][0];
@@ -162,17 +162,7 @@ double cross_product(Matrix *a, Matrix *b)
     multiply_matrices(c_a, b, &cross_product);
     double norm_cross = norm_of_vector(cross_product);
     multiply_matrix_with_scalar(cross_product, 1 / norm_cross);
-    Matrix *y_axis = create_matrix(4, 1);
-    y_axis->value[0][0] = 0;
-    y_axis->value[1][0] = 1;
-    y_axis->value[2][0] = 0;
-    y_axis->value[3][0] = 1;
-    double rot_angle = vector_angle(cross_product, y_axis);
-    printf("%f\n", rot_angle * 180 / PI);
     destroy_matrix(c_a);
     free(c_a);
-    print_matrix(cross_product);
-    destroy_matrix(cross_product);
-    free(cross_product);
-    return 1.0;
+    return cross_product;
 }
