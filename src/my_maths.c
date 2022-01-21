@@ -153,6 +153,10 @@ Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
     Matrix *c_a = matrix_view_array(tmp_ca, 4, 4);
     Matrix *cross_product = NULL;
     multiply_matrices(c_a, b, &cross_product);
+    for (int i = 0; i < 3; ++i)
+    {
+        printf("%f\n", cross_product->value[i][0]);
+    }
     double norm_cross = norm_of_vector(cross_product);
     multiply_matrix_with_scalar(cross_product, 1 / norm_cross);
     destroy_matrix(c_a);
