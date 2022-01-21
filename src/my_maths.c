@@ -133,7 +133,7 @@ void rotate_around_origin(Matrix *coords, double rad, char axis,
                            {0, 1, 0, centroid[1]},
                            {0, 0, 1, centroid[2]},
                            {0, 0, 0, 1}};
-    Matrix *trans_mat = matrix_view_array((double **)trans_m, 4, 4);
+    Matrix *trans_mat = matrix_view_array(trans_m, 4, 4);
     multiply_matrices(trans_mat, tmp, result);
     // Operations done. Tidy up memory
     free(centroid);

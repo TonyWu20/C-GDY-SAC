@@ -337,8 +337,6 @@ Atom *parse_atom(char *atom_block)
     pcre2_substring_free(buffer);
     pcre2_match_data_free(match_data);
     pcre2_code_free(re);
-    free(element);
-    free(label);
     return new;
 }
 
