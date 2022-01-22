@@ -20,6 +20,9 @@ int test_lat(char *fileName)
     body[fsize] = 0;
     Matrix *res = NULL;
     get_lattice_vectors(body, &res);
+    free(body);
+    destroy_matrix(res);
+    free(res);
     return 0;
 }
 
