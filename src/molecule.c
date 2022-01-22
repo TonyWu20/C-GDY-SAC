@@ -8,46 +8,55 @@
 
 // Implementation of Molecule struct
 
-struct Molecule_vtable vtable = {
-    Molecule_get_Atom_by_Id,     Molecule_get_coords,
-    Molecule_update_Atom_coords, Molecule_get_vector_ab,
-    Molecule_get_stem_vector,    Molecule_get_plane_normal,
-    Molecule_make_upright,       destroyMolecule};
+struct Molecule_vtable vtable = {Molecule_get_Atom_by_Id, Molecule_get_coords,
+                                 Molecule_update_Atom_coords,
+                                 Molecule_get_vector_ab};
+struct Adsorbate_vtable ads_vtable = {Adsorbate_get_stem_vector,
+                                      Adsorbate_get_plane_normal,
+                                      Adsorbate_make_upright, destroyAdsorbate};
 
-Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr,
-                         int coordAtomNum, int *coordAtomIds, int *stemAtomIds,
-                         int *planeAtomIds)
+Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr)
 {
     Molecule *newMol = malloc(sizeof(Molecule));
     newMol->name = strdup(name);
     newMol->atomNum = atomNum;
     newMol->atom_arr = atom_arr;
-    newMol->coordAtomNum = coordAtomNum;
-    newMol->coordAtomIds = malloc(coordAtomNum * sizeof(int));
-    memcpy(newMol->coordAtomIds, coordAtomIds, sizeof(int) * coordAtomNum);
-    memcpy(newMol->stemAtomIds, stemAtomIds, 2 * sizeof(int));
-    memcpy(newMol->planeAtomIds, planeAtomIds, 3 * sizeof(int));
     newMol->vtable = &vtable;
     return newMol;
 }
 
-void destroyMolecule(Molecule *molPtr)
+Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
+                           int *coordAtomIds, int *stemAtomIds,
+                           int *planeAtomIds)
 {
-    free(molPtr->name);
-    for (int i = 0; i < molPtr->atomNum; ++i)
+    Adsorbate *ads = malloc(sizeof(Adsorbate));
+    ads->_mol = newMol;
+    ads->coordAtomNum = coordAtomNum;
+    ads->coordAtomIds = malloc(coordAtomNum * sizeof(int));
+    memcpy(ads->coordAtomIds, coordAtomIds, sizeof(int) * coordAtomNum);
+    memcpy(ads->stemAtomIds, stemAtomIds, 2 * sizeof(int));
+    memcpy(ads->planeAtomIds, planeAtomIds, 3 * sizeof(int));
+    ads->ads_vtable = &ads_vtable;
+    return ads;
+}
+
+void destroyAdsorbate(Adsorbate *ads)
+{
+    free(ads->_mol->name);
+    for (int i = 0; i < ads->_mol->atomNum; ++i)
     {
-        Atom *cur = molPtr->atom_arr[i];
+        Atom *cur = ads->_mol->atom_arr[i];
         cur->vtable->destroy(cur);
     }
-    free(molPtr->atom_arr);
-    free(molPtr->coordAtomIds);
-    free(molPtr);
+    free(ads->_mol->atom_arr);
+    free(ads->coordAtomIds);
+    free(ads->_mol);
+    free(ads);
 }
 
 // Methods
 Atom *Molecule_get_Atom_by_Id(Molecule *mPtr, int atomId)
 {
-    printf("%d\n", atomId);
     return mPtr->atom_arr[atomId - 1];
 }
 
@@ -93,18 +102,20 @@ Matrix *Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
     return res;
 }
 
-Matrix *Molecule_get_stem_vector(Molecule *mPtr)
+Matrix *Adsorbate_get_stem_vector(Adsorbate *adsPtr)
 {
-    return mPtr->vtable->get_vector_ab(mPtr, mPtr->stemAtomIds[0],
-                                       mPtr->stemAtomIds[1]);
+    Molecule *mPtr = adsPtr->_mol;
+    return mPtr->vtable->get_vector_ab(mPtr, adsPtr->stemAtomIds[0],
+                                       adsPtr->stemAtomIds[1]);
 }
 
-Matrix *Molecule_get_plane_normal(Molecule *mPtr)
+Matrix *Adsorbate_get_plane_normal(Adsorbate *adsPtr)
 {
-    Matrix *ba = mPtr->vtable->get_vector_ab(mPtr, mPtr->planeAtomIds[0],
-                                             mPtr->planeAtomIds[1]);
-    Matrix *ca = mPtr->vtable->get_vector_ab(mPtr, mPtr->planeAtomIds[0],
-                                             mPtr->planeAtomIds[2]);
+    Molecule *mPtr = adsPtr->_mol;
+    Matrix *ba = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
+                                             adsPtr->planeAtomIds[1]);
+    Matrix *ca = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
+                                             adsPtr->planeAtomIds[2]);
     double y_axis[] = {0, 1, 0, 1};
     Matrix *y_base = col_vector_view_array((double *)y_axis, 4);
     Matrix *normal = cross_product(ba, ca);
@@ -117,16 +128,18 @@ Matrix *Molecule_get_plane_normal(Molecule *mPtr)
     return normal;
 }
 
-void Molecule_make_upright(Molecule *mol)
+void Adsorbate_make_upright(Adsorbate *adsPtr)
 {
-    Matrix *plane_normal = mol->vtable->get_plane_normal(mol); // malloced
+    Molecule *mPtr = adsPtr->_mol;
+    Matrix *plane_normal =
+        adsPtr->ads_vtable->get_plane_normal(adsPtr); // malloced
     double y_axis[] = {0, 1, 0, 1};
     Matrix *y_base = col_vector_view_array(y_axis, 4);
     double rot_angle = vector_angle(plane_normal, y_base);
-    Matrix *mol_coords = mol->vtable->get_mol_coords(mol);
+    Matrix *mol_coords = mPtr->vtable->get_mol_coords(mPtr);
     Matrix *new_coords;
     rotate_around_origin(mol_coords, rot_angle, 'X', &new_coords);
-    mol->vtable->update_atom_coords(mol, new_coords);
+    mPtr->vtable->update_atom_coords(mPtr, new_coords);
     destroy_matrix(mol_coords);
     destroy_matrix(y_base);
     destroy_matrix(plane_normal);

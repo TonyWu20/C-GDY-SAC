@@ -24,18 +24,19 @@ int main(int argc, char *argv[])
     fclose(file);
     content[fsize] = 0;
     printf("%s\n", content);
-    Molecule *mol =
+    Adsorbate *ads =
         parse_molecule_from_file("C2_pathways_ads/C2H4.msi", "C2H4");
+    Molecule *mol = ads->_mol;
     Matrix *coord = mol->vtable->get_mol_coords(mol);
     print_matrix(coord);
     destroy_matrix(coord);
     free(coord);
-    mol->vtable->make_upright(mol);
+    ads->ads_vtable->make_upright(ads);
     Matrix *after = mol->vtable->get_mol_coords(mol);
     print_matrix(after);
     destroy_matrix(after);
     free(after);
     free(content);
-    mol->vtable->destroy(mol);
+    ads->ads_vtable->destroy(ads);
     return 0;
 }
