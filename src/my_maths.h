@@ -10,4 +10,7 @@ double dot_product(Matrix *u, Matrix *v);
 double vector_angle(Matrix *u, Matrix *v);
 Matrix *cross_product(Matrix *a, Matrix *b);
 Matrix *rotationMatrix(double rad, char axis);
-Matrix *center_of_mass(Matrix **vertices);
+double *centroid_of_points(Matrix *coords);
+void rotate_around_origin(Matrix *coords, double rad, char axis,
+                          Matrix **result);
+Matrix *cross_product(Matrix *a, Matrix *b); // Return normalized vector

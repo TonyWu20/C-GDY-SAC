@@ -43,9 +43,9 @@ double norm_of_vector(Matrix *m)
 
 double dot_product(Matrix *u, Matrix *v)
 {
-    if (u->columns != v->columns)
+    if (u->lines != v->lines)
     {
-        printf("Inconsistent column size of u and v");
+        printf("Inconsistent row size of u and v");
         return -1.0;
     }
     double res = 0.0;
@@ -155,6 +155,8 @@ Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
     multiply_matrices(c_a, b, &cross_product);
     double norm_cross = norm_of_vector(cross_product);
     multiply_matrix_with_scalar(cross_product, 1 / norm_cross);
+    printf("cross product row %d, columns %d\n", cross_product->lines,
+           cross_product->columns);
     destroy_matrix(c_a);
     free(c_a);
     return cross_product;

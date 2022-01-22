@@ -7,16 +7,12 @@
 #include <string.h>
 
 // Implementation of Molecule struct
-struct _Molecule
-{
-    char *name;
-    int atomNum;
-    Atom **atom_arr;
-    int coordAtomNum;
-    int *coordAtomIds;
-    int stemAtomIds[2];
-    int planeAtomIds[3];
-};
+
+struct Molecule_vtable vtable = {
+    Molecule_get_Atom_by_Id,     Molecule_get_coords,
+    Molecule_update_Atom_coords, Molecule_get_vector_ab,
+    Molecule_get_stem_vector,    Molecule_get_plane_normal,
+    Molecule_make_upright,       destroyMolecule};
 
 Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr,
                          int coordAtomNum, int *coordAtomIds, int *stemAtomIds,
@@ -31,6 +27,7 @@ Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr,
     memcpy(newMol->coordAtomIds, coordAtomIds, sizeof(int) * coordAtomNum);
     memcpy(newMol->stemAtomIds, stemAtomIds, 2 * sizeof(int));
     memcpy(newMol->planeAtomIds, planeAtomIds, 3 * sizeof(int));
+    newMol->vtable = &vtable;
     return newMol;
 }
 
@@ -78,8 +75,8 @@ void Molecule_update_Atom_coords(Molecule *mPtr, Matrix *MolCoords)
 
 Matrix *Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
 {
-    Atom *a = Molecule_get_Atom_by_Id(mPtr, aId);
-    Atom *b = Molecule_get_Atom_by_Id(mPtr, bId);
+    Atom *a = mPtr->vtable->get_atom_by_Id(mPtr, aId);
+    Atom *b = mPtr->vtable->get_atom_by_Id(mPtr, bId);
     Matrix *a_coord = Atom_get_coord(a);
     Matrix *b_coord = Atom_get_coord(b);
     Matrix *minus_b = create_matrix(b_coord->lines, b_coord->columns);
@@ -95,16 +92,16 @@ Matrix *Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
 
 Matrix *Molecule_get_stem_vector(Molecule *mPtr)
 {
-    return Molecule_get_vector_ab(mPtr, mPtr->stemAtomIds[0],
-                                  mPtr->stemAtomIds[1]);
+    return mPtr->vtable->get_vector_ab(mPtr, mPtr->stemAtomIds[0],
+                                       mPtr->stemAtomIds[1]);
 }
 
 Matrix *Molecule_get_plane_normal(Molecule *mPtr)
 {
-    Matrix *ba = Molecule_get_vector_ab(mPtr, mPtr->planeAtomIds[0],
-                                        mPtr->planeAtomIds[1]);
-    Matrix *ca = Molecule_get_vector_ab(mPtr, mPtr->planeAtomIds[0],
-                                        mPtr->planeAtomIds[2]);
+    Matrix *ba = mPtr->vtable->get_vector_ab(mPtr, mPtr->planeAtomIds[0],
+                                             mPtr->planeAtomIds[1]);
+    Matrix *ca = mPtr->vtable->get_vector_ab(mPtr, mPtr->planeAtomIds[0],
+                                             mPtr->planeAtomIds[2]);
     double y_axis[] = {0, 1, 0, 1};
     Matrix *y_base = col_vector_view_array((double *)y_axis, 4);
     Matrix *normal = cross_product(ba, ca);
@@ -113,10 +110,28 @@ Matrix *Molecule_get_plane_normal(Molecule *mPtr)
     destroy_matrix(ba);
     destroy_matrix(ca);
     destroy_matrix(y_base);
-    destroy_matrix(normal);
     free(ba);
     free(ca);
-    free(normal);
     free(y_base);
-    return NULL;
+    return normal;
+}
+
+void Molecule_make_upright(Molecule *mol)
+{
+    Matrix *plane_normal = mol->vtable->get_plane_normal(mol); // malloced
+    double y_axis[] = {0, 1, 0, 1};
+    Matrix *y_base = col_vector_view_array(y_axis, 4);
+    double rot_angle = vector_angle(plane_normal, y_base);
+    Matrix *mol_coords = mol->vtable->get_mol_coords(mol);
+    Matrix *new_coords;
+    rotate_around_origin(mol_coords, rot_angle, 'X', &new_coords);
+    mol->vtable->update_atom_coords(mol, new_coords);
+    destroy_matrix(mol_coords);
+    destroy_matrix(y_base);
+    destroy_matrix(plane_normal);
+    destroy_matrix(new_coords);
+    free(mol_coords);
+    free(y_base);
+    free(plane_normal);
+    free(new_coords);
 }
