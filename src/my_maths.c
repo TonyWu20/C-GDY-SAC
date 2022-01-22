@@ -45,15 +45,36 @@ double dot_product(Matrix *u, Matrix *v)
 {
     if (u->lines != v->lines)
     {
-        printf("Inconsistent row size of u and v");
+        printf("Inconsistent row sizes of u and v\n");
         return -1.0;
     }
-    double res = 0.0;
+    if (u->columns != v->columns)
+    {
+        printf("Inconsistent column sizes of u and v\n");
+        return -1.0;
+    }
+    Matrix *v3_u, *v3_v;
+    v3_u = create_matrix(3, 1);
+    v3_v = create_matrix(3, 1);
     for (int i = 0; i < 3; ++i)
     {
-        res += u->value[i][0] * v->value[i][0];
+        v3_u->value[i][0] = u->value[i][0];
+        v3_v->value[i][0] = v->value[i][0];
     }
-    return res;
+    Matrix *res;
+    Matrix *u_t;
+    get_transpose(v3_u, &u_t);
+    multiply_matrices(u_t, v3_v, &res);
+    double ret = res->value[0][0];
+    destroy_matrix(res);
+    destroy_matrix(u_t);
+    destroy_matrix(v3_u);
+    destroy_matrix(v3_v);
+    free(res);
+    free(u_t);
+    free(v3_u);
+    free(v3_v);
+    return ret;
 }
 
 double vector_angle(Matrix *u, Matrix *v)
@@ -155,8 +176,7 @@ Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
     multiply_matrices(c_a, b, &cross_product);
     double norm_cross = norm_of_vector(cross_product);
     multiply_matrix_with_scalar(cross_product, 1 / norm_cross);
-    printf("cross product row %d, columns %d\n", cross_product->lines,
-           cross_product->columns);
+    cross_product->value[3][0] = 1;
     destroy_matrix(c_a);
     free(c_a);
     return cross_product;

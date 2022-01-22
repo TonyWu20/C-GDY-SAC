@@ -36,7 +36,8 @@ void destroyMolecule(Molecule *molPtr)
     free(molPtr->name);
     for (int i = 0; i < molPtr->atomNum; ++i)
     {
-        destroyAtom(molPtr->atom_arr[i]);
+        Atom *cur = molPtr->atom_arr[i];
+        cur->vtable->destroy(cur);
     }
     free(molPtr->atom_arr);
     free(molPtr->coordAtomIds);
@@ -55,10 +56,10 @@ Matrix *Molecule_get_coords(Molecule *mPtr)
     Matrix *MolCoords = create_matrix(4, mPtr->atomNum);
     for (int i = 0; i < mPtr->atomNum; ++i)
     {
-        Matrix *atom_coord = Atom_get_coord(mPtr->atom_arr[i]);
+        Atom *cur = mPtr->atom_arr[i];
         for (int j = 0; j < 4; ++j)
         {
-            MolCoords->value[j][i] = atom_coord->value[j][0];
+            MolCoords->value[j][i] = cur->vtable->get_coord(cur)->value[j][0];
         }
     }
     return MolCoords;
@@ -68,8 +69,10 @@ void Molecule_update_Atom_coords(Molecule *mPtr, Matrix *MolCoords)
 {
     for (int i = 0; i < mPtr->atomNum; ++i)
     {
-        Atom_update_coord(mPtr->atom_arr[i], MolCoords->value[0][i],
-                          MolCoords->value[1][i], MolCoords->value[2][i]);
+        Atom *cur = mPtr->atom_arr[i];
+        cur->vtable->update_coord(cur, MolCoords->value[0][i],
+                                  MolCoords->value[1][i],
+                                  MolCoords->value[2][i]);
     }
 }
 
@@ -77,8 +80,8 @@ Matrix *Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
 {
     Atom *a = mPtr->vtable->get_atom_by_Id(mPtr, aId);
     Atom *b = mPtr->vtable->get_atom_by_Id(mPtr, bId);
-    Matrix *a_coord = Atom_get_coord(a);
-    Matrix *b_coord = Atom_get_coord(b);
+    Matrix *a_coord = a->vtable->get_coord(a);
+    Matrix *b_coord = b->vtable->get_coord(b);
     Matrix *minus_b = create_matrix(b_coord->lines, b_coord->columns);
     copy_matrix(b_coord, &minus_b);
     multiply_matrix_with_scalar(minus_b, -1.0);
@@ -105,8 +108,6 @@ Matrix *Molecule_get_plane_normal(Molecule *mPtr)
     double y_axis[] = {0, 1, 0, 1};
     Matrix *y_base = col_vector_view_array((double *)y_axis, 4);
     Matrix *normal = cross_product(ba, ca);
-    double rot_angle = vector_angle(normal, y_base);
-    printf("%f\n", rot_angle * 180 / PI);
     destroy_matrix(ba);
     destroy_matrix(ca);
     destroy_matrix(y_base);
