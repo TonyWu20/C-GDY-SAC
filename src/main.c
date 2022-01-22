@@ -8,6 +8,20 @@
 #include <stdlib.h>
 
 #define PI (atan(1) * 4)
+int test_lat(char *fileName)
+{
+    FILE *f = fopen(fileName, "r");
+    fseek(f, 0, SEEK_END);
+    long fsize = ftell(f);
+    rewind(f);
+    char *body = malloc(fsize + 1);
+    fread(body, fsize, 1, f);
+    fclose(f);
+    body[fsize] = 0;
+    Matrix *res = NULL;
+    get_lattice_vectors(body, &res);
+    return 0;
+}
 
 int main(int argc, char *argv[])
 {
@@ -38,5 +52,6 @@ int main(int argc, char *argv[])
     free(after);
     free(content);
     ads->ads_vtable->destroy(ads);
+    test_lat("SAC_GDY_V.msi");
     return 0;
 }

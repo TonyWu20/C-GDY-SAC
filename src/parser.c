@@ -145,11 +145,37 @@ void get_plane_arr(char *subject, int *plane_arr)
 
 void get_lattice_vectors(char *subject, Matrix **result)
 {
+    *result = create_matrix(3, 3);
     if (*result == NULL)
     {
-        *result = create_matrix(3, 3);
+        printf("Can't create matrix.\n");
+        return;
     }
-    char *RegexStr;
+    char *RegexStr = ".*A3 \\(([0-9e. -]+)\\)\\)\r\n"
+                     ".*B3 \\(([0-9e. -]+)\\)\\)\r\n"
+                     ".*C3 \\(([0-9e. -]+)\\)\\)\r\n";
+    pcre2_code *re = init_re(RegexStr);
+    pcre2_match_data *match_data;
+    int rc = 0;
+    re_match(re, &match_data, &rc, subject);
+    PCRE2_UCHAR8 *buffer = NULL;
+    PCRE2_SIZE size = 0;
+    for (int j = 0; j < 3; ++j)
+    {
+        pcre2_substring_get_bynumber(match_data, j + 1, &buffer, &size);
+        char *rest = NULL;
+        char *token;
+        int i = 0;
+        for (token = strtok_r((char *)buffer, " ", &rest); token && i < 3;
+             token = strtok_r(NULL, " ", &rest), ++i)
+        {
+            (*result)->value[i][j] = atof((const char *)token);
+        }
+        pcre2_substring_free(buffer);
+    }
+    print_matrix(*result);
+    pcre2_code_free(re);
+    pcre2_match_data_free(match_data);
 }
 
 Atom **get_all_atoms(char *subject, int *returnSize)
@@ -228,12 +254,12 @@ Atom *parse_atom(char *atom_block)
     pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
     int treeId = atoi((const char *)buffer);
     pcre2_substring_free(buffer);
-    pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
     // Label
+    pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
     char *label = strdup((const char *)buffer);
     pcre2_substring_free(buffer);
-    pcre2_substring_get_bynumber(match_data, 3, &buffer, &size);
     // Element
+    pcre2_substring_get_bynumber(match_data, 3, &buffer, &size);
     char *element = strdup((const char *)buffer);
     pcre2_substring_free(buffer);
     // XYZ matrix
