@@ -29,34 +29,41 @@ pcre2_code *init_re(char *RegexStr)
     return re;
 }
 
-void get_cd_num(char *subject, int *cd_num)
+void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data, int *rc,
+              char *subject)
 {
-    char RegexStr[] = "# cd_num: ([0-9])";
-    pcre2_code *re = init_re(RegexStr);
-    if (!re)
+    if (!re_pattern)
     {
-        printf("Failed initializing re pattern");
+        printf("Failed initializing re_pattern");
         return;
     }
-    pcre2_match_data *match_data =
-        pcre2_match_data_create_from_pattern(re, NULL);
-    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
-                         match_data, NULL);
-    if (rc < 0)
+    *match_data = pcre2_match_data_create_from_pattern(re_pattern, NULL);
+    *rc = pcre2_match(re_pattern, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
+                      *match_data, NULL);
+    if (*rc < 0)
     {
-        switch (rc)
+        switch (*rc)
         {
         case PCRE2_ERROR_NOMATCH:
             printf("No match.\n");
             break;
         default:
-            printf("Matching error%d\n", rc);
+            printf("Matching error%d\n", *rc);
             break;
         }
-        pcre2_match_data_free(match_data);
-        pcre2_code_free(re);
+        pcre2_match_data_free(*match_data);
+        pcre2_code_free(re_pattern);
         return;
     }
+}
+
+void get_cd_num(char *subject, int *cd_num)
+{
+    char RegexStr[] = "# cd_num: ([0-9])";
+    pcre2_code *re = init_re(RegexStr);
+    pcre2_match_data *match_data;
+    int rc = 0;
+    re_match(re, &match_data, &rc, subject);
     PCRE2_UCHAR8 *buffer = NULL;
     PCRE2_SIZE size = 0;
     pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
@@ -71,30 +78,9 @@ void get_cd_info(char *subject, int *cd_num, int **cd_ids)
     get_cd_num(subject, cd_num);
     char RegexStr[] = "# cd_ids: ([0-9,]+)";
     pcre2_code *re = init_re(RegexStr);
-    if (!re)
-    {
-        printf("Failed initializing re pattern");
-        return;
-    }
-    pcre2_match_data *match_data =
-        pcre2_match_data_create_from_pattern(re, NULL);
-    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
-                         match_data, NULL);
-    if (rc < 0)
-    {
-        switch (rc)
-        {
-        case PCRE2_ERROR_NOMATCH:
-            printf("No match.\n");
-            break;
-        default:
-            printf("Matching error%d\n", rc);
-            break;
-        }
-        pcre2_match_data_free(match_data);
-        pcre2_code_free(re);
-        return;
-    }
+    pcre2_match_data *match_data;
+    int rc = 0;
+    re_match(re, &match_data, &rc, subject);
     PCRE2_UCHAR8 *buffer = NULL;
     PCRE2_SIZE size = 0;
     pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
@@ -116,30 +102,9 @@ void get_stem_arr(char *subject, int *stem_arr)
 {
     char rg[] = "# stem_ids: ([0-9,]+)";
     pcre2_code *re = init_re(rg);
-    if (!re)
-    {
-        printf("Failed initializing re pattern");
-        return;
-    }
-    pcre2_match_data *match_data =
-        pcre2_match_data_create_from_pattern(re, NULL);
-    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
-                         match_data, NULL);
-    if (rc < 0)
-    {
-        switch (rc)
-        {
-        case PCRE2_ERROR_NOMATCH:
-            printf("No match.\n");
-            break;
-        default:
-            printf("Matching error%d\n", rc);
-            break;
-        }
-        pcre2_match_data_free(match_data);
-        pcre2_code_free(re);
-        return;
-    }
+    pcre2_match_data *match_data;
+    int rc = 0;
+    re_match(re, &match_data, &rc, subject);
     PCRE2_UCHAR8 *buffer = NULL;
     PCRE2_SIZE size = 0;
     pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
@@ -159,30 +124,9 @@ void get_plane_arr(char *subject, int *plane_arr)
 {
     char rg[] = "# plane_ids: ([0-9,]+)";
     pcre2_code *re = init_re(rg);
-    if (!re)
-    {
-        printf("Failed initializing re pattern");
-        return;
-    }
-    pcre2_match_data *match_data =
-        pcre2_match_data_create_from_pattern(re, NULL);
-    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
-                         match_data, NULL);
-    if (rc < 0)
-    {
-        switch (rc)
-        {
-        case PCRE2_ERROR_NOMATCH:
-            printf("No match.\n");
-            break;
-        default:
-            printf("Matching error%d\n", rc);
-            break;
-        }
-        pcre2_match_data_free(match_data);
-        pcre2_code_free(re);
-        return;
-    }
+    pcre2_match_data *match_data;
+    int rc = 0;
+    re_match(re, &match_data, &rc, subject);
     PCRE2_UCHAR8 *buffer = NULL;
     PCRE2_SIZE size = 0;
     pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
@@ -199,6 +143,15 @@ void get_plane_arr(char *subject, int *plane_arr)
     pcre2_match_data_free(match_data);
 }
 
+void get_lattice_vectors(char *subject, Matrix **result)
+{
+    if (*result == NULL)
+    {
+        *result = create_matrix(3, 3);
+    }
+    char *RegexStr;
+}
+
 Atom **get_all_atoms(char *subject, int *returnSize)
 {
     char RegexStr[] =
@@ -207,30 +160,9 @@ Atom **get_all_atoms(char *subject, int *returnSize)
         ".*Id ([0-9]+)";
     Atom **ret = malloc(sizeof(Atom *));
     pcre2_code *re = init_re(RegexStr);
-    if (!re)
-    {
-        printf("Failed initializing re pattern");
-        return NULL;
-    }
-    pcre2_match_data *match_data =
-        pcre2_match_data_create_from_pattern(re, NULL);
-    int rc = pcre2_match(re, (PCRE2_SPTR)subject, strlen(subject), 0, 0,
-                         match_data, NULL);
-    if (rc < 0)
-    {
-        switch (rc)
-        {
-        case PCRE2_ERROR_NOMATCH:
-            printf("No match.\n");
-            break;
-        default:
-            printf("Matching error%d\n", rc);
-            break;
-        }
-        pcre2_match_data_free(match_data);
-        pcre2_code_free(re);
-        return NULL;
-    }
+    pcre2_match_data *match_data;
+    int rc = 0;
+    re_match(re, &match_data, &rc, subject);
     PCRE2_SIZE *ovector = pcre2_get_ovector_pointer(match_data);
     PCRE2_SPTR substring_start = (PCRE2_SPTR)subject + ovector[0];
     PCRE2_SIZE substring_length = ovector[1] - ovector[0];
@@ -287,30 +219,9 @@ Atom *parse_atom(char *atom_block)
                       "XYZ \\(([0-9.e-]+) ([0-9.e-]+) ([0-9.e-]+).*\r\n"
                       ".*Id ([0-9]+)";
     pcre2_code *re = init_re(RegexStr);
-    if (!re)
-    {
-        printf("Failed initializing re pattern");
-        return NULL;
-    }
-    pcre2_match_data *match_data =
-        pcre2_match_data_create_from_pattern(re, NULL);
-    int rc = pcre2_match(re, (PCRE2_SPTR)atom_block, strlen(atom_block), 0, 0,
-                         match_data, NULL);
-    if (rc < 0)
-    {
-        switch (rc)
-        {
-        case PCRE2_ERROR_NOMATCH:
-            printf("No match.\n");
-            break;
-        default:
-            printf("Matching error%d\n", rc);
-            break;
-        }
-        pcre2_match_data_free(match_data);
-        pcre2_code_free(re);
-        return NULL;
-    }
+    pcre2_match_data *match_data;
+    int rc = 0;
+    re_match(re, &match_data, &rc, atom_block);
     PCRE2_UCHAR8 *buffer = NULL;
     PCRE2_SIZE size = 0;
     // Tree Id
@@ -318,11 +229,14 @@ Atom *parse_atom(char *atom_block)
     int treeId = atoi((const char *)buffer);
     pcre2_substring_free(buffer);
     pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
+    // Label
     char *label = strdup((const char *)buffer);
     pcre2_substring_free(buffer);
     pcre2_substring_get_bynumber(match_data, 3, &buffer, &size);
+    // Element
     char *element = strdup((const char *)buffer);
     pcre2_substring_free(buffer);
+    // XYZ matrix
     Matrix *coord = create_matrix(4, 1);
     for (int i = 0; i < 3; ++i)
     {
@@ -331,6 +245,7 @@ Atom *parse_atom(char *atom_block)
         pcre2_substring_free(buffer);
     }
     coord->value[3][0] = 1;
+    // Atom Id
     pcre2_substring_get_bynumber(match_data, 7, &buffer, &size);
     int atomId = atoi((const char *)buffer);
     // Create new Atom object
@@ -381,4 +296,5 @@ Lattice *parse_lattice_from_file(char *fileName, char *name)
     body[fsize] = 0;
     int atom_nums = 0;
     Atom **atom_arr = get_all_atoms(body, &atom_nums);
+    Molecule *lat_mol = createMolecule(name, atom_nums, atom_arr);
 }

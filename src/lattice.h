@@ -10,9 +10,7 @@ struct carbon_site
 
 struct _Lattice
 {
-    char *name;
-    int atomNum;
-    Atom **atom_arr;
+    Molecule *_mol;
     Matrix *lattice_vectors;
     struct carbon_site carbon_sites[6];
     int metal_site_id;
@@ -23,21 +21,15 @@ typedef struct _Lattice Lattice;
 
 struct Lattice_vtable
 {
-    Atom *(*get_atom_by_Id)(Lattice *self, int);
-    Matrix *(*get_lattice_coords)(Lattice *self);
-    void (*update_atom_coords)(Lattice *self, Matrix *);
-    Matrix *(*get_vector_ab)(Lattice *self, int, int);
     Matrix *(*get_carbon_chain_vector)(Lattice *self, int, int);
-    Lattice *(*attach_molecule)(Lattice *self, Molecule *mol);
+    Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads);
     void (*destroy)(Lattice *self);
 };
 
-/* Create a pointer to Lattice struct and malloc memory for it.
- * Initiate it with name (char *), atomNum (int), array of atoms (Atom **),
- * lattice_vectors (3x3 column-major matrix)
+/* Create a pointer to Lattice struct and malloc memory for it. Inherit from
+ * Molecule object, with adding lattice_vectors (3x3 column-major matrix)
  */
-Lattice *createLattice(char *name, int atomNum, Atom **atom_arr,
-                       Matrix *lattice_vectors);
+Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors);
 
 /* Free memory occupied by the Lattice struct pointer
  */
@@ -66,4 +58,4 @@ Matrix *lattice_get_carbon_chain_vector(Lattice *self, int a, int b);
  * of the atoms in mol will be updated to follow the order in current Lattice.
  * Returns a new Lattice struct pointer for future exports
  */
-Lattice *lattice_attach_molecule(Lattice *self, Molecule *mol);
+Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads);
