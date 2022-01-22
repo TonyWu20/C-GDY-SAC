@@ -1,27 +1,27 @@
 [
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -o CMakeFiles/my_maths.dir/src/my_maths.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c\"",
+  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -o CMakeFiles/my_maths.dir/src/my_maths.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -o CMakeFiles/atom.dir/src/atom.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c\"",
+  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -o CMakeFiles/atom.dir/src/atom.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -o CMakeFiles/mol.dir/src/molecule.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c\"",
+  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -o CMakeFiles/mol.dir/src/molecule.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -o CMakeFiles/parser.dir/src/parser.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c\"",
+  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -o CMakeFiles/parser.dir/src/parser.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -o CMakeFiles/test.o.dir/src/main.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
+  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -lMatrix -lm -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -o CMakeFiles/test.o.dir/src/main.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c"
 }
 ]

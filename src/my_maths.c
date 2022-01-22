@@ -126,7 +126,7 @@ Matrix *rotationMatrix(double rad, char axis)
 
 double *centroid_of_points(Matrix *coords)
 {
-    double *ans = malloc(sizeof(double) * 3);
+    double *ans = calloc(3, sizeof(double));
     for (int i = 0; i < coords->columns; ++i)
     {
         ans[0] += coords->value[0][i];
