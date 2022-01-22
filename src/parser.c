@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "atom.h"
 #include "matrix.h"
 #include "molecule.h"
 #include "pcre2.h"
