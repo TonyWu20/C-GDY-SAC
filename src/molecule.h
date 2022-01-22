@@ -26,6 +26,7 @@ struct Molecule_vtable
     Matrix *(*get_mol_coords)(Molecule *self);
     void (*update_atom_coords)(Molecule *self, Matrix *MolCoords);
     Matrix *(*get_vector_ab)(Molecule *self, int aId, int bId);
+    void (*destroy)(Molecule *self);
 };
 
 struct Adsorbate_vtable
@@ -41,6 +42,8 @@ Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr);
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
                            int *planeAtomIds);
+
+void destroyMolecule(Molecule *self);
 void destroyAdsorbate(Adsorbate *self);
 
 // Methods

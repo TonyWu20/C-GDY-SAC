@@ -10,7 +10,7 @@
 
 struct Molecule_vtable vtable = {Molecule_get_Atom_by_Id, Molecule_get_coords,
                                  Molecule_update_Atom_coords,
-                                 Molecule_get_vector_ab};
+                                 Molecule_get_vector_ab, destroyMolecule};
 struct Adsorbate_vtable ads_vtable = {Adsorbate_get_stem_vector,
                                       Adsorbate_get_plane_normal,
                                       Adsorbate_make_upright, destroyAdsorbate};
@@ -40,17 +40,21 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
     return ads;
 }
 
-void destroyAdsorbate(Adsorbate *ads)
+void destroyMolecule(Molecule *self)
 {
-    free(ads->_mol->name);
-    for (int i = 0; i < ads->_mol->atomNum; ++i)
+    free(self->name);
+    for (int i = 0; i < self->atomNum; ++i)
     {
-        Atom *cur = ads->_mol->atom_arr[i];
+        Atom *cur = self->atom_arr[i];
         cur->vtable->destroy(cur);
     }
-    free(ads->_mol->atom_arr);
+    free(self->atom_arr);
+    free(self);
+}
+void destroyAdsorbate(Adsorbate *ads)
+{
+    ads->_mol->vtable->destroy(ads->_mol);
     free(ads->coordAtomIds);
-    free(ads->_mol);
     free(ads);
 }
 
