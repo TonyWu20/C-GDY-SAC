@@ -29,7 +29,7 @@ Atom *dupAtom(Atom *self)
     dup->coord = create_matrix(4, 1);
     copy_matrix(self->coord, &dup->coord);
     dup->atomId = self->atomId;
-    dup->atomId = self->treeId;
+    dup->treeId = self->treeId;
     dup->vtable = &atom_vtable;
     return dup;
 }
