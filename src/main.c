@@ -41,12 +41,12 @@ int main(int argc, char *argv[])
     Lattice *GDY_V = load_lat("SAC_GDY_V.msi", "SAC_GDY_V");
     Lattice *result = Add_cd2_mol_to_carbon_chain(GDY_V, ads, 41, 42);
     Matrix *res_coords = result->_mol->vtable->get_mol_coords(result->_mol);
-    result->vtable->destroy(result);
+    GDY_V->vtable->destroy(GDY_V);
     ads->ads_vtable->destroy(ads);
     print_matrix(res_coords);
     destroy_matrix(res_coords);
     free(res_coords);
     printf("%s\n", result->_mol->name);
-    GDY_V->vtable->destroy(GDY_V);
+    result->vtable->destroy(result);
     return 0;
 }
