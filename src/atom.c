@@ -7,7 +7,7 @@
 
 struct Atom_vtable atom_vtable = {
     Atom_get_coord,  Atom_update_coord, Atom_get_atomId, Atom_set_atomId,
-    Atom_get_treeId, Atom_set_treeId,   destroyAtom};
+    Atom_get_treeId, Atom_set_treeId,   dupAtom,         destroyAtom};
 Atom *createAtom(char *element, char *label, Matrix *coord, int atomId,
                  int treeId)
 {
@@ -19,6 +19,19 @@ Atom *createAtom(char *element, char *label, Matrix *coord, int atomId,
     newAtom->treeId = treeId;
     newAtom->vtable = &atom_vtable;
     return newAtom;
+}
+
+Atom *dupAtom(Atom *self)
+{
+    Atom *dup = malloc(sizeof(Atom));
+    dup->element = strdup(self->element);
+    dup->ACL_Label = strdup(self->ACL_Label);
+    dup->coord = create_matrix(4, 1);
+    copy_matrix(self->coord, &dup->coord);
+    dup->atomId = self->atomId;
+    dup->atomId = self->treeId;
+    dup->vtable = &atom_vtable;
+    return dup;
 }
 void destroyAtom(Atom *atomPtr)
 {

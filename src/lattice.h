@@ -23,7 +23,7 @@ struct Lattice_vtable
 {
     Matrix *(*get_carbon_chain_vector)(Lattice *self);
     Matrix *(*get_carbon_metal_vector)(Lattice *self, int);
-    Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads);
+    Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads, char *newName);
     void (*destroy)(Lattice *self);
 };
 
@@ -61,4 +61,6 @@ Matrix *lattice_get_carbon_metal_vector(Lattice *self, int);
  * of the atoms in mol will be updated to follow the order in current Lattice.
  * Returns a new Lattice struct pointer for future exports
  */
-Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads);
+Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName);
+
+char *get_carbon_site_name(int siteId);

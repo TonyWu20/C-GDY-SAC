@@ -18,6 +18,7 @@ struct Atom_vtable
     void (*set_atomId)(Atom *, int);
     int (*get_treeId)(Atom *);
     void (*set_treeId)(Atom *, int);
+    Atom *(*dupAtom)(Atom *self);
     void (*destroy)(Atom *);
 };
 
@@ -25,6 +26,7 @@ struct Atom_vtable
 Atom *createAtom(char *element, char *label, Matrix *coord, int atomId,
                  int treeId);
 
+Atom *dupAtom(Atom *self);
 void destroyAtom(Atom *);
 
 // Methods

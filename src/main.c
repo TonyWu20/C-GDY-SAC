@@ -39,8 +39,14 @@ int main(int argc, char *argv[])
         parse_molecule_from_file("C2_pathways_ads/C2H4.msi", "C2H4");
     free(content);
     Lattice *GDY_V = load_lat("SAC_GDY_V.msi", "SAC_GDY_V");
-    Add_mol_to_carbon_chain(GDY_V, ads, 41, 42);
+    Lattice *result = Add_cd2_mol_to_carbon_chain(GDY_V, ads, 41, 42);
+    Matrix *res_coords = result->_mol->vtable->get_mol_coords(result->_mol);
+    result->vtable->destroy(result);
     ads->ads_vtable->destroy(ads);
+    print_matrix(res_coords);
+    destroy_matrix(res_coords);
+    free(res_coords);
+    printf("%s\n", result->_mol->name);
     GDY_V->vtable->destroy(GDY_V);
     return 0;
 }
