@@ -21,7 +21,8 @@ typedef struct _Lattice Lattice;
 
 struct Lattice_vtable
 {
-    Matrix *(*get_carbon_chain_vector)(Lattice *self, int, int);
+    Matrix *(*get_carbon_chain_vector)(Lattice *self);
+    Matrix *(*get_carbon_metal_vector)(Lattice *self, int);
     Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads);
     void (*destroy)(Lattice *self);
 };
@@ -52,8 +53,10 @@ Matrix *lattice_get_coords(Lattice *self);
 void lattice_update_Atom_coords(Lattice *self, Matrix *);
 /* Returns a vector from two given atoms' coordinates */
 Matrix *lattice_get_vector_ab(Lattice *self, int a, int b);
-/* Returns a vector from two given atoms' coordinates */
-Matrix *lattice_get_carbon_chain_vector(Lattice *self, int a, int b);
+/* Returns a vector of the carbon chain */
+Matrix *lattice_get_carbon_chain_vector(Lattice *self);
+/* Returns a vector point from carbon to metal atom */
+Matrix *lattice_get_carbon_metal_vector(Lattice *self, int);
 /* Add a Molecule into the Lattice. The atomId and treeId
  * of the atoms in mol will be updated to follow the order in current Lattice.
  * Returns a new Lattice struct pointer for future exports

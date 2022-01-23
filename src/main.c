@@ -1,3 +1,4 @@
+#include "assemble.h"
 #include "atom.h"
 #include "matrix.h"
 #include "molecule.h"
@@ -8,7 +9,7 @@
 #include <stdlib.h>
 
 #define PI (atan(1) * 4)
-int test_lat(char *fileName)
+Lattice *load_lat(char *fileName, char *name)
 {
     FILE *f = fopen(fileName, "r");
     fseek(f, 0, SEEK_END);
@@ -18,12 +19,14 @@ int test_lat(char *fileName)
     fread(body, fsize, 1, f);
     fclose(f);
     body[fsize] = 0;
-    Matrix *res = NULL;
-    get_lattice_vectors(body, &res);
+    Lattice *lat = parse_lattice_from_file(fileName, name);
+    for (int i = 0; i < 6; ++i)
+    {
+        printf("carbon site: %s, id: %d\n", lat->carbon_sites[i].name,
+               lat->carbon_sites[i].id);
+    }
     free(body);
-    destroy_matrix(res);
-    free(res);
-    return 0;
+    return lat;
 }
 
 int main(int argc, char *argv[])
@@ -43,18 +46,10 @@ int main(int argc, char *argv[])
     printf("%s\n", content);
     Adsorbate *ads =
         parse_molecule_from_file("C2_pathways_ads/C2H4.msi", "C2H4");
-    Molecule *mol = ads->_mol;
-    Matrix *coord = mol->vtable->get_mol_coords(mol);
-    print_matrix(coord);
-    destroy_matrix(coord);
-    free(coord);
-    ads->ads_vtable->make_upright(ads);
-    Matrix *after = mol->vtable->get_mol_coords(mol);
-    print_matrix(after);
-    destroy_matrix(after);
-    free(after);
     free(content);
+    Lattice *GDY_V = load_lat("SAC_GDY_V.msi", "SAC_GDY_V");
+    Add_mol_to_carbon_chain(GDY_V, ads, 41, 42);
     ads->ads_vtable->destroy(ads);
-    test_lat("SAC_GDY_V.msi");
+    GDY_V->vtable->destroy(GDY_V);
     return 0;
 }

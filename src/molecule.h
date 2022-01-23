@@ -26,6 +26,11 @@ struct Molecule_vtable
     Matrix *(*get_mol_coords)(Molecule *self);
     void (*update_atom_coords)(Molecule *self, Matrix *MolCoords);
     Matrix *(*get_vector_ab)(Molecule *self, int aId, int bId);
+    double *(*get_centroid_ab)(Molecule *self, int aId, int bId);
+    void (*apply_transformation)(Molecule *self, Matrix *trans_m,
+                                 void (*trans_func)(Matrix *trans_m,
+                                                    Matrix *coords,
+                                                    Matrix **result));
     void (*destroy)(Molecule *self);
 };
 
@@ -39,18 +44,31 @@ struct Adsorbate_vtable
 
 // Memory Management
 Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr);
+// Memory Management
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
                            int *planeAtomIds);
 
+// Memory Management
 void destroyMolecule(Molecule *self);
+// Memory Management
 void destroyAdsorbate(Adsorbate *self);
 
 // Methods
+
+// Returns an atom by AtomId
 Atom *Molecule_get_Atom_by_Id(Molecule *, int);
+// Returns the molecule coords in 4xN matrix
 Matrix *Molecule_get_coords(Molecule *);
+// Updates the coords to atoms from the input matrix
 void Molecule_update_Atom_coords(Molecule *, Matrix *);
+// Returns a vector from a to b by Id
 Matrix *Molecule_get_vector_ab(Molecule *, int a, int b);
+double *Molecule_get_centroid_ab(Molecule *, int a, int b);
 Matrix *Adsorbate_get_stem_vector(Adsorbate *);
 Matrix *Adsorbate_get_plane_normal(Adsorbate *);
 void Adsorbate_make_upright(Adsorbate *mol);
+void Molecule_apply_transformation(Molecule *mPtr, Matrix *trans_mat,
+                                   void (*transform_func)(Matrix *coords,
+                                                          Matrix *trans_mat,
+                                                          Matrix **result));

@@ -130,30 +130,17 @@ my_maths/fast:
 .PHONY : my_maths/fast
 
 #=============================================================================
-# Target rules for targets named atom
+# Target rules for targets named datastruct
 
 # Build rule for target.
-atom: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 atom
-.PHONY : atom
+datastruct: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 datastruct
+.PHONY : datastruct
 
 # fast build rule for target.
-atom/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/atom.dir/build.make CMakeFiles/atom.dir/build
-.PHONY : atom/fast
-
-#=============================================================================
-# Target rules for targets named mol
-
-# Build rule for target.
-mol: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mol
-.PHONY : mol
-
-# fast build rule for target.
-mol/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mol.dir/build.make CMakeFiles/mol.dir/build
-.PHONY : mol/fast
+datastruct/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/build
+.PHONY : datastruct/fast
 
 #=============================================================================
 # Target rules for targets named parser
@@ -169,6 +156,19 @@ parser/fast:
 .PHONY : parser/fast
 
 #=============================================================================
+# Target rules for targets named assemble
+
+# Build rule for target.
+assemble: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 assemble
+.PHONY : assemble
+
+# fast build rule for target.
+assemble/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/assemble.dir/build.make CMakeFiles/assemble.dir/build
+.PHONY : assemble/fast
+
+#=============================================================================
 # Target rules for targets named test.o
 
 # Build rule for target.
@@ -182,19 +182,49 @@ test.o/fast:
 .PHONY : test.o/fast
 
 # target to build an object file
+src/assemble.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/assemble.dir/build.make CMakeFiles/assemble.dir/src/assemble.o
+.PHONY : src/assemble.o
+
+# target to preprocess a source file
+src/assemble.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/assemble.dir/build.make CMakeFiles/assemble.dir/src/assemble.i
+.PHONY : src/assemble.i
+
+# target to generate assembly for a file
+src/assemble.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/assemble.dir/build.make CMakeFiles/assemble.dir/src/assemble.s
+.PHONY : src/assemble.s
+
+# target to build an object file
 src/atom.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/atom.dir/build.make CMakeFiles/atom.dir/src/atom.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/atom.o
 .PHONY : src/atom.o
 
 # target to preprocess a source file
 src/atom.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/atom.dir/build.make CMakeFiles/atom.dir/src/atom.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/atom.i
 .PHONY : src/atom.i
 
 # target to generate assembly for a file
 src/atom.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/atom.dir/build.make CMakeFiles/atom.dir/src/atom.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/atom.s
 .PHONY : src/atom.s
+
+# target to build an object file
+src/lattice.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/lattice.o
+.PHONY : src/lattice.o
+
+# target to preprocess a source file
+src/lattice.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/lattice.i
+.PHONY : src/lattice.i
+
+# target to generate assembly for a file
+src/lattice.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/lattice.s
+.PHONY : src/lattice.s
 
 # target to build an object file
 src/main.o:
@@ -213,17 +243,17 @@ src/main.s:
 
 # target to build an object file
 src/molecule.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mol.dir/build.make CMakeFiles/mol.dir/src/molecule.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/molecule.o
 .PHONY : src/molecule.o
 
 # target to preprocess a source file
 src/molecule.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mol.dir/build.make CMakeFiles/mol.dir/src/molecule.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/molecule.i
 .PHONY : src/molecule.i
 
 # target to generate assembly for a file
 src/molecule.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mol.dir/build.make CMakeFiles/mol.dir/src/molecule.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/molecule.s
 .PHONY : src/molecule.s
 
 # target to build an object file
@@ -264,14 +294,20 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... atom"
-	@echo "... mol"
+	@echo "... assemble"
+	@echo "... datastruct"
 	@echo "... my_maths"
 	@echo "... parser"
 	@echo "... test.o"
+	@echo "... src/assemble.o"
+	@echo "... src/assemble.i"
+	@echo "... src/assemble.s"
 	@echo "... src/atom.o"
 	@echo "... src/atom.i"
 	@echo "... src/atom.s"
+	@echo "... src/lattice.o"
+	@echo "... src/lattice.i"
+	@echo "... src/lattice.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

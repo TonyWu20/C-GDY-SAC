@@ -8,9 +8,13 @@
 
 // Implementation of Molecule struct
 
-struct Molecule_vtable vtable = {Molecule_get_Atom_by_Id, Molecule_get_coords,
+struct Molecule_vtable vtable = {Molecule_get_Atom_by_Id,
+                                 Molecule_get_coords,
                                  Molecule_update_Atom_coords,
-                                 Molecule_get_vector_ab, destroyMolecule};
+                                 Molecule_get_vector_ab,
+                                 Molecule_get_centroid_ab,
+                                 Molecule_apply_transformation,
+                                 destroyMolecule};
 struct Adsorbate_vtable ads_vtable = {Adsorbate_get_stem_vector,
                                       Adsorbate_get_plane_normal,
                                       Adsorbate_make_upright, destroyAdsorbate};
@@ -106,6 +110,37 @@ Matrix *Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
     return res;
 }
 
+double *Molecule_get_centroid_ab(Molecule *mPtr, int aId, int bId)
+{
+    Atom *a = mPtr->vtable->get_atom_by_Id(mPtr, aId);
+    Atom *b = mPtr->vtable->get_atom_by_Id(mPtr, bId);
+    Matrix *ab = create_matrix(3, 2);
+    for (int i = 0; i < 3; ++i)
+    {
+        ab->value[i][0] = a->coord->value[i][0];
+        ab->value[i][1] = b->coord->value[i][0];
+    }
+    double *c_ab = centroid_of_points(ab);
+    destroy_matrix(ab);
+    free(ab);
+    return c_ab;
+}
+
+void Molecule_apply_transformation(Molecule *mPtr, Matrix *trans_mat,
+                                   void (*transform_func)(Matrix *trans_mat,
+                                                          Matrix *coords,
+                                                          Matrix **result))
+{
+    Matrix *mol_coords = mPtr->vtable->get_mol_coords(mPtr);
+    Matrix *result;
+    transform_func(trans_mat, mol_coords, &result);
+    mPtr->vtable->update_atom_coords(mPtr, result);
+    destroy_matrix(mol_coords);
+    destroy_matrix(result);
+    free(result);
+    free(mol_coords);
+}
+
 Matrix *Adsorbate_get_stem_vector(Adsorbate *adsPtr)
 {
     Molecule *mPtr = adsPtr->_mol;
@@ -140,16 +175,12 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
     double y_axis[] = {0, 1, 0, 1};
     Matrix *y_base = col_vector_view_array(y_axis, 4);
     double rot_angle = vector_angle(plane_normal, y_base);
-    Matrix *mol_coords = mPtr->vtable->get_mol_coords(mPtr);
-    Matrix *new_coords;
-    rotate_around_origin(mol_coords, rot_angle, 'X', &new_coords);
-    mPtr->vtable->update_atom_coords(mPtr, new_coords);
-    destroy_matrix(mol_coords);
+    Matrix *rot_mat = rotationMatrix(rot_angle, 'X');
+    mPtr->vtable->apply_transformation(mPtr, rot_mat, rotate_around_origin);
     destroy_matrix(y_base);
     destroy_matrix(plane_normal);
-    destroy_matrix(new_coords);
-    free(mol_coords);
+    destroy_matrix(rot_mat);
     free(y_base);
     free(plane_normal);
-    free(new_coords);
+    free(rot_mat);
 }

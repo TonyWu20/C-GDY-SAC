@@ -173,7 +173,6 @@ void get_lattice_vectors(char *subject, Matrix **result)
         }
         pcre2_substring_free(buffer);
     }
-    print_matrix(*result);
     pcre2_code_free(re);
     pcre2_match_data_free(match_data);
 }
@@ -323,4 +322,8 @@ Lattice *parse_lattice_from_file(char *fileName, char *name)
     int atom_nums = 0;
     Atom **atom_arr = get_all_atoms(body, &atom_nums);
     Molecule *lat_mol = createMolecule(name, atom_nums, atom_arr);
+    Matrix *vectors;
+    get_lattice_vectors(body, &vectors);
+    Lattice *new = createLattice(lat_mol, vectors);
+    return new;
 }

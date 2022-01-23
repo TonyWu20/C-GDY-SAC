@@ -6,15 +6,12 @@
 #include <string.h>
 #define PI (atan(1) * 4)
 
-Matrix *matrix_view_array(double base[][4], int m, int n)
+Matrix *matrix_view_array(double base[], int m, int n)
 {
     Matrix *ret = create_matrix(m, n);
-    for (int i = 0; i < m; ++i)
+    for (int i = 0; i < m * n; ++i)
     {
-        for (int j = 0; j < n; ++j)
-        {
-            ret->value[i][j] = base[i][j];
-        }
+        ret->value[i / n][i % n] = base[i];
     }
     return ret;
 }
@@ -39,6 +36,12 @@ double norm_of_vector(Matrix *m)
     }
     norm = sqrt(res);
     return norm;
+}
+
+void normalize_vector(Matrix *vec)
+{
+    double norm = norm_of_vector(vec);
+    multiply_matrix_with_scalar(vec, 1 / norm);
 }
 
 double dot_product(Matrix *u, Matrix *v)
@@ -90,18 +93,12 @@ Matrix *rotationMatrix(double rad, char axis)
 {
     double cos_rad = cos(rad);
     double sin_rad = sin(rad);
-    double rot_x[][4] = {{1, 0, 0, 0},
-                         {0, cos_rad, -1 * sin_rad, 0},
-                         {0, sin_rad, cos_rad, 0},
-                         {0, 0, 0, 1}};
-    double rot_y[][4] = {{cos_rad, 0, sin_rad, 0},
-                         {0, 1, 0, 0},
-                         {-1 * sin_rad, 0, cos_rad, 0},
-                         {0, 0, 0, 1}};
-    double rot_z[][4] = {{cos_rad, -1 * sin_rad, 0, 0},
-                         {sin_rad, cos_rad, 0, 0},
-                         {0, 0, 1, 0},
-                         {0, 0, 0, 1}};
+    double rot_x[] = {1, 0,       0,       0, 0, cos_rad, -sin_rad, 0,
+                      0, sin_rad, cos_rad, 0, 0, 0,       0,        1};
+    double rot_y[] = {cos_rad,  0, sin_rad, 0, 0, 1, 0, 0,
+                      -sin_rad, 0, cos_rad, 0, 0, 0, 0, 1};
+    double rot_z[] = {cos_rad, -sin_rad, 0, 0, sin_rad, cos_rad, 0, 0,
+                      0,       0,        1, 0, 0,       0,       0, 1};
     Matrix *rotMat;
     switch (axis)
     {
@@ -139,10 +136,8 @@ double *centroid_of_points(Matrix *coords)
     return ans;
 }
 
-void rotate_around_origin(Matrix *coords, double rad, char axis,
-                          Matrix **result)
+void rotate_around_origin(Matrix *rot_mat, Matrix *coords, Matrix **result)
 {
-    Matrix *rot_mat = rotationMatrix(rad, axis);
     double *centroid = centroid_of_points(coords);
     for (int i = 0; i < 3; ++i)
     {
@@ -150,18 +145,14 @@ void rotate_around_origin(Matrix *coords, double rad, char axis,
     }
     Matrix *tmp;
     multiply_matrices(rot_mat, coords, &tmp);
-    double trans_m[][4] = {{1, 0, 0, centroid[0]},
-                           {0, 1, 0, centroid[1]},
-                           {0, 0, 1, centroid[2]},
-                           {0, 0, 0, 1}};
+    double trans_m[] = {1, 0, 0, centroid[0], 0, 1, 0, centroid[1],
+                        0, 0, 1, centroid[2], 0, 0, 0, 1};
     Matrix *trans_mat = matrix_view_array(trans_m, 4, 4);
     multiply_matrices(trans_mat, tmp, result);
     // Operations done. Tidy up memory
     free(centroid);
-    destroy_matrix(rot_mat);
     destroy_matrix(tmp);
     destroy_matrix(trans_mat);
-    free(rot_mat);
     free(tmp);
     free(trans_mat);
 }
@@ -169,15 +160,67 @@ void rotate_around_origin(Matrix *coords, double rad, char axis,
 Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
 {
     double a1 = a->value[0][0], a2 = a->value[1][0], a3 = a->value[2][0];
-    double tmp_ca[][4] = {
-        {0, -a3, a2, 0}, {a3, 0, -a1, 0}, {-a2, a1, 0, 0}, {0, 0, 0, 1}};
+    double tmp_ca[] = {0,   -a3, a2,  0, //
+                       a3,  0,   -a1, 0, //
+                       -a2, a1,  0,   0, //
+                       0,   0,   0,   1};
     Matrix *c_a = matrix_view_array(tmp_ca, 4, 4);
     Matrix *cross_product = NULL;
     multiply_matrices(c_a, b, &cross_product);
-    double norm_cross = norm_of_vector(cross_product);
-    multiply_matrix_with_scalar(cross_product, 1 / norm_cross);
+    normalize_vector(cross_product);
     cross_product->value[3][0] = 1;
     destroy_matrix(c_a);
     free(c_a);
     return cross_product;
+}
+
+// Determine the transform matrix to make u parallel to v
+Matrix *rotate_u_to_v(Matrix *u, Matrix *v)
+{
+    Matrix *n = cross_product(u, v);
+    double n1, n2, n3;
+    n1 = n->value[0][0];
+    n2 = n->value[1][0];
+    n3 = n->value[2][0];
+    double angle = vector_angle(u, v);
+    double a = cos(angle);
+    double b = 1 - a;
+    double c = sin(angle);
+    double Rij_n_T[] = {a + n1 * n1 * b,
+                        n1 * n2 * b - n3 * c,
+                        n1 * n3 * b + n2 * c,
+                        0,
+                        n1 * n2 * b + n3 * c,
+                        a + n2 * n2 * b,
+                        n2 * n3 * b - n1 * c,
+                        0,
+                        n1 * n3 * b - n2 * c,
+                        n2 * n3 * b + n1 * c,
+                        a + n3 * n3 * b,
+                        0, //
+                        0,
+                        0,
+                        0,
+                        1};
+    Matrix *T = matrix_view_array(Rij_n_T, 4, 4);
+    destroy_matrix(n);
+    free(n);
+    return T;
+}
+
+Matrix *translate_mat_a_to_b(double *src, double *dest)
+{
+    Matrix *translate;
+    double tx, ty, tz;
+    tx = dest[0] - src[0];
+    ty = dest[1] - src[1];
+    tz = dest[2] - src[2];
+    double t_array[] = {1, 0, 0, tx, 0, 1, 0, ty, 0, 0, 1, tz, 0, 0, 0, 1};
+    translate = matrix_view_array(t_array, 4, 4);
+    return translate;
+}
+
+void translate_a_to_b(Matrix *trans_mat, Matrix *coords, Matrix **result)
+{
+    multiply_matrices(trans_mat, coords, result);
 }
