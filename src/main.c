@@ -26,6 +26,7 @@ Lattice *load_lat(char *fileName, char *name)
                lat->carbon_sites[i].id);
     }
     free(body);
+    lat->vtable->destroy(lat);
     return lat;
 }
 

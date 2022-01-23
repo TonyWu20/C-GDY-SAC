@@ -325,5 +325,6 @@ Lattice *parse_lattice_from_file(char *fileName, char *name)
     Matrix *vectors;
     get_lattice_vectors(body, &vectors);
     Lattice *new = createLattice(lat_mol, vectors);
+    free(body);
     return new;
 }
