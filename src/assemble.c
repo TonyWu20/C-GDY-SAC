@@ -65,5 +65,6 @@ Lattice *Add_cd2_mol_to_carbon_chain(Lattice *lat, Adsorbate *ads, int c1,
     free(center_coords_of_cd_sites);
     char *newName = append_cd2_mol_name(lat, ads, c1, c2);
     Lattice *newModel = lat->vtable->attach_molecule(lat, ads, newName);
+    free(newName);
     return newModel;
 }
