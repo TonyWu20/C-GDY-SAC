@@ -40,6 +40,7 @@ struct Adsorbate_vtable
     Matrix *(*get_stem_vector)(Adsorbate *self);
     Matrix *(*get_plane_normal)(Adsorbate *self);
     void (*make_upright)(Adsorbate *self);
+    void (*export_msi)(Adsorbate *self, char *dest);
     void (*destroy)(Adsorbate *self);
 };
 

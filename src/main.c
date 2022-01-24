@@ -30,10 +30,7 @@ int main(int argc, char *argv[])
     free(content);
     Lattice *GDY_V = load_lat("SAC_GDY_V.msi", "SAC_GDY_V");
     Lattice *result = Add_cd2_mol_to_carbon_chain(GDY_V, ads, 42, 54);
-    for (int i = 0; i < result->_mol->atomNum; ++i)
-    {
-        Atom *cur = result->_mol->atom_arr[i];
-    }
+    ads->ads_vtable->export_msi(ads, NULL);
     GDY_V->vtable->destroy(GDY_V);
     ads->ads_vtable->destroy(ads);
     printf("%s\n", result->_mol->name);

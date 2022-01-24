@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 // Implementation of Molecule struct
 
@@ -13,9 +14,9 @@ struct Molecule_vtable vtable = {
     Molecule_update_Atom_coords, Molecule_get_vector_ab,
     Molecule_get_centroid_ab,    Molecule_apply_transformation,
     Molecule_textblock,          destroyMolecule};
-struct Adsorbate_vtable ads_vtable = {Adsorbate_get_stem_vector,
-                                      Adsorbate_get_plane_normal,
-                                      Adsorbate_make_upright, destroyAdsorbate};
+struct Adsorbate_vtable ads_vtable = {
+    Adsorbate_get_stem_vector, Adsorbate_get_plane_normal,
+    Adsorbate_make_upright, Adsorbate_export_MSI, destroyAdsorbate};
 
 Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr)
 {
@@ -144,8 +145,8 @@ char **Molecule_textblock(Molecule *self)
     char **atom_blocks = malloc(sizeof(char *) * self->atomNum);
     for (int i = 0; i < self->atomNum; ++i)
     {
-        atom_blocks[i] =
-            self->atom_arr[i]->vtable->export_text(self->atom_arr[i]);
+        atom_blocks[i] = self->atom_arr[i]->vtable->export_text(
+            self->atom_arr[i]); // malloc from func
     }
     return atom_blocks;
 }
@@ -196,4 +197,43 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
 
 void Adsorbate_export_MSI(Adsorbate *self, char *dest)
 {
+    char header_line[] = "# MSI CERIUS2 DataModel File Version 4 0\n";
+    char model_start[] = "(1 Model\n";
+    char model_end[] = ")";
+    int lineSize = self->_mol->atomNum + 3;
+    char **content_lines = malloc(sizeof(char *) * (lineSize));
+    content_lines[0] = strdup(header_line);
+    content_lines[1] = strdup(model_start);
+    char **atoms = self->_mol->vtable->export_text(self->_mol);
+    for (int i = 0; i < self->_mol->atomNum; ++i)
+    {
+        content_lines[i + 2] = atoms[i];
+    }
+    content_lines[lineSize - 1] = strdup(model_end);
+    int destUndefined = 0;
+    if (!dest)
+    {
+        dest = strdup("./C2_pathways_ads/test_ads/");
+        destUndefined = 1;
+    }
+    int dirLen = strlen(dest);
+    int adsNameLen = strlen(self->_mol->name);
+    char *exportName = malloc(dirLen + adsNameLen + 1);
+    snprintf(exportName, dirLen + adsNameLen + 4 + 1, "%s%s.msi", dest,
+             self->_mol->name);
+    struct stat s;
+    int err = stat(dest, &s);
+    if (err == -1)
+        mkdir(dest, ACCESSPERMS);
+    FILE *writeFile = fopen(exportName, "w");
+    for (int i = 0; i < lineSize; ++i)
+    {
+        fputs(content_lines[i], writeFile);
+        free(content_lines[i]);
+    }
+    fclose(writeFile);
+    free(content_lines);
+    free(exportName);
+    if (destUndefined)
+        free(dest);
 }
