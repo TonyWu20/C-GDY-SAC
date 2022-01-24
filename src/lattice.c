@@ -1,4 +1,5 @@
 #include "lattice.h"
+#include "misc.h"
 #include "molecule.h"
 #include <matrix.h>
 #include <stdio.h>
@@ -8,9 +9,9 @@
 struct carbon_site siteDict[] = {{"c1", 41},       {"c2", 42},
                                  {"c3", 54},       {"c4", 43},
                                  {"far_ring", 52}, {"near_ring", 40}};
-struct Lattice_vtable lat_vtable = {lattice_get_carbon_chain_vector,
-                                    lattice_get_carbon_metal_vector,
-                                    lattice_attach_molecule, destroyLattice};
+struct Lattice_vtable lat_vtable = {
+    lattice_get_carbon_chain_vector, lattice_get_carbon_metal_vector,
+    lattice_attach_molecule, lattice_export_MSI, destroyLattice};
 Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
 {
     Lattice *new = malloc(sizeof(Lattice));
@@ -89,4 +90,51 @@ char *get_carbon_site_name(int siteId)
         printf("Incorrect carbon site Id %d\n", siteId);
         return NULL;
     }
+}
+
+void lattice_export_MSI(Lattice *self, char *dest)
+{
+    char header_line[] = "# MSI CERIUS2 DataModel File Version 4 0\n";
+    char model_start[] = "(1 Model\n";
+    char model_misc[] = "  (A I CRY/DISPLAY (192 256))\n  (A I PeriodicType "
+                        "100)\n  (A C SpaceGroup \" 1 1\")\n  (A D A3 "
+                        "(16.39518593025 -9.465765010246 0))\n  (A D B3 (0 "
+                        "18.93153002049 0))\n  (A D C3 (0 0 9.999213039981))\n "
+                        " (A D CRY/TOLERANCE 0.05)\n";
+    char model_end[] = ")\n";
+    Molecule *mol = self->_mol;
+    int lineSize = mol->atomNum + 4;
+    char **atoms = mol->vtable->export_text(mol);
+    char **contentLines = malloc(sizeof(char *) * lineSize);
+    contentLines[0] = strdup(header_line);
+    contentLines[1] = strdup(model_start);
+    contentLines[2] = strdup(model_misc);
+    for (int i = 0; i < self->_mol->atomNum; ++i)
+    {
+        contentLines[i + 3] = atoms[i];
+    }
+    contentLines[lineSize - 1] = strdup(model_end);
+    int destUndefined = 0;
+    if (!dest)
+    {
+        dest = strdup("./test_models/");
+        destUndefined = 1;
+    }
+    createDirectory(dest);
+    int dirLen = strlen(dest);
+    int adsNameLen = strlen(mol->name);
+    char *exportName = malloc(dirLen + adsNameLen + 5);
+    snprintf(exportName, dirLen + adsNameLen + 5, "%s%s.msi", dest, mol->name);
+    FILE *exportFile = fopen(exportName, "w");
+    for (int i = 0; i < lineSize; ++i)
+    {
+        fputs(contentLines[i], exportFile);
+        free(contentLines[i]);
+    }
+    fclose(exportFile);
+    free(contentLines);
+    free(exportName);
+    free(atoms);
+    if (destUndefined)
+        free(dest);
 }

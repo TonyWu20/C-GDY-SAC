@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     GDY_V->vtable->destroy(GDY_V);
     ads->ads_vtable->destroy(ads);
     printf("%s\n", result->_mol->name);
+    result->vtable->export_msi(result, NULL);
     result->vtable->destroy(result);
     return 0;
 }
