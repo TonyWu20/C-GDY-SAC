@@ -8,13 +8,11 @@
 
 // Implementation of Molecule struct
 
-struct Molecule_vtable vtable = {Molecule_get_Atom_by_Id,
-                                 Molecule_get_coords,
-                                 Molecule_update_Atom_coords,
-                                 Molecule_get_vector_ab,
-                                 Molecule_get_centroid_ab,
-                                 Molecule_apply_transformation,
-                                 destroyMolecule};
+struct Molecule_vtable vtable = {
+    Molecule_get_Atom_by_Id,     Molecule_get_coords,
+    Molecule_update_Atom_coords, Molecule_get_vector_ab,
+    Molecule_get_centroid_ab,    Molecule_apply_transformation,
+    Molecule_textblock,          destroyMolecule};
 struct Adsorbate_vtable ads_vtable = {Adsorbate_get_stem_vector,
                                       Adsorbate_get_plane_normal,
                                       Adsorbate_make_upright, destroyAdsorbate};
@@ -141,6 +139,17 @@ void Molecule_apply_transformation(Molecule *mPtr, Matrix *trans_mat,
     free(mol_coords);
 }
 
+char **Molecule_textblock(Molecule *self)
+{
+    char **atom_blocks = malloc(sizeof(char *) * self->atomNum);
+    for (int i = 0; i < self->atomNum; ++i)
+    {
+        atom_blocks[i] =
+            self->atom_arr[i]->vtable->export_text(self->atom_arr[i]);
+    }
+    return atom_blocks;
+}
+
 Matrix *Adsorbate_get_stem_vector(Adsorbate *adsPtr)
 {
     Molecule *mPtr = adsPtr->_mol;
@@ -183,4 +192,8 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
     free(y_base);
     free(plane_normal);
     free(rot_mat);
+}
+
+void Adsorbate_export_MSI(Adsorbate *self, char *dest)
+{
 }

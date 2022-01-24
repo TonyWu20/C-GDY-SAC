@@ -33,9 +33,6 @@ int main(int argc, char *argv[])
     for (int i = 0; i < result->_mol->atomNum; ++i)
     {
         Atom *cur = result->_mol->atom_arr[i];
-        printf("Element: %s, coord [%f %f %f], Id: %d\n", cur->element,
-               cur->coord->value[0][0], cur->coord->value[1][0],
-               cur->coord->value[2][0], cur->atomId);
     }
     GDY_V->vtable->destroy(GDY_V);
     ads->ads_vtable->destroy(ads);

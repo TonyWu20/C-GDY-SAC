@@ -1,13 +1,15 @@
 #include "atom.h"
 #include "matrix.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // Implementation of Atom methods
 
 struct Atom_vtable atom_vtable = {
-    Atom_get_coord,  Atom_update_coord, Atom_get_atomId, Atom_set_atomId,
-    Atom_get_treeId, Atom_set_treeId,   dupAtom,         destroyAtom};
+    Atom_get_coord,  Atom_update_coord, Atom_get_atomId,
+    Atom_set_atomId, Atom_get_treeId,   Atom_set_treeId,
+    dupAtom,         Atom_textblock,    destroyAtom};
 Atom *createAtom(char *element, char *label, Matrix *coord, int atomId,
                  int treeId)
 {
@@ -74,4 +76,16 @@ void Atom_set_treeId(Atom *self, int newId)
     self->atomId = newId;
 }
 
+char *Atom_textblock(Atom *self)
+{
+    char *buffer = malloc(144);
+    snprintf(buffer, 144,
+             "  (%d Atom\n    (A C ACL \"%s\")\n    (A C Label \"%s\")\n    (A "
+             "D XYZ (%.12f %.12f %.12f))\n    (A I Id %d)\n  )",
+             self->treeId, self->ACL_Label, self->element,
+             self->coord->value[0][0], self->coord->value[1][0],
+             self->coord->value[2][0], self->atomId);
+    buffer = realloc(buffer, strlen(buffer) + 1);
+    return buffer;
+}
 // End of Atom

@@ -19,6 +19,7 @@ struct Atom_vtable
     int (*get_treeId)(Atom *);
     void (*set_treeId)(Atom *, int);
     Atom *(*dupAtom)(Atom *self);
+    char *(*export_text)(Atom *self);
     void (*destroy)(Atom *);
 };
 
@@ -36,3 +37,4 @@ int Atom_get_atomId(Atom *);
 void Atom_set_atomId(Atom *, int);
 int Atom_get_treeId(Atom *);
 void Atom_set_treeId(Atom *, int);
+char *Atom_textblock(Atom *self);

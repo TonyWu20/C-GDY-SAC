@@ -31,6 +31,7 @@ struct Molecule_vtable
                                  void (*trans_func)(Matrix *trans_m,
                                                     Matrix *coords,
                                                     Matrix **result));
+    char **(*export_text)(Molecule *);
     void (*destroy)(Molecule *self);
 };
 
@@ -72,3 +73,10 @@ void Molecule_apply_transformation(Molecule *mPtr, Matrix *trans_mat,
                                    void (*transform_func)(Matrix *coords,
                                                           Matrix *trans_mat,
                                                           Matrix **result));
+char **Molecule_textblock(Molecule *);
+
+/* Format adsorbate data and write to .msi.
+ * param:
+ *		dest (char *): can be NULL for default export location
+ */
+void Adsorbate_export_MSI(Adsorbate *, char *dest);
