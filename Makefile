@@ -242,6 +242,21 @@ src/main.s:
 .PHONY : src/main.s
 
 # target to build an object file
+src/misc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/misc.o
+.PHONY : src/misc.o
+
+# target to preprocess a source file
+src/misc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/misc.i
+.PHONY : src/misc.i
+
+# target to generate assembly for a file
+src/misc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/misc.s
+.PHONY : src/misc.s
+
+# target to build an object file
 src/molecule.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/molecule.o
 .PHONY : src/molecule.o
@@ -311,6 +326,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/misc.o"
+	@echo "... src/misc.i"
+	@echo "... src/misc.s"
 	@echo "... src/molecule.o"
 	@echo "... src/molecule.i"
 	@echo "... src/molecule.s"

@@ -1,6 +1,7 @@
 #include "molecule.h"
 #include "atom.h"
 #include "matrix.h"
+#include "misc.h"
 #include "my_maths.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -213,23 +214,15 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
     int destUndefined = 0;
     if (!dest)
     {
-        dest = strdup("./C2_pathways_ads/test_eth/test_multi/");
+        dest = strdup("./C2_pathways_ads/exported/");
         destUndefined = 1;
     }
-    int destLen = strlen(dest);
-    int commandLen = destLen + 9;
-    char mkdir_command[commandLen + 1];
-    snprintf(mkdir_command, commandLen + 1, "mkdir -p %s", dest);
-    struct stat s;
-    int err = stat(dest, &s);
-    if (err == -1)
-        system(mkdir_command);
+    createDirectory(dest);
     int dirLen = strlen(dest);
     int adsNameLen = strlen(self->_mol->name);
     char *exportName = malloc(dirLen + adsNameLen + 5);
     snprintf(exportName, dirLen + adsNameLen + 5, "%s%s.msi", dest,
              self->_mol->name);
-    printf("%s\n", exportName);
     FILE *writeFile = fopen(exportName, "w");
     for (int i = 0; i < lineSize; ++i)
     {

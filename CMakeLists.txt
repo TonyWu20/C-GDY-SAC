@@ -13,7 +13,7 @@ project (C-GDY-SAC)
 
 add_library(my_maths src/my_maths.c)
 target_link_libraries(my_maths -L/opt/homebrew/lib -lMatrix -lm)
-add_library(datastruct src/atom.c src/molecule.c src/lattice.c)
+add_library(datastruct src/atom.c src/molecule.c src/lattice.c src/misc.c)
 target_link_libraries(datastruct -L/opt/homebrew/lib -lMatrix -lm)
 add_library(parser src/parser.c)
 target_link_libraries(parser -L/opt/homebrew/lib -lpcre2-8)
