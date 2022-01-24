@@ -218,8 +218,8 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
     }
     int dirLen = strlen(dest);
     int adsNameLen = strlen(self->_mol->name);
-    char *exportName = malloc(dirLen + adsNameLen + 1);
-    snprintf(exportName, dirLen + adsNameLen + 4 + 1, "%s%s.msi", dest,
+    char *exportName = malloc(dirLen + adsNameLen + 4);
+    snprintf(exportName, dirLen + adsNameLen + 4, "%s%s.msi", dest,
              self->_mol->name);
     struct stat s;
     int err = stat(dest, &s);
