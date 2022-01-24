@@ -234,6 +234,7 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
     fclose(writeFile);
     free(content_lines);
     free(exportName);
+    free(atoms);
     if (destUndefined)
         free(dest);
 }
