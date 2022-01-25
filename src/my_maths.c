@@ -214,7 +214,7 @@ Matrix *translate_mat_a_to_b(double *src, double *dest)
     double tx, ty, tz;
     tx = dest[0] - src[0];
     ty = dest[1] - src[1];
-    tz = dest[2] - src[2] + 1.5;
+    tz = dest[2] - src[2];
     double t_array[] = {1, 0, 0, tx, 0, 1, 0, ty, 0, 0, 1, tz, 0, 0, 0, 1};
     translate = matrix_view_array(t_array, 4, 4);
     return translate;

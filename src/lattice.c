@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct carbon_site siteDict[] = {{"c1", 41},       {"c2", 42},
-                                 {"c3", 54},       {"c4", 43},
-                                 {"far_ring", 52}, {"near_ring", 40}};
+struct carbon_site siteDict[] = {
+    {"c1", 41},       {"c2", 42},        {"c3", 54},   {"c4", 43},
+    {"far_ring", 52}, {"near_ring", 40}, {"metal", 73}};
 struct Lattice_vtable lat_vtable = {
     lattice_get_carbon_chain_vector, lattice_get_carbon_metal_vector,
     lattice_attach_molecule, lattice_export_MSI, destroyLattice};
@@ -17,7 +17,7 @@ Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
     Lattice *new = malloc(sizeof(Lattice));
     new->_mol = mol;
     new->lattice_vectors = lattice_vectors;
-    memcpy(new->carbon_sites, siteDict, sizeof(struct carbon_site) * 6);
+    memcpy(new->carbon_sites, siteDict, sizeof(struct carbon_site) * 7);
     new->metal_site_id = 73;
     new->vtable = &lat_vtable;
     return new;
@@ -37,11 +37,14 @@ Matrix *lattice_get_carbon_chain_vector(Lattice *self)
     return self->_mol->vtable->get_vector_ab(self->_mol, 41, 42);
 }
 
+/* Return a vector pointing to metal from given carbon atom */
 Matrix *lattice_get_carbon_metal_vector(Lattice *self, int cId)
 {
     return self->_mol->vtable->get_vector_ab(self->_mol, cId, 73);
 }
 
+/* Attach adsorbate to the lattice and update their atomId folloing the lattice
+ * atoms */
 Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName)
 {
     Molecule *lat_mol = self->_mol, *ads_mol = ads->_mol;
@@ -86,6 +89,8 @@ char *get_carbon_site_name(int siteId)
         return siteDict[4].name;
     case 40:
         return siteDict[5].name;
+    case 73:
+        return siteDict[6].name;
     default:
         printf("Incorrect carbon site Id %d\n", siteId);
         return NULL;

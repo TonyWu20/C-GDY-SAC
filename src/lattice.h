@@ -12,7 +12,7 @@ struct _Lattice
 {
     Molecule *_mol;
     Matrix *lattice_vectors;
-    struct carbon_site carbon_sites[6];
+    struct carbon_site carbon_sites[7];
     int metal_site_id;
     struct Lattice_vtable *vtable;
 };

@@ -48,6 +48,7 @@ file, we need to do the following:
         - array of stem atom id (to determine the direction of the molecule)
         - array of plane atom id (to determine the desired "plane" of the
           molecule to rotate it)
+        - **Specify if it is symmetric**
       - Lattice
         - name
         - array of `struct Atom`
