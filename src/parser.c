@@ -195,10 +195,10 @@ void get_lattice_vectors(char *subject, Matrix **result)
 
 Atom **get_all_atoms(char *subject, int *returnSize)
 {
-    char RegexStr[] =
-        "\\(([0-9]+) Atom\r\n.*ACL \"([0-9]+) ([a-zA-Z]+).*\r\n.*\r\n.*"
-        "XYZ \\(([0-9.e-]+) ([0-9.e-]+) ([0-9.e-]+).*\r\n"
-        ".*Id ([0-9]+)";
+    char RegexStr[] = "\\(([0-9]+) Atom\\R.*ACL \"([0-9]+) "
+                      "([a-zA-Z]+).*\\R.*\\R.*"
+                      "XYZ \\(([0-9.e-]+) ([0-9.e-]+) ([0-9.e-]+).*\\R"
+                      ".*Id ([0-9]+)";
     Atom **ret = malloc(sizeof(Atom *));
     pcre2_code *re = init_re(RegexStr);
     pcre2_match_data *match_data;
@@ -255,9 +255,9 @@ Atom **get_all_atoms(char *subject, int *returnSize)
 
 Atom *parse_atom(char *atom_block)
 {
-    char RegexStr[] = "\\(([0-9]+) Atom\r\n.*ACL \"([0-9a-zA-Z "
-                      "]+).*\r\n.*Label \"([a-zA-Z]+).*\r\n.*"
-                      "XYZ \\(([0-9.e-]+) ([0-9.e-]+) ([0-9.e-]+).*\r\n"
+    char RegexStr[] = "\\(([0-9]+) Atom\\R.*ACL \"([0-9a-zA-Z "
+                      "]+).*\\R.*Label \"([a-zA-Z]+).*\r\n.*"
+                      "XYZ \\(([0-9.e-]+) ([0-9.e-]+) ([0-9.e-]+).*\\R"
                       ".*Id ([0-9]+)";
     pcre2_code *re = init_re(RegexStr);
     pcre2_match_data *match_data;

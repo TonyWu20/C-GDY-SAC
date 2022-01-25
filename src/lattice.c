@@ -20,6 +20,7 @@ Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
     memcpy(new->carbon_sites, siteDict, sizeof(struct carbon_site) * 7);
     new->metal_site_id = 73;
     new->vtable = &lat_vtable;
+    lattice_metal_info(new);
     return new;
 }
 
@@ -29,6 +30,7 @@ void destroyLattice(Lattice *self)
     mPtr->vtable->destroy(mPtr);
     destroy_matrix(self->lattice_vectors);
     free(self->lattice_vectors);
+    free(self->metal_family);
     free(self);
 }
 
@@ -97,7 +99,7 @@ char *get_carbon_site_name(int siteId)
     }
 }
 
-void lattice_export_MSI(Lattice *self, char *dest)
+void lattice_export_MSI(Lattice *self, char *pathName)
 {
     char header_line[] = "# MSI CERIUS2 DataModel File Version 4 0\n";
     char model_start[] = "(1 Model\n";
@@ -119,12 +121,7 @@ void lattice_export_MSI(Lattice *self, char *dest)
         contentLines[i + 3] = atoms[i];
     }
     contentLines[lineSize - 1] = strdup(model_end);
-    int destUndefined = 0;
-    if (!dest)
-    {
-        dest = strdup("./test_models/");
-        destUndefined = 1;
-    }
+    char *dest = lattice_export_dest(self, pathName);
     createDirectory(dest);
     int dirLen = strlen(dest);
     int adsNameLen = strlen(mol->name);
@@ -140,6 +137,39 @@ void lattice_export_MSI(Lattice *self, char *dest)
     free(contentLines);
     free(exportName);
     free(atoms);
-    if (destUndefined)
-        free(dest);
+    free(dest);
+}
+
+void lattice_metal_info(Lattice *self)
+{
+    Atom *metal =
+        self->_mol->vtable->get_atom_by_Id(self->_mol, self->metal_site_id);
+    self->metal_symbol = metal->element;
+    char *token = NULL;
+    char *buffer = strdup(metal->ACL_Label);
+    char *rest;
+    token = strtok_r(buffer, " ", &rest);
+    int metal_atomic_num = atoi(token);
+    if (metal_atomic_num <= 30)
+        self->metal_family = strdup("3d");
+    else if (metal_atomic_num > 30 && metal_atomic_num <= 48)
+        self->metal_family = strdup("4d");
+    else if (metal_atomic_num > 71 && metal_atomic_num <= 80)
+        self->metal_family = strdup("5d");
+    else if (metal_atomic_num > 56 && metal_atomic_num <= 71)
+        self->metal_family = strdup("lm");
+    self->metal_order = metal_atomic_num;
+    free(buffer);
+}
+
+char *lattice_export_dest(Lattice *self, char *pathName)
+{
+    char *metal_family = self->metal_family;
+    char *metal_symbol = self->metal_symbol;
+    int destLen =
+        19 + strlen(pathName) + strlen(metal_family) + strlen(metal_symbol) + 3;
+    char *buffer = malloc(destLen + 1);
+    snprintf(buffer, destLen + 1, "./C2_CO2RR_models/%s/%s/%s/", pathName,
+             metal_family, metal_symbol);
+    return buffer;
 }

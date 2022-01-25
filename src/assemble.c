@@ -38,7 +38,7 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to)
      * Except C2H4, prefer it to be planar
      */
     if ((id_from == 73 && id_to != 41 && id_to != 42) ||
-        (id_to == 73 && id_from != 41 && id_to != 42))
+        (id_to == 73 && id_from != 41 && id_from != 42))
     {
         printf("When one site is metal, the other given site is not a valid "
                "carbon site\n");
@@ -97,4 +97,14 @@ Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2)
     Lattice *newModel = lat->vtable->attach_molecule(lat, ads, newName);
     free(newName);
     return newModel;
+}
+void executeAllTasks(Lattice *lat, Adsorbate *ads)
+{
+    struct taskTable *taskList = ads->taskLists;
+    for (int i = 0; i < taskList->taskNum; ++i)
+    {
+        int c1 = taskList->tasks[i][0];
+        int c2 = taskList->tasks[i][1];
+        Lattice *result = Add_mol_to_lattice(lat, ads, c1, c2);
+    }
 }

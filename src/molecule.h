@@ -19,7 +19,15 @@ typedef struct
     int planeAtomIds[3];
     int bSym;
     struct Adsorbate_vtable *ads_vtable;
+    struct taskTable *taskLists;
 } Adsorbate;
+
+struct taskTable
+{
+    int taskNum;
+    int **tasks;
+};
+struct taskTable *createTasks(Adsorbate *self);
 
 struct Molecule_vtable
 {

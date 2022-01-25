@@ -14,6 +14,9 @@ struct _Lattice
     Matrix *lattice_vectors;
     struct carbon_site carbon_sites[7];
     int metal_site_id;
+    int metal_order;
+    char *metal_family;
+    char *metal_symbol;
     struct Lattice_vtable *vtable;
 };
 
@@ -24,7 +27,7 @@ struct Lattice_vtable
     Matrix *(*get_carbon_chain_vector)(Lattice *self);
     Matrix *(*get_carbon_metal_vector)(Lattice *self, int);
     Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads, char *newName);
-    void (*export_msi)(Lattice *self, char *dest);
+    void (*export_msi)(Lattice *self, char *pathName);
     void (*destroy)(Lattice *self);
 };
 
@@ -32,6 +35,9 @@ struct Lattice_vtable
  * Molecule object, with adding lattice_vectors (3x3 column-major matrix)
  */
 Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors);
+
+/* Fill metal info after initialization */
+void lattice_metal_info(Lattice *self);
 
 /* Free memory occupied by the Lattice struct pointer
  */
@@ -69,4 +75,5 @@ char *get_carbon_site_name(int siteId);
 /* Format and export lattice contents to .msi
  * if dest == NULL, use default
  */
-void lattice_export_MSI(Lattice *self, char *dest);
+void lattice_export_MSI(Lattice *self, char *pathName);
+char *lattice_export_dest(Lattice *self, char *pathName);

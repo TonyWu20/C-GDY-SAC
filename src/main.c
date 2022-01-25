@@ -1,6 +1,7 @@
 #include "assemble.h"
 #include "atom.h"
 #include "matrix.h"
+#include "misc.h"
 #include "molecule.h"
 #include "my_maths.h"
 #include "parser.h"
@@ -20,8 +21,10 @@ void test_add(char *latFile, char *latName, char *adsFile, char *adsName,
 {
     Lattice *lat = load_lat(latFile, latName);
     Adsorbate *ads = parse_molecule_from_file(adsFile, adsName);
-    Lattice *result = Add_mol_to_lattice(lat, ads, c1, c2);
-    result->vtable->export_msi(result, NULL);
+    Lattice *result = Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[0][0],
+                                         ads->taskLists->tasks[0][1]);
+    printf("%s\n", result->_mol->name);
+    result->vtable->export_msi(result, "ethylene");
     result->vtable->destroy(result);
     lat->vtable->destroy(lat);
     ads->ads_vtable->destroy(ads);
@@ -29,9 +32,6 @@ void test_add(char *latFile, char *latName, char *adsFile, char *adsName,
 
 int main(int argc, char *argv[])
 {
-    test_add("SAC_GDY_V.msi", "SAC_GDY_V", "C2_pathways_ads/COCHO.msi", "COCHO",
-             41, NULLSITE);
-    test_add("SAC_GDY_V.msi", "SAC_GDY_V", "C2_pathways_ads/OCH2CH.msi",
-             "OCH2CH", 41, 73);
+    allocateTasks("ethylene");
     return 0;
 }
