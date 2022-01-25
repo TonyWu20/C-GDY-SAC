@@ -31,7 +31,7 @@ Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr)
 
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
-                           int *planeAtomIds)
+                           int *planeAtomIds, int bSym)
 {
     Adsorbate *ads = malloc(sizeof(Adsorbate));
     ads->_mol = newMol;
@@ -41,6 +41,7 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
     memcpy(ads->stemAtomIds, stemAtomIds, 2 * sizeof(int));
     memcpy(ads->planeAtomIds, planeAtomIds, 3 * sizeof(int));
     ads->ads_vtable = &ads_vtable;
+    ads->bSym = bSym;
     return ads;
 }
 

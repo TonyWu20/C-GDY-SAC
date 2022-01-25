@@ -17,6 +17,7 @@ typedef struct
     int *coordAtomIds;
     int stemAtomIds[2];
     int planeAtomIds[3];
+    int bSym;
     struct Adsorbate_vtable *ads_vtable;
 } Adsorbate;
 
@@ -49,7 +50,7 @@ Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr);
 // Memory Management
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
-                           int *planeAtomIds);
+                           int *planeAtomIds, int bSym);
 
 // Memory Management
 void destroyMolecule(Molecule *self);

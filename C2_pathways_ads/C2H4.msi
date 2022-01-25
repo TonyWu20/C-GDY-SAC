@@ -3,6 +3,7 @@
 # cd_ids: 1,2
 # stem_ids: 1,2
 # plane_ids: 1,2,3
+# Symmetric: 1
 (1 Model
   (2 Atom
     (A C ACL "6 C") 

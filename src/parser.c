@@ -98,6 +98,22 @@ void get_cd_info(char *subject, int *cd_num, int **cd_ids)
     pcre2_match_data_free(match_data);
 }
 
+void get_symmetric_info(char *subject, int *bSym)
+{
+    char RegexStr[] = "# Symmetric: ([0-1])";
+    pcre2_code *re = init_re(RegexStr);
+    pcre2_match_data *match_data;
+    int rc = 0;
+    re_match(re, &match_data, &rc, subject);
+    PCRE2_UCHAR *buffer = NULL;
+    PCRE2_SIZE size = 0;
+    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
+    *bSym = atoi((const char *)buffer);
+    pcre2_substring_free(buffer);
+    pcre2_match_data_free(match_data);
+    pcre2_code_free(re);
+}
+
 void get_stem_arr(char *subject, int *stem_arr)
 {
     char rg[] = "# stem_ids: ([0-9,]+)";
@@ -299,11 +315,14 @@ Adsorbate *parse_molecule_from_file(char *fileName, char *name)
     int *cd_arr = NULL;
     int stem_arr[2];
     int plane_arr[3];
+    int bSym = 0;
     get_cd_info(body, &cd_num, &cd_arr);
     get_stem_arr(body, stem_arr);
     get_plane_arr(body, plane_arr);
+    get_symmetric_info(body, &bSym);
     mol = createMolecule(name, atom_nums, atom_arr);
-    Adsorbate *ads = createAdsorbate(mol, cd_num, cd_arr, stem_arr, plane_arr);
+    Adsorbate *ads =
+        createAdsorbate(mol, cd_num, cd_arr, stem_arr, plane_arr, bSym);
     free(cd_arr);
     free(body);
     return ads;

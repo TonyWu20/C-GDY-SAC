@@ -29,11 +29,11 @@ int main(int argc, char *argv[])
         parse_molecule_from_file("C2_pathways_ads/OCH2CH.msi", "OCH2CH");
     free(content);
     Lattice *GDY_V = load_lat("SAC_GDY_V.msi", "SAC_GDY_V");
-    Lattice *result = Add_cd2_mol_to_carbon_chain(GDY_V, ads, 42, 54);
+    Lattice *result = Add_cd2_mol_to_lattice(GDY_V, ads, 54, 42);
     printf("%s\n", result->_mol->name);
     result->vtable->export_msi(result, NULL);
     result->vtable->destroy(result);
-    result = Add_cd2_mol_to_carbon_metal(GDY_V, ads, 42);
+    result = Add_cd2_mol_to_lattice(GDY_V, ads, 73, 42);
     printf("%s\n", result->_mol->name);
     result->vtable->export_msi(result, NULL);
     result->vtable->destroy(result);
