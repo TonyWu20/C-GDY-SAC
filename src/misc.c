@@ -53,6 +53,11 @@ void allocateTasks(char *pathName)
         free(basePath);
         lat->vtable->destroy(lat);
     }
+    for (int i = 0; i < adsListLen; ++i)
+    {
+        free(adsList[i]);
+    }
+    free(adsList);
 }
 
 void createDirectory(char *dest)
@@ -99,6 +104,7 @@ char *findBaseByElementId(int i)
     char *filePath = malloc(filePathLen + 1);
     snprintf(filePath, filePathLen, "./msi_models/%s/SAC_GDY_%s.msi", family,
              elements[i]);
+    free(family);
     return filePath;
 }
 
