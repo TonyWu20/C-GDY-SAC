@@ -5,7 +5,6 @@
 #include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
-
 enum
 {
     T3D,
@@ -27,28 +26,29 @@ void allocateTasks(char *pathName)
 {
     int adsListLen = 0;
     char **adsList = pathway_adsLists(pathName, &adsListLen);
-    for (int i = 0; i < TOTAL_ELEMENT_NUM; ++i)
+    int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
+    for (int i = 0; i < total_tasks; ++i)
     {
-        int baseNameLen = 8 + strlen(elements[i]);
+        int currElement = i / adsListLen;
+        int currAds = i % adsListLen;
+        int baseNameLen = 8 + strlen(elements[currElement]);
         char *baseName = malloc(baseNameLen + 1);
-        snprintf(baseName, baseNameLen + 1, "SAC_GDY_%s", elements[i]);
-        char *basePath = findBaseByElementId(i);
+        snprintf(baseName, baseNameLen + 1, "SAC_GDY_%s",
+                 elements[currElement]);
+        char *basePath = findBaseByElementId(currElement);
         Lattice *lat = parse_lattice_from_file(basePath, baseName);
-        for (int j = 0; j < adsListLen; ++j)
+        char *ads_name = extractStemName(adsList[currAds]);
+        Adsorbate *ads = parse_molecule_from_file(adsList[currAds], ads_name);
+        for (int k = 0; k < ads->taskLists->taskNum; ++k)
         {
-            char *ads_name = extractStemName(adsList[j]);
-            Adsorbate *ads = parse_molecule_from_file(adsList[j], ads_name);
-            for (int k = 0; k < ads->taskLists->taskNum; ++k)
-            {
-                Lattice *result =
-                    Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[k][0],
-                                       ads->taskLists->tasks[k][1]);
-                result->vtable->export_msi(result, pathName);
-                result->vtable->destroy(result);
-            }
-            ads->ads_vtable->destroy(ads);
-            free(ads_name);
+            Lattice *result =
+                Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[k][0],
+                                   ads->taskLists->tasks[k][1]);
+            result->vtable->export_msi(result, pathName);
+            result->vtable->destroy(result);
         }
+        ads->ads_vtable->destroy(ads);
+        free(ads_name);
         free(baseName);
         free(basePath);
         lat->vtable->destroy(lat);

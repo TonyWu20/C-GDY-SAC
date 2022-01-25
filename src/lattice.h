@@ -17,6 +17,7 @@ struct _Lattice
     int metal_order;
     char *metal_family;
     char *metal_symbol;
+    char *attached_adsName;
     struct Lattice_vtable *vtable;
 };
 

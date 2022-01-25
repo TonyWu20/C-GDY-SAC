@@ -20,6 +20,7 @@ Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
     memcpy(new->carbon_sites, siteDict, sizeof(struct carbon_site) * 7);
     new->metal_site_id = 73;
     new->vtable = &lat_vtable;
+    new->attached_adsName = NULL;
     lattice_metal_info(new);
     return new;
 }
@@ -31,6 +32,7 @@ void destroyLattice(Lattice *self)
     destroy_matrix(self->lattice_vectors);
     free(self->lattice_vectors);
     free(self->metal_family);
+    free(self->attached_adsName);
     free(self);
 }
 
@@ -72,6 +74,7 @@ Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName)
     Matrix *lattice_vectors = create_matrix(3, 3);
     copy_matrix(self->lattice_vectors, &lattice_vectors);
     Lattice *new = createLattice(resMol, lattice_vectors);
+    new->attached_adsName = strdup(ads->_mol->name);
     return new;
 }
 
@@ -168,8 +171,15 @@ char *lattice_export_dest(Lattice *self, char *pathName)
     char *metal_symbol = self->metal_symbol;
     int destLen =
         19 + strlen(pathName) + strlen(metal_family) + strlen(metal_symbol) + 3;
+    if (self->attached_adsName != NULL)
+        destLen += strlen(self->attached_adsName);
+    else
+    {
+        printf("No attached adsorbate!\n");
+        return 0;
+    }
     char *buffer = malloc(destLen + 1);
-    snprintf(buffer, destLen + 1, "./C2_CO2RR_models/%s/%s/%s/", pathName,
-             metal_family, metal_symbol);
+    snprintf(buffer, destLen + 1, "./C2_CO2RR_models/%s/%s/%s/%s/", pathName,
+             metal_family, metal_symbol, self->attached_adsName);
     return buffer;
 }
