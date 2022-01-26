@@ -117,56 +117,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named my_maths
+# Target rules for targets named msi_modeling
 
 # Build rule for target.
-my_maths: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 my_maths
-.PHONY : my_maths
+msi_modeling: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 msi_modeling
+.PHONY : msi_modeling
 
 # fast build rule for target.
-my_maths/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/build
-.PHONY : my_maths/fast
-
-#=============================================================================
-# Target rules for targets named datastruct
-
-# Build rule for target.
-datastruct: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 datastruct
-.PHONY : datastruct
-
-# fast build rule for target.
-datastruct/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/build
-.PHONY : datastruct/fast
-
-#=============================================================================
-# Target rules for targets named parser
-
-# Build rule for target.
-parser: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 parser
-.PHONY : parser
-
-# fast build rule for target.
-parser/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser.dir/build.make CMakeFiles/parser.dir/build
-.PHONY : parser/fast
-
-#=============================================================================
-# Target rules for targets named assemble
-
-# Build rule for target.
-assemble: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 assemble
-.PHONY : assemble
-
-# fast build rule for target.
-assemble/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/assemble.dir/build.make CMakeFiles/assemble.dir/build
-.PHONY : assemble/fast
+msi_modeling/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/build
+.PHONY : msi_modeling/fast
 
 #=============================================================================
 # Target rules for targets named test.o
@@ -181,125 +142,197 @@ test.o/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/build
 .PHONY : test.o/fast
 
-# target to build an object file
-src/assemble.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/assemble.dir/build.make CMakeFiles/assemble.dir/src/assemble.o
+src/assemble.o: src/assemble.c.o
 .PHONY : src/assemble.o
 
-# target to preprocess a source file
-src/assemble.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/assemble.dir/build.make CMakeFiles/assemble.dir/src/assemble.i
+# target to build an object file
+src/assemble.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/assemble.c.o
+.PHONY : src/assemble.c.o
+
+src/assemble.i: src/assemble.c.i
 .PHONY : src/assemble.i
 
-# target to generate assembly for a file
-src/assemble.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/assemble.dir/build.make CMakeFiles/assemble.dir/src/assemble.s
+# target to preprocess a source file
+src/assemble.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/assemble.c.i
+.PHONY : src/assemble.c.i
+
+src/assemble.s: src/assemble.c.s
 .PHONY : src/assemble.s
 
-# target to build an object file
-src/atom.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/atom.o
+# target to generate assembly for a file
+src/assemble.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/assemble.c.s
+.PHONY : src/assemble.c.s
+
+src/atom.o: src/atom.c.o
 .PHONY : src/atom.o
 
-# target to preprocess a source file
-src/atom.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/atom.i
+# target to build an object file
+src/atom.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/atom.c.o
+.PHONY : src/atom.c.o
+
+src/atom.i: src/atom.c.i
 .PHONY : src/atom.i
 
-# target to generate assembly for a file
-src/atom.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/atom.s
+# target to preprocess a source file
+src/atom.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/atom.c.i
+.PHONY : src/atom.c.i
+
+src/atom.s: src/atom.c.s
 .PHONY : src/atom.s
 
-# target to build an object file
-src/lattice.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/lattice.o
+# target to generate assembly for a file
+src/atom.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/atom.c.s
+.PHONY : src/atom.c.s
+
+src/lattice.o: src/lattice.c.o
 .PHONY : src/lattice.o
 
-# target to preprocess a source file
-src/lattice.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/lattice.i
+# target to build an object file
+src/lattice.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/lattice.c.o
+.PHONY : src/lattice.c.o
+
+src/lattice.i: src/lattice.c.i
 .PHONY : src/lattice.i
 
-# target to generate assembly for a file
-src/lattice.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/lattice.s
+# target to preprocess a source file
+src/lattice.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/lattice.c.i
+.PHONY : src/lattice.c.i
+
+src/lattice.s: src/lattice.c.s
 .PHONY : src/lattice.s
 
-# target to build an object file
-src/main.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.o
+# target to generate assembly for a file
+src/lattice.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/lattice.c.s
+.PHONY : src/lattice.c.s
+
+src/main.o: src/main.c.o
 .PHONY : src/main.o
 
-# target to preprocess a source file
-src/main.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.i
+# target to build an object file
+src/main.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.c.o
+.PHONY : src/main.c.o
+
+src/main.i: src/main.c.i
 .PHONY : src/main.i
 
-# target to generate assembly for a file
-src/main.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.s
+# target to preprocess a source file
+src/main.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.c.i
+.PHONY : src/main.c.i
+
+src/main.s: src/main.c.s
 .PHONY : src/main.s
 
-# target to build an object file
-src/misc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/misc.o
+# target to generate assembly for a file
+src/main.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.c.s
+.PHONY : src/main.c.s
+
+src/misc.o: src/misc.c.o
 .PHONY : src/misc.o
 
-# target to preprocess a source file
-src/misc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/misc.i
+# target to build an object file
+src/misc.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.o
+.PHONY : src/misc.c.o
+
+src/misc.i: src/misc.c.i
 .PHONY : src/misc.i
 
-# target to generate assembly for a file
-src/misc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/misc.s
+# target to preprocess a source file
+src/misc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.i
+.PHONY : src/misc.c.i
+
+src/misc.s: src/misc.c.s
 .PHONY : src/misc.s
 
-# target to build an object file
-src/molecule.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/molecule.o
+# target to generate assembly for a file
+src/misc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.s
+.PHONY : src/misc.c.s
+
+src/molecule.o: src/molecule.c.o
 .PHONY : src/molecule.o
 
-# target to preprocess a source file
-src/molecule.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/molecule.i
+# target to build an object file
+src/molecule.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/molecule.c.o
+.PHONY : src/molecule.c.o
+
+src/molecule.i: src/molecule.c.i
 .PHONY : src/molecule.i
 
-# target to generate assembly for a file
-src/molecule.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/datastruct.dir/build.make CMakeFiles/datastruct.dir/src/molecule.s
+# target to preprocess a source file
+src/molecule.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/molecule.c.i
+.PHONY : src/molecule.c.i
+
+src/molecule.s: src/molecule.c.s
 .PHONY : src/molecule.s
 
-# target to build an object file
-src/my_maths.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.o
+# target to generate assembly for a file
+src/molecule.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/molecule.c.s
+.PHONY : src/molecule.c.s
+
+src/my_maths.o: src/my_maths.c.o
 .PHONY : src/my_maths.o
 
-# target to preprocess a source file
-src/my_maths.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.i
+# target to build an object file
+src/my_maths.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/my_maths.c.o
+.PHONY : src/my_maths.c.o
+
+src/my_maths.i: src/my_maths.c.i
 .PHONY : src/my_maths.i
 
-# target to generate assembly for a file
-src/my_maths.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.s
+# target to preprocess a source file
+src/my_maths.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/my_maths.c.i
+.PHONY : src/my_maths.c.i
+
+src/my_maths.s: src/my_maths.c.s
 .PHONY : src/my_maths.s
 
-# target to build an object file
-src/parser.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser.dir/build.make CMakeFiles/parser.dir/src/parser.o
+# target to generate assembly for a file
+src/my_maths.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/my_maths.c.s
+.PHONY : src/my_maths.c.s
+
+src/parser.o: src/parser.c.o
 .PHONY : src/parser.o
 
-# target to preprocess a source file
-src/parser.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser.dir/build.make CMakeFiles/parser.dir/src/parser.i
+# target to build an object file
+src/parser.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/parser.c.o
+.PHONY : src/parser.c.o
+
+src/parser.i: src/parser.c.i
 .PHONY : src/parser.i
 
-# target to generate assembly for a file
-src/parser.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser.dir/build.make CMakeFiles/parser.dir/src/parser.s
+# target to preprocess a source file
+src/parser.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/parser.c.i
+.PHONY : src/parser.c.i
+
+src/parser.s: src/parser.c.s
 .PHONY : src/parser.s
+
+# target to generate assembly for a file
+src/parser.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/parser.c.s
+.PHONY : src/parser.c.s
 
 # Help Target
 help:
@@ -309,10 +342,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... assemble"
-	@echo "... datastruct"
-	@echo "... my_maths"
-	@echo "... parser"
+	@echo "... msi_modeling"
 	@echo "... test.o"
 	@echo "... src/assemble.o"
 	@echo "... src/assemble.i"
