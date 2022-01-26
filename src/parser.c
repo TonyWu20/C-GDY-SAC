@@ -7,12 +7,22 @@
 #include <stdio.h>
 #include <string.h>
 
+static pcre2_code *init_re(char *RegexStr);
+static void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data,
+                     int *rc, char *subject);
+static void get_cd_num(char *subject, int *cd_num);
+static void get_cd_info(char *subject, int *cd_num, int **cd_ids);
+static void get_symmetric_info(char *subject, int *bSym);
+static void get_stem_arr(char *subject, int *stem_arr);
+static void get_plane_arr(char *subject, int *plane_arr);
+static Atom *parse_atom(char *atom_block);
+static Atom **get_all_atoms(char *subject, int *returnSize);
 // Table
 
 // UThash
 
 // [>regex<]
-pcre2_code *init_re(char *RegexStr)
+static pcre2_code *init_re(char *RegexStr)
 {
     int errornumber;
     PCRE2_SIZE erroroffset;
@@ -29,8 +39,8 @@ pcre2_code *init_re(char *RegexStr)
     return re;
 }
 
-void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data, int *rc,
-              char *subject)
+static void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data,
+                     int *rc, char *subject)
 {
     if (!re_pattern)
     {
@@ -57,7 +67,8 @@ void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data, int *rc,
     }
 }
 
-void get_cd_num(char *subject, int *cd_num)
+/* Parse number of coordinate atoms */
+static void get_cd_num(char *subject, int *cd_num)
 {
     char RegexStr[] = "# cd_num: ([0-9])";
     pcre2_code *re = init_re(RegexStr);
@@ -73,7 +84,9 @@ void get_cd_num(char *subject, int *cd_num)
     pcre2_code_free(re);
 }
 
-void get_cd_info(char *subject, int *cd_num, int **cd_ids)
+/* Parse atom Ids of coordinate atoms and store in **cd_ids
+ */
+static void get_cd_info(char *subject, int *cd_num, int **cd_ids)
 {
     get_cd_num(subject, cd_num);
     char RegexStr[] = "# cd_ids: ([0-9,]+)";
@@ -98,7 +111,8 @@ void get_cd_info(char *subject, int *cd_num, int **cd_ids)
     pcre2_match_data_free(match_data);
 }
 
-void get_symmetric_info(char *subject, int *bSym)
+/* Get if the molecule is symmetric */
+static void get_symmetric_info(char *subject, int *bSym)
 {
     char RegexStr[] = "# Symmetric: ([0-1])";
     pcre2_code *re = init_re(RegexStr);
@@ -114,7 +128,8 @@ void get_symmetric_info(char *subject, int *bSym)
     pcre2_code_free(re);
 }
 
-void get_stem_arr(char *subject, int *stem_arr)
+/* Store the stem atomId in the pointer */
+static void get_stem_arr(char *subject, int *stem_arr)
 {
     char rg[] = "# stem_ids: ([0-9,]+)";
     pcre2_code *re = init_re(rg);
@@ -136,7 +151,9 @@ void get_stem_arr(char *subject, int *stem_arr)
     pcre2_substring_free(buffer);
     pcre2_match_data_free(match_data);
 }
-void get_plane_arr(char *subject, int *plane_arr)
+
+/* Store the plane atomId in the pointer */
+static void get_plane_arr(char *subject, int *plane_arr)
 {
     char rg[] = "# plane_ids: ([0-9,]+)";
     pcre2_code *re = init_re(rg);
@@ -159,7 +176,8 @@ void get_plane_arr(char *subject, int *plane_arr)
     pcre2_match_data_free(match_data);
 }
 
-void get_lattice_vectors(char *subject, Matrix **result)
+/* Parse the lattice vectors */
+static void get_lattice_vectors(char *subject, Matrix **result)
 {
     *result = create_matrix(3, 3);
     if (*result == NULL)
@@ -193,7 +211,10 @@ void get_lattice_vectors(char *subject, Matrix **result)
     pcre2_match_data_free(match_data);
 }
 
-Atom **get_all_atoms(char *subject, int *returnSize)
+/* Match and parse all atoms
+ * Returns: array of Atom *
+ */
+static Atom **get_all_atoms(char *subject, int *returnSize)
 {
     char RegexStr[] = "\\(([0-9]+) Atom\\R.*ACL \"([0-9]+) "
                       "([a-zA-Z]+).*\\R.*\\R.*"
@@ -253,7 +274,8 @@ Atom **get_all_atoms(char *subject, int *returnSize)
     return ret;
 }
 
-Atom *parse_atom(char *atom_block)
+/* Parse single atom block */
+static Atom *parse_atom(char *atom_block)
 {
     char RegexStr[] = "\\(([0-9]+) Atom\\R.*ACL \"([0-9a-zA-Z "
                       "]+).*\\R.*Label \"([a-zA-Z]+).*\r\n.*"
