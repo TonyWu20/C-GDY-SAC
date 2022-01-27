@@ -26,6 +26,7 @@ Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
     new->vtable = &lat_vtable;
     new->attached_adsName = NULL;
     lattice_metal_info(new);
+    new->vtable->rotate_to_standard_orientation(new);
     return new;
 }
 
@@ -91,11 +92,20 @@ void lattice_rotate_to_standard_orientation(Lattice *self)
     for (int i = 0; i < 3; ++i)
     {
         a->value[i][0] = lat_vectors->value[i][0];
-        b->value[i][0] = lat_vectors->value[i][1];
+        b->value[i + 1][0] = 0;
     }
     a->value[3][0] = 1;
+    b->value[0][0] = 1;
     b->value[3][0] = 1;
-    double a_to_x = vector_angle(a, b) - PI / 2;
+    double a_to_x = vector_angle(a, b);
+    if (a_to_x == 0)
+    {
+        destroy_matrix(a);
+        destroy_matrix(b);
+        free(a);
+        free(b);
+        return;
+    }
     Matrix *rot_mat = rotationMatrix(a_to_x, 'Z');
     Matrix *new_lat_vec;
     multiply_matrices(rot_mat, lat_vectors, &new_lat_vec);

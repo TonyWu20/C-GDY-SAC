@@ -38,7 +38,6 @@ void test_build()
 void test_fracCoordMat()
 {
     Lattice *t = load_lat("./SAC_GDY_V.msi", "SAC_GDY_V");
-    t->vtable->rotate_to_standard_orientation(t);
     Matrix *fracCoordMat = fractionalCoordMatrix(t->lattice_vectors);
     print_matrix(fracCoordMat);
     Matrix *t_coord = t->_mol->vtable->get_mol_coords(t->_mol);
