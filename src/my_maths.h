@@ -17,3 +17,5 @@ Matrix *cross_product(Matrix *a, Matrix *b); // Return normalized vector
 Matrix *rotate_u_to_v(Matrix *u, Matrix *v);
 Matrix *translate_mat_a_to_b(double *center_a, double *center_b);
 void translate_a_to_b(Matrix *trans_mat, Matrix *coords, Matrix **result);
+
+Matrix *fractionalCoordMatrix(Matrix *lat_vectors);

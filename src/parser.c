@@ -179,7 +179,7 @@ static void get_plane_arr(char *subject, int *plane_arr)
 /* Parse the lattice vectors */
 static void get_lattice_vectors(char *subject, Matrix **result)
 {
-    *result = create_matrix(3, 3);
+    *result = create_matrix(4, 3);
     if (*result == NULL)
     {
         printf("Can't create matrix.\n");
@@ -206,6 +206,10 @@ static void get_lattice_vectors(char *subject, Matrix **result)
             (*result)->value[i][j] = atof((const char *)token);
         }
         pcre2_substring_free(buffer);
+    }
+    for (int i = 0; i < 3; ++i)
+    {
+        (*result)->value[3][i] = 1;
     }
     pcre2_code_free(re);
     pcre2_match_data_free(match_data);

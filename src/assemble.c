@@ -66,6 +66,7 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to)
 
 Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2)
 {
+    lat->vtable->rotate_to_standard_orientation(lat);
     // Init the adsorbate to be aligned with the carbon chain
     if (c2 != NULLSITE || ads->coordAtomNum == 2)
         init_ads_direction(lat, ads, c1, c2);
@@ -97,14 +98,4 @@ Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2)
     Lattice *newModel = lat->vtable->attach_molecule(lat, ads, newName);
     free(newName);
     return newModel;
-}
-void executeAllTasks(Lattice *lat, Adsorbate *ads)
-{
-    struct taskTable *taskList = ads->taskLists;
-    for (int i = 0; i < taskList->taskNum; ++i)
-    {
-        int c1 = taskList->tasks[i][0];
-        int c2 = taskList->tasks[i][1];
-        Lattice *result = Add_mol_to_lattice(lat, ads, c1, c2);
-    }
 }

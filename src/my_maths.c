@@ -167,7 +167,6 @@ Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
     Matrix *c_a = matrix_view_array(tmp_ca, 4, 4);
     Matrix *cross_product = NULL;
     multiply_matrices(c_a, b, &cross_product);
-    normalize_vector(cross_product);
     cross_product->value[3][0] = 1;
     destroy_matrix(c_a);
     free(c_a);
@@ -179,6 +178,7 @@ Matrix *rotate_u_to_v(Matrix *u, Matrix *v)
 {
     Matrix *n = cross_product(u, v);
     double n1, n2, n3;
+    normalize_vector(n);
     n1 = n->value[0][0];
     n2 = n->value[1][0];
     n3 = n->value[2][0];
@@ -223,4 +223,53 @@ Matrix *translate_mat_a_to_b(double *src, double *dest)
 void translate_a_to_b(Matrix *trans_mat, Matrix *coords, Matrix **result)
 {
     multiply_matrices(trans_mat, coords, result);
+}
+
+Matrix *fractionalCoordMatrix(Matrix *lat_vectors)
+{
+    Matrix *a = create_matrix(4, 1);
+    Matrix *b = create_matrix(4, 1);
+    Matrix *c = create_matrix(4, 1);
+    for (int i = 0; i < 3; ++i)
+    {
+        a->value[i][0] = lat_vectors->value[i][0];
+        b->value[i][0] = lat_vectors->value[i][1];
+        c->value[i][0] = lat_vectors->value[i][2];
+    }
+    a->value[3][0] = 1;
+    b->value[3][0] = 1;
+    c->value[3][0] = 1;
+    double alpha = vector_angle(b, c);
+    double beta = vector_angle(a, c);
+    double gamma = vector_angle(a, b);
+    double vol;
+    Matrix *bc_cross = cross_product(b, c);
+    printf("alpha: %f, beta : %f, gamma: %f\n", alpha * 180 / PI,
+           beta * 180 / PI, gamma * 180 / PI);
+    vol = dot_product(a, bc_cross);
+    destroy_matrix(bc_cross);
+    free(bc_cross);
+    double aLen = norm_of_vector(a);
+    double bLen = norm_of_vector(b);
+    double cLen = norm_of_vector(c);
+    printf("a: %f, b: %f , c: %f\n", aLen, bLen, cLen);
+    destroy_matrix(a);
+    destroy_matrix(b);
+    destroy_matrix(c);
+    free(a);
+    free(b);
+    free(c);
+    double a_11 = 1 / aLen;
+    double a_12 = -cos(gamma) / (aLen * sin(gamma));
+    double a_13 = bLen * cLen * (cos(alpha) * cos(gamma) - cos(beta)) /
+                  (vol * sin(gamma));
+    double a_21 = 0;
+    double a_22 = 1 / (bLen * sin(gamma));
+    double a_23 = aLen * cLen * (cos(beta) * cos(gamma) - cos(alpha)) /
+                  (vol * sin(gamma));
+    double a_33 = aLen * bLen * sin(gamma) / vol;
+    double tmp_frac_coord[] = {a_11, a_12, a_13, 0, a_21, a_22, a_23, 0,
+                               0,    0,    a_33, 0, 0,    0,    0,    1};
+    Matrix *frac_coord = matrix_view_array(tmp_frac_coord, 4, 4);
+    return frac_coord;
 }

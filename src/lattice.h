@@ -28,6 +28,9 @@ struct Lattice_vtable
     Matrix *(*get_carbon_chain_vector)(Lattice *self);
     Matrix *(*get_carbon_metal_vector)(Lattice *self, int);
     Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads, char *newName);
+    /* Rotate lattice to standard orientation "C along Z, A in XZ plane"
+     */
+    void (*rotate_to_standard_orientation)(Lattice *self);
     void (*export_msi)(Lattice *self, char *pathName);
     void (*destroy)(Lattice *self);
 };
@@ -70,6 +73,10 @@ Matrix *lattice_get_carbon_metal_vector(Lattice *self, int);
  * Returns a new Lattice struct pointer for future exports
  */
 Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName);
+
+/* Rotate lattice to standard orientation "C along Z, A in XZ plane"
+ */
+void lattice_rotate_to_standard_orientation(Lattice *self);
 
 char *get_carbon_site_name(int siteId);
 

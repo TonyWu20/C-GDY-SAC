@@ -30,8 +30,37 @@ void test_add(char *latFile, char *latName, char *adsFile, char *adsName,
     ads->ads_vtable->destroy(ads);
 }
 
-int main(int argc, char *argv[])
+void test_build()
 {
     allocateTasks("ethylene");
+}
+
+void test_fracCoordMat()
+{
+    Lattice *t = load_lat("./SAC_GDY_V.msi", "SAC_GDY_V");
+    t->vtable->rotate_to_standard_orientation(t);
+    Matrix *fracCoordMat = fractionalCoordMatrix(t->lattice_vectors);
+    print_matrix(fracCoordMat);
+    Matrix *t_coord = t->_mol->vtable->get_mol_coords(t->_mol);
+    Matrix *res;
+    multiply_matrices(fracCoordMat, t_coord, &res);
+    for (int i = 0; i < t->_mol->atomNum; ++i)
+    {
+        Atom *cur = t->_mol->atom_arr[i];
+        printf("%d %s: (%.15f, %.15f, %.15f)\n", cur->atomId, cur->element,
+               res->value[0][i], res->value[1][i], res->value[2][i]);
+    }
+    destroy_matrix(t_coord);
+    destroy_matrix(res);
+    destroy_matrix(fracCoordMat);
+    free(fracCoordMat);
+    free(t_coord);
+    free(res);
+    t->vtable->destroy(t);
+}
+
+int main(int argc, char *argv[])
+{
+    test_fracCoordMat();
     return 0;
 }

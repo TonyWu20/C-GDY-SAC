@@ -1,6 +1,7 @@
 #include "lattice.h"
 #include "misc.h"
 #include "molecule.h"
+#include "my_maths.h"
 #include <matrix.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,9 +10,12 @@
 struct carbon_site siteDict[] = {
     {"c1", 41},       {"c2", 42},        {"c3", 54},   {"c4", 43},
     {"far_ring", 52}, {"near_ring", 40}, {"metal", 73}};
-struct Lattice_vtable lat_vtable = {
-    lattice_get_carbon_chain_vector, lattice_get_carbon_metal_vector,
-    lattice_attach_molecule, lattice_export_MSI, destroyLattice};
+struct Lattice_vtable lat_vtable = {lattice_get_carbon_chain_vector,
+                                    lattice_get_carbon_metal_vector,
+                                    lattice_attach_molecule,
+                                    lattice_rotate_to_standard_orientation,
+                                    lattice_export_MSI,
+                                    destroyLattice};
 Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
 {
     Lattice *new = malloc(sizeof(Lattice));
@@ -76,6 +80,35 @@ Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName)
     Lattice *new = createLattice(resMol, lattice_vectors);
     new->attached_adsName = strdup(ads->_mol->name);
     return new;
+}
+
+void lattice_rotate_to_standard_orientation(Lattice *self)
+{
+    Molecule *mol = self->_mol;
+    Matrix *lat_vectors = self->lattice_vectors;
+    Matrix *a = create_matrix(4, 1);
+    Matrix *b = create_matrix(4, 1);
+    for (int i = 0; i < 3; ++i)
+    {
+        a->value[i][0] = lat_vectors->value[i][0];
+        b->value[i][0] = lat_vectors->value[i][1];
+    }
+    a->value[3][0] = 1;
+    b->value[3][0] = 1;
+    double a_to_x = vector_angle(a, b) - PI / 2;
+    Matrix *rot_mat = rotationMatrix(a_to_x, 'Z');
+    Matrix *new_lat_vec;
+    multiply_matrices(rot_mat, lat_vectors, &new_lat_vec);
+    self->lattice_vectors = new_lat_vec;
+    mol->vtable->apply_transformation(mol, rot_mat, rotate_around_origin);
+    destroy_matrix(lat_vectors);
+    destroy_matrix(a);
+    destroy_matrix(b);
+    destroy_matrix(rot_mat);
+    free(lat_vectors);
+    free(a);
+    free(b);
+    free(rot_mat);
 }
 
 char *get_carbon_site_name(int siteId)
