@@ -5,6 +5,18 @@
 #include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
+#define PBWIDTH 60
+static void printProgress(int cur, int total, double percentage, char *name)
+{
+    int val = (int)(percentage * 100);
+    int lpad = (int)(percentage * PBWIDTH);
+    int rpad = PBWIDTH - lpad;
+    int strPad = 32 - strlen(name);
+    printf("\e[32m \rNow %.*s%*s %d/%d %3d%% [%.*s%*s]\e[m", 32, name, strPad,
+           "", cur, total, val, lpad, PBSTR, rpad, "");
+    fflush(stdout);
+}
 enum
 {
     T3D,
@@ -45,12 +57,14 @@ void allocateTasks(char *pathName)
                 Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[k][0],
                                    ads->taskLists->tasks[k][1]);
             result->vtable->export_msi(result, pathName);
+            double percentage = (double)(i + 1) / (double)total_tasks;
+            printProgress(i + 1, total_tasks, percentage, result->_mol->name);
             result->vtable->destroy(result);
         }
         ads->ads_vtable->destroy(ads);
         free(ads_name);
-        free(baseName);
         free(basePath);
+        free(baseName);
         lat->vtable->destroy(lat);
     }
     for (int i = 0; i < adsListLen; ++i)
