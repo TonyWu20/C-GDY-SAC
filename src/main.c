@@ -60,6 +60,6 @@ void test_fracCoordMat()
 
 int main(int argc, char *argv[])
 {
-    test_fracCoordMat();
+    test_build();
     return 0;
 }

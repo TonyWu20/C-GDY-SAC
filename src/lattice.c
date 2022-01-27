@@ -76,7 +76,7 @@ Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName)
         new_arr[i + lat_mol->atomNum]->treeId += lastId;
     }
     Molecule *resMol = createMolecule(newName, new_atomNum, new_arr);
-    Matrix *lattice_vectors = create_matrix(3, 3);
+    Matrix *lattice_vectors = create_matrix(4, 3);
     copy_matrix(self->lattice_vectors, &lattice_vectors);
     Lattice *new = createLattice(resMol, lattice_vectors);
     new->attached_adsName = strdup(ads->_mol->name);
