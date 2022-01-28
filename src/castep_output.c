@@ -58,3 +58,34 @@ CastepInfo *initTable()
     }
     return table;
 }
+
+Cell *createCell(Lattice *lat, CastepInfo *table)
+{
+    Cell *new = malloc(sizeof(Cell));
+    new->lattice = lat;
+    CastepInfo *tabItem = find_item(table, lat->metal_symbol);
+    new->info = tabItem->info; // Reference to CastepInfo->struct ElmItem *info,
+                               // will be freed when destroying hashtable
+    new->destroy = destroyCell;
+    new->writeBlock = cellWriteBlock;
+    return new;
+}
+
+void destroyCell(Cell *self)
+{
+    self->lattice->vtable->destroy(self->lattice); // Destroy lattice here
+    free(self);
+}
+
+/* Returns a malloced string
+ */
+char *cellWriteBlock(Cell *self, char *blockName,
+                     char *(*blockTextWriter)(Cell *self))
+{
+    char *content = blockTextWriter(self);
+    int needed = snprintf(NULL, 0, "%%BLOCK %s\n%s%%ENDBLOCK %s\n\n", blockName, content, blockName);
+    char *output = malloc(needed + 1);
+    snprintf(output, needed + 1, "%%BLOCK %s\n%s%%ENDBLOCK %s\n\n", blockName,
+             content, blockName);
+    return output;
+}

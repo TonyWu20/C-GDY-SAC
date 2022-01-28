@@ -67,8 +67,9 @@ void test_table()
     printf("%s:\n\tLCAO:%d\n\tMass:%.12f\n\tPot:%s\n\tSpin:%d\n",
            item->info->elm, item->info->LCAO, item->info->mass,
            item->info->potential_file, item->info->spin);
-    char buf[128];
-    snprintf(buf, 128, "head %s\n", item->info->potential_file);
+    int needed = snprintf(NULL, 0, "head %s\n", item->info->potential_file);
+    char buf[needed+1];
+    snprintf(buf, needed+1, "head %s\n", item->info->potential_file);
     system(buf);
     delete_all(&table);
 }

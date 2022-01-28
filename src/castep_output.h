@@ -4,21 +4,12 @@
 #include "uthash.h"
 #include <stdio.h>
 
-typedef struct Cell Cell;
-
 typedef struct
 {
     const char *name;
     struct ElmItem *info;
     UT_hash_handle hh;
 } CastepInfo;
-
-struct Cell
-{
-    Lattice *lattice;
-    struct ElmItem *info;
-    char *(*write_block)(char *block_name, char *(*block_text)(Cell *self));
-};
 
 struct ElmItem
 {
@@ -95,3 +86,18 @@ CastepInfo *find_item(CastepInfo *table, const char *elm);
 void delete_all(CastepInfo **table);
 
 CastepInfo *initTable();
+
+typedef struct Cell Cell;
+struct Cell
+{
+    Lattice *lattice;
+    struct ElmItem *info;
+    char *(*writeBlock)(Cell *self, char *block_name,
+                        char *(*blockTextWriter)(Cell *self));
+    void (*destroy)(Cell *self);
+};
+
+Cell *createCell(Lattice *lat, CastepInfo *table);
+void destroyCell(Cell *self);
+char *cellWriteBlock(Cell *self, char *blockName,
+                     char *(*blockTextWriter)(Cell *self));
