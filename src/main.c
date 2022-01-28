@@ -64,10 +64,11 @@ void test_table()
     CastepInfo *table = initTable();
     CastepInfo *item;
     item = find_item(table, "Sc");
-    printf("%s:\n\tLCAO:%d\n\tMass:%.12f\n\tPot:%s\n\tSpin:%d\n", item->elm,
-           item->LCAO, item->mass, item->potential_file, item->spin);
+    printf("%s:\n\tLCAO:%d\n\tMass:%.12f\n\tPot:%s\n\tSpin:%d\n",
+           item->info->elm, item->info->LCAO, item->info->mass,
+           item->info->potential_file, item->info->spin);
     char buf[128];
-    snprintf(buf, 128, "head %s\n", item->potential_file);
+    snprintf(buf, 128, "head %s\n", item->info->potential_file);
     system(buf);
     delete_all(&table);
 }

@@ -5,22 +5,20 @@
 #include <stdio.h>
 
 typedef struct Cell Cell;
-struct Cell
-{
-    Lattice *lattice;
-    char *potential_path;
-    char *(*write_block)(char *block_name, char *(*block_text)(Cell *self));
-};
 
 typedef struct
 {
-    const char *elm;
-    int LCAO;
-    double mass;
-    const char *potential_file;
-    int spin;
+    const char *name;
+    struct ElmItem *info;
     UT_hash_handle hh;
 } CastepInfo;
+
+struct Cell
+{
+    Lattice *lattice;
+    struct ElmItem *info;
+    char *(*write_block)(char *block_name, char *(*block_text)(Cell *self));
+};
 
 struct ElmItem
 {
@@ -90,10 +88,9 @@ struct ElmItem metalLM[] = {
 
 /* Add CastepInfo item to hash table
  */
-void add_item(CastepInfo **table, const char *elm, int lcaoVal, double massVal,
-              const char *potential_file, int spinVal);
+void add_item(CastepInfo **table, struct ElmItem *item);
 
-CastepInfo *find_item(CastepInfo *table, char *elm);
+CastepInfo *find_item(CastepInfo *table, const char *elm);
 
 void delete_all(CastepInfo **table);
 
