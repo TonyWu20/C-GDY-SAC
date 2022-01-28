@@ -130,6 +130,19 @@ msi_modeling/fast:
 .PHONY : msi_modeling/fast
 
 #=============================================================================
+# Target rules for targets named castepSeedGen
+
+# Build rule for target.
+castepSeedGen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 castepSeedGen
+.PHONY : castepSeedGen
+
+# fast build rule for target.
+castepSeedGen/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/build
+.PHONY : castepSeedGen/fast
+
+#=============================================================================
 # Target rules for targets named test.o
 
 # Build rule for target.
@@ -189,6 +202,30 @@ src/atom.s: src/atom.c.s
 src/atom.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/atom.c.s
 .PHONY : src/atom.c.s
+
+src/castep_output.o: src/castep_output.c.o
+.PHONY : src/castep_output.o
+
+# target to build an object file
+src/castep_output.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_output.c.o
+.PHONY : src/castep_output.c.o
+
+src/castep_output.i: src/castep_output.c.i
+.PHONY : src/castep_output.i
+
+# target to preprocess a source file
+src/castep_output.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_output.c.i
+.PHONY : src/castep_output.c.i
+
+src/castep_output.s: src/castep_output.c.s
+.PHONY : src/castep_output.s
+
+# target to generate assembly for a file
+src/castep_output.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_output.c.s
+.PHONY : src/castep_output.c.s
 
 src/lattice.o: src/lattice.c.o
 .PHONY : src/lattice.o
@@ -342,6 +379,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... castepSeedGen"
 	@echo "... msi_modeling"
 	@echo "... test.o"
 	@echo "... src/assemble.o"
@@ -350,6 +388,9 @@ help:
 	@echo "... src/atom.o"
 	@echo "... src/atom.i"
 	@echo "... src/atom.s"
+	@echo "... src/castep_output.o"
+	@echo "... src/castep_output.i"
+	@echo "... src/castep_output.s"
 	@echo "... src/lattice.o"
 	@echo "... src/lattice.i"
 	@echo "... src/lattice.s"

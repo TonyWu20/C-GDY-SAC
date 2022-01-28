@@ -1,5 +1,6 @@
 #include "assemble.h"
 #include "atom.h"
+#include "castep_output.h"
 #include "matrix.h"
 #include "misc.h"
 #include "molecule.h"
@@ -58,8 +59,21 @@ void test_fracCoordMat()
     t->vtable->destroy(t);
 }
 
+void test_table()
+{
+    CastepInfo *table = initTable();
+    CastepInfo *item;
+    item = find_item(table, "Sc");
+    printf("%s:\n\tLCAO:%d\n\tMass:%.12f\n\tPot:%s\n\tSpin:%d\n", item->elm,
+           item->LCAO, item->mass, item->potential_file, item->spin);
+    char buf[128];
+    snprintf(buf, 128, "head %s\n", item->potential_file);
+    system(buf);
+    delete_all(&table);
+}
+
 int main(int argc, char *argv[])
 {
-    test_build();
+    test_table();
     return 0;
 }
