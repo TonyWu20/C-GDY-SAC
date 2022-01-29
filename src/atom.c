@@ -32,6 +32,7 @@ Atom *dupAtom(Atom *self)
     copy_matrix(self->coord, &dup->coord);
     dup->atomId = self->atomId;
     dup->treeId = self->treeId;
+    dup->elementId = self->elementId;
     dup->vtable = &atom_vtable;
     return dup;
 }
@@ -78,8 +79,15 @@ void Atom_set_treeId(Atom *self, int newId)
 
 char *Atom_textblock(Atom *self)
 {
-    char *buffer = malloc(144); // freed after export to msi
-    snprintf(buffer, 144,
+    int textLen = snprintf(NULL, 0,
+             "  (%d Atom\n    (A C ACL \"%s\")\n    (A C Label \"%s\")\n    (A "
+             "D XYZ (%.12f %.12f %.12f))\n    (A I Id %d)\n  )\n",
+             self->treeId, self->ACL_Label, self->element,
+             self->coord->value[0][0], self->coord->value[1][0],
+             self->coord->value[2][0], self->atomId);
+    textLen += 1;
+    char *buffer = malloc(textLen); // freed after export to msi
+    snprintf(buffer, textLen,
              "  (%d Atom\n    (A C ACL \"%s\")\n    (A C Label \"%s\")\n    (A "
              "D XYZ (%.12f %.12f %.12f))\n    (A I Id %d)\n  )\n",
              self->treeId, self->ACL_Label, self->element,
