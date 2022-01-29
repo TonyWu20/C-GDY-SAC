@@ -1,8 +1,8 @@
 #include "castep_output.h"
+#include <string.h>
 
 void add_item(CastepInfo **table, struct ElmItem *item)
-{
-    CastepInfo *tableItem = malloc(sizeof(CastepInfo));
+{ CastepInfo *tableItem = malloc(sizeof(CastepInfo));
     tableItem->name = item->elm;
     tableItem->info = malloc(sizeof(struct ElmItem));
     memcpy(tableItem->info, item, sizeof(struct ElmItem));
@@ -64,10 +64,12 @@ Cell *createCell(Lattice *lat, CastepInfo *table)
     Cell *new = malloc(sizeof(Cell));
     new->lattice = lat;
     CastepInfo *tabItem = find_item(table, lat->metal_symbol);
-    new->info = tabItem->info; // Reference to CastepInfo->struct ElmItem *info,
-                               // will be freed when destroying hashtable
+    new->info = tabItem->info; /* Reference to CastepInfo->struct ElmItem *info,
+                               * will be freed when destrokying hashtable
+                               */
+    new->atomSorted = false;
     new->destroy = destroyCell;
-    new->writeBlock = cellWriteBlock;
+    new->vtable = &cellVTable;
     return new;
 }
 
@@ -88,4 +90,48 @@ char *cellWriteBlock(Cell *self, char *blockName,
     snprintf(output, needed + 1, "%%BLOCK %s\n%s%%ENDBLOCK %s\n\n", blockName,
              content, blockName);
     return output;
+}
+static int atomCmp(const void *a, const void *b)
+{
+    Atom *atomA = *(Atom **)a;
+    Atom *atomB = *(Atom **)b;
+    int aNum = atomA->elementId;
+    int bNum = atomB->elementId;
+    if (aNum == bNum)
+        return atomA->atomId - atomB->atomId;
+    return aNum - bNum;
+}
+
+void sortAtomsByElement(Cell *self)
+{
+    Molecule *mol = self->lattice->_mol;
+    Atom **atomArray = mol->atom_arr;
+    qsort(atomArray, mol->atomNum, sizeof(Atom *), atomCmp);
+    mol->atom_arr = atomArray;
+    self->atomSorted = true;
+}
+
+char **sortedElementList(Cell *self, int *returnSize)
+{
+    if (self->atomSorted==false)
+        self->vtable->sortAtoms(self);
+    Molecule *mol = self->lattice->_mol;
+    int size = 1;
+    char **elementsSet = malloc(sizeof(char *));
+    elementsSet[0] = strdup(mol->atom_arr[0]->element);
+    for (int i = 1; i < mol->atomNum; ++i)
+    {
+        Atom *cur = mol->atom_arr[i];
+        Atom *prev = mol->atom_arr[i-1];
+        if (prev->elementId == cur->elementId)
+            continue;
+        else
+        {
+            ++size;
+            elementsSet = realloc(elementsSet, sizeof(char *)*(size));
+            elementsSet[size-1] = strdup(cur->element);
+        };
+    }
+    *returnSize = size;
+    return elementsSet;
 }
