@@ -100,14 +100,18 @@ void test_cell()
     for (int i = 0; i < elmNum; ++i)
     {
         CastepInfo *item = find_item(table, elmList[i]);
-        char *pos = strrchr(item->info->potential_file, '/');
         printf("%8s%18.10f\n", elmList[i], item->info->mass);
-        printf("%8s  %s\n", elmList[i], pos+1);
     }
     for (int i = 0; i < elmNum; ++i)
     {
+        CastepInfo *item = find_item(table, elmList[i]);
+        char *pos = strrchr(item->info->potential_file, '/');
+        printf("%8s  %s\n", elmList[i], pos+1);
         free(elmList[i]);
     }
+    char *vec = cell->textTable->blockWriter(cell, "LATTICE_CART", cell_latticeVector_writer);
+    printf("%s\n", vec);
+    free(vec);
     free(elmList);
     cell->destroy(cell);
     delete_all(&table);

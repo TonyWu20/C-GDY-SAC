@@ -70,6 +70,7 @@ Cell *createCell(Lattice *lat, CastepInfo *table)
     new->atomSorted = false;
     new->destroy = destroyCell;
     new->vtable = &cellVTable;
+    new->textTable = &cellTextTable;
     return new;
 }
 
@@ -89,8 +90,29 @@ char *cellWriteBlock(Cell *self, char *blockName,
     char *output = malloc(needed + 1);
     snprintf(output, needed + 1, "%%BLOCK %s\n%s%%ENDBLOCK %s\n\n", blockName,
              content, blockName);
+    free(content);
     return output;
 }
+
+char *cell_latticeVector_writer(Cell *self)
+{
+    double a[3], b[3], c[3];
+    Lattice *lat = self->lattice;
+    Matrix *latVectors = lat->lattice_vectors;
+    for (int i =0; i < 3; ++i)
+    {
+        a[i] = latVectors->value[i][0];
+        b[i] = latVectors->value[i][1];
+        c[i] = latVectors->value[i][2];
+    }
+    int bufSize = snprintf(NULL, 0, "%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n", a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2])
+        +1;
+    char *resString = malloc(bufSize);
+    snprintf(resString, bufSize, "%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n", a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
+    return resString;
+}
+
+
 static int atomCmp(const void *a, const void *b)
 {
     Atom *atomA = *(Atom **)a;
