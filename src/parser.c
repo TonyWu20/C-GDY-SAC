@@ -316,12 +316,12 @@ static Atom *parse_atom(char *atom_block)
     pcre2_substring_get_bynumber(match_data, 7, &buffer, &size);
     int atomId = atoi((const char *)buffer);
     // Create new Atom object
-    Atom *new = createAtom(element, label, coord, atomId, treeId);
-    // Parse the element atomic number from ACL Label
     char *labelDup = strdup(label);
     char *token, *rest;
     token = strtok_r(labelDup, " ", &rest);
+    Atom *new = createAtom(element, label, coord, atomId, treeId);
     new->elementId = atoi(token);
+    // Parse the element atomic number from ACL Label
     // Free memory
     pcre2_substring_free(buffer);
     pcre2_match_data_free(match_data);
