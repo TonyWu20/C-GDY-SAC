@@ -169,10 +169,9 @@ void lattice_export_MSI(Lattice *self, char *pathName)
     contentLines[lineSize - 1] = strdup(model_end);
     char *dest = lattice_export_dest(self, pathName);
     createDirectory(dest);
-    int dirLen = strlen(dest);
-    int adsNameLen = strlen(mol->name);
-    char *exportName = malloc(dirLen + adsNameLen + 5);
-    snprintf(exportName, dirLen + adsNameLen + 5, "%s%s.msi", dest, mol->name);
+    int exportNameLen = snprintf(NULL, 0, "%s%s.msi", dest, mol->name)+1;
+    char *exportName = malloc(exportNameLen);
+    snprintf(exportName, exportNameLen, "%s%s.msi", dest, mol->name);
     FILE *exportFile = fopen(exportName, "w");
     for (int i = 0; i < lineSize; ++i)
     {
