@@ -104,6 +104,11 @@ void test_cell()
         printf("%8s%18.10f\n", elmList[i], item->info->mass);
         printf("%8s  %s\n", elmList[i], pos+1);
     }
+    for (int i = 0; i < elmNum; ++i)
+    {
+        free(elmList[i]);
+    }
+    free(elmList);
     cell->destroy(cell);
     delete_all(&table);
 }
