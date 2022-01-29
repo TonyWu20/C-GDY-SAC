@@ -4,6 +4,7 @@ struct _Atom
 {
     char *element;
     char *ACL_Label;
+    int elementId;
     Matrix *coord;
     int atomId;
     int treeId;
