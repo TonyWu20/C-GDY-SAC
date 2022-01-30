@@ -1,8 +1,11 @@
 #include "castep_output.h"
+#include "my_maths.h"
 #include <string.h>
 
+/* CastepInfo hash table related functions */
 void add_item(CastepInfo **table, struct ElmItem *item)
-{ CastepInfo *tableItem = malloc(sizeof(CastepInfo));
+{
+    CastepInfo *tableItem = malloc(sizeof(CastepInfo));
     tableItem->name = item->elm;
     tableItem->info = malloc(sizeof(struct ElmItem));
     memcpy(tableItem->info, item, sizeof(struct ElmItem));
@@ -58,15 +61,17 @@ CastepInfo *initTable()
     }
     return table;
 }
+/* CastepInfo hash table related functions ends */
 
+/* Cell starts */
 Cell *createCell(Lattice *lat, CastepInfo *table)
 {
     Cell *new = malloc(sizeof(Cell));
     new->lattice = lat;
     CastepInfo *tabItem = find_item(table, lat->metal_symbol);
     new->info = tabItem->info; /* Reference to CastepInfo->struct ElmItem *info,
-                               * will be freed when destrokying hashtable
-                               */
+                                * will be freed when destrokying hashtable
+                                */
     new->atomSorted = false;
     new->destroy = destroyCell;
     new->vtable = &cellVTable;
@@ -86,7 +91,8 @@ char *cellWriteBlock(Cell *self, char *blockName,
                      char *(*blockTextWriter)(Cell *self))
 {
     char *content = blockTextWriter(self);
-    int needed = snprintf(NULL, 0, "%%BLOCK %s\n%s%%ENDBLOCK %s\n\n", blockName, content, blockName);
+    int needed = snprintf(NULL, 0, "%%BLOCK %s\n%s%%ENDBLOCK %s\n\n", blockName,
+                          content, blockName);
     char *output = malloc(needed + 1);
     snprintf(output, needed + 1, "%%BLOCK %s\n%s%%ENDBLOCK %s\n\n", blockName,
              content, blockName);
@@ -99,19 +105,96 @@ char *cell_latticeVector_writer(Cell *self)
     double a[3], b[3], c[3];
     Lattice *lat = self->lattice;
     Matrix *latVectors = lat->lattice_vectors;
-    for (int i =0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         a[i] = latVectors->value[i][0];
         b[i] = latVectors->value[i][1];
         c[i] = latVectors->value[i][2];
     }
-    int bufSize = snprintf(NULL, 0, "%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n", a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2])
-        +1;
+    int bufSize =
+        snprintf(NULL, 0,
+                 "%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n%24."
+                 "18f%24.18f%24.18f\n",
+                 a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]) +
+        1;
     char *resString = malloc(bufSize);
-    snprintf(resString, bufSize, "%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n", a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
+    snprintf(
+        resString, bufSize,
+        "%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n",
+        a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
     return resString;
 }
 
+char *cell_fracCoord_writer(Cell *self)
+{
+    if (self->atomSorted == false)
+        self->vtable->sortAtoms(self);
+    Molecule *mol = self->lattice->_mol;
+    Matrix *molCoord = mol->vtable->get_mol_coords(mol);
+    Matrix *xyzToFrac = fractionalCoordMatrix(self->lattice->lattice_vectors);
+    Matrix *fracCoord;
+    multiply_matrices(xyzToFrac, molCoord, &fracCoord);
+    destroy_matrix(xyzToFrac);
+    destroy_matrix(molCoord);
+    free(xyzToFrac);
+    free(molCoord);
+    int lineLens[mol->atomNum];
+    char **lines = malloc(sizeof(char *) * mol->atomNum);
+    int totalLen = 0;
+    for (int i = 0; i < mol->atomNum; ++i)
+    {
+        Atom *cur = mol->atom_arr[i];
+        Matrix *cd = fracCoord;
+        if (i < mol->atomNum - 1)
+        {
+            lineLens[i] = 1 + snprintf(NULL, 0, "%3s%20.16f%20.16f%20.16f\n",
+                                       cur->element, cd->value[0][i],
+                                       cd->value[1][i], cd->value[2][i]);
+            lines[i] = malloc(sizeof(char) * lineLens[i]);
+            snprintf(lines[i], lineLens[i], "%3s%20.16f%20.16f%20.16f\n",
+                     cur->element, cd->value[0][i], cd->value[1][i],
+                     cd->value[2][i]);
+        }
+        else
+        {
+            if (self->info->spin)
+            {
+                lineLens[i] =
+                    1 + snprintf(NULL, 0,
+                                 "%3s%20.16f%20.16f%20.16f SPIN=%14.10f\n",
+                                 cur->element, cd->value[0][i], cd->value[1][i],
+                                 cd->value[2][i], (double)self->info->spin);
+                lines[i] = malloc(sizeof(char) * lineLens[i]);
+                snprintf(lines[i], lineLens[i],
+                         "%3s%20.16f%20.16f%20.16f SPIN=%14.10f\n",
+                         cur->element, cd->value[0][i], cd->value[1][i],
+                         cd->value[2][i], (double)self->info->spin);
+            }
+            else
+            {
+                lineLens[i] =
+                    1 + snprintf(NULL, 0, "%3s%20.16f%20.16f%20.16f\n",
+                                 cur->element, cd->value[0][i], cd->value[1][i],
+                                 cd->value[2][i]);
+                lines[i] = malloc(sizeof(char) * lineLens[i]);
+                snprintf(lines[i], lineLens[i], "%3s%20.16f%20.16f%20.16f\n",
+                         cur->element, cd->value[0][i], cd->value[1][i],
+                         cd->value[2][i]);
+            }
+        }
+        totalLen += lineLens[i];
+    }
+    destroy_matrix(fracCoord);
+    free(fracCoord);
+    char *blockText = calloc(totalLen + 1, sizeof(char));
+    for (int i = 0; i < mol->atomNum; ++i)
+    {
+        strncat(blockText, lines[i], lineLens[i]);
+        free(lines[i]);
+    }
+    free(lines);
+    return blockText;
+}
 
 static int atomCmp(const void *a, const void *b)
 {
@@ -135,7 +218,7 @@ void sortAtomsByElement(Cell *self)
 
 char **sortedElementList(Cell *self, int *returnSize)
 {
-    if (self->atomSorted==false)
+    if (self->atomSorted == false)
         self->vtable->sortAtoms(self);
     Molecule *mol = self->lattice->_mol;
     int size = 1;
@@ -144,16 +227,18 @@ char **sortedElementList(Cell *self, int *returnSize)
     for (int i = 1; i < mol->atomNum; ++i)
     {
         Atom *cur = mol->atom_arr[i];
-        Atom *prev = mol->atom_arr[i-1];
+        Atom *prev = mol->atom_arr[i - 1];
         if (prev->elementId == cur->elementId)
             continue;
         else
         {
             ++size;
-            elementsSet = realloc(elementsSet, sizeof(char *)*(size));
-            elementsSet[size-1] = strdup(cur->element);
+            elementsSet = realloc(elementsSet, sizeof(char *) * (size));
+            elementsSet[size - 1] = strdup(cur->element);
         };
     }
     *returnSize = size;
     return elementsSet;
 }
+
+/* Cell ends */

@@ -2,8 +2,8 @@
 #include "lattice.h"
 #include "molecule.h"
 #include "uthash.h"
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 typedef struct
 {
     const char *name;
@@ -106,9 +106,9 @@ struct Cell_vtable
 
 struct Cell_textFunc
 {
-    char *(*blockWriter)(Cell *self, char *blockName, char *(*blockTextWriter)(Cell *self));
+    char *(*blockWriter)(Cell *self, char *blockName,
+                         char *(*blockTextWriter)(Cell *self));
 };
-
 
 Cell *createCell(Lattice *lat, CastepInfo *table);
 void destroyCell(Cell *self);
@@ -116,6 +116,7 @@ char *cellWriteBlock(Cell *self, char *blockName,
                      char *(*blockTextWriter)(Cell *self));
 
 char *cell_latticeVector_writer(Cell *self);
+char *cell_fracCoord_writer(Cell *self);
 
 /* Sort array of [Atom *] by element atomic number and atom id
  */
@@ -131,5 +132,5 @@ void sortAtomsByElement(Cell *self);
  */
 char **sortedElementList(Cell *self, int *returnSize);
 
-struct Cell_vtable cellVTable = { sortAtomsByElement, sortedElementList };
+struct Cell_vtable cellVTable = {sortAtomsByElement, sortedElementList};
 struct Cell_textFunc cellTextTable = {cellWriteBlock};
