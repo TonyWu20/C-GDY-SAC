@@ -1,87 +1,39 @@
 #include "castep_output.h"
+#include "castep_database.h"
 #include "my_maths.h"
 #include <string.h>
 
-/* CastepInfo hash table related functions */
-void add_item(CastepInfo **table, struct ElmItem *item)
-{
-    CastepInfo *tableItem = malloc(sizeof(CastepInfo));
-    tableItem->name = item->elm;
-    tableItem->info = malloc(sizeof(struct ElmItem));
-    memcpy(tableItem->info, item, sizeof(struct ElmItem));
-    HASH_ADD_KEYPTR(hh, *table, tableItem->name, strlen(tableItem->name),
-                    tableItem);
-}
-
-CastepInfo *find_item(CastepInfo *table, const char *elm)
-{
-    CastepInfo *ret;
-    HASH_FIND_STR(table, elm, ret);
-    return ret;
-}
-
-void delete_all(CastepInfo **table)
-{
-    CastepInfo *currItem, *tmp;
-    HASH_ITER(hh, *table, currItem, tmp)
-    {
-        HASH_DEL(*table, currItem);
-        free(currItem->info);
-        free(currItem);
-    }
-}
-
-CastepInfo *initTable()
-{
-    CastepInfo *table = NULL;
-    for (int i = 0; i < 3; ++i)
-    {
-        struct ElmItem cur = ads[i];
-        add_item(&table, &cur);
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        struct ElmItem cur = metal3D[i];
-        add_item(&table, &cur);
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        struct ElmItem cur = metal4D[i];
-        add_item(&table, &cur);
-    }
-    for (int i = 0; i < 9; ++i)
-    {
-        struct ElmItem cur = metal5D[i];
-        add_item(&table, &cur);
-    }
-    for (int i = 0; i < 15; ++i)
-    {
-        struct ElmItem cur = metalLM[i];
-        add_item(&table, &cur);
-    }
-    return table;
-}
-/* CastepInfo hash table related functions ends */
-
 /* Cell starts */
-Cell *createCell(Lattice *lat, CastepInfo *table)
+Cell *createCell(Lattice *lat, CastepInfo **table)
 {
     Cell *new = malloc(sizeof(Cell));
     new->lattice = lat;
-    CastepInfo *tabItem = find_item(table, lat->metal_symbol);
-    new->info = tabItem->info; /* Reference to CastepInfo->struct ElmItem *info,
-                                * will be freed when destrokying hashtable
-                                */
     new->atomSorted = false;
     new->destroy = destroyCell;
     new->vtable = &cellVTable;
     new->textTable = &cellTextTable;
+    new->infoTab = NULL;
+    cellLoadInfoTab(new, table);
     return new;
+}
+
+void cellLoadInfoTab(Cell *self, CastepInfo **table)
+{
+    int elmNums = 0;
+    char **elmList = self->vtable->sortElmList(self, &elmNums);
+    for (int i = 0; i < elmNums; ++i)
+    {
+        CastepInfo *get = find_item(table, elmList[i]);
+        add_item(&self->infoTab, get->info);
+        free(elmList[i]);
+    }
+    free(elmList);
 }
 
 void destroyCell(Cell *self)
 {
     self->lattice->vtable->destroy(self->lattice); // Destroy lattice here
+    delete_all(&self->infoTab);
     free(self);
 }
 
@@ -157,18 +109,20 @@ char *cell_fracCoord_writer(Cell *self)
         }
         else
         {
-            if (self->info->spin)
+            CastepInfo *metal =
+                find_item(&self->infoTab, self->lattice->metal_symbol);
+            if (metal->info->spin)
             {
                 lineLens[i] =
                     1 + snprintf(NULL, 0,
                                  "%3s%20.16f%20.16f%20.16f SPIN=%14.10f\n",
                                  cur->element, cd->value[0][i], cd->value[1][i],
-                                 cd->value[2][i], (double)self->info->spin);
+                                 cd->value[2][i], (double)metal->info->spin);
                 lines[i] = malloc(sizeof(char) * lineLens[i]);
                 snprintf(lines[i], lineLens[i],
                          "%3s%20.16f%20.16f%20.16f SPIN=%14.10f\n",
                          cur->element, cd->value[0][i], cd->value[1][i],
-                         cd->value[2][i], (double)self->info->spin);
+                         cd->value[2][i], (double)metal->info->spin);
             }
             else
             {
@@ -194,6 +148,64 @@ char *cell_fracCoord_writer(Cell *self)
     }
     free(lines);
     return blockText;
+}
+
+char *cell_kPointsList_writer(Cell *self)
+{
+    char line[] = "   0.0000000000000000   0.0000000000000000   "
+                  "0.0000000000000000       1.000000000000000\n";
+    char *ret = strdup(line);
+    return ret;
+}
+
+char *cell_miscOptions_writer(Cell *self)
+{
+    char line[] = "FIX_ALL_CELL : true\nFIX_COM : false\n";
+    char *ret = strdup(line);
+    return ret;
+}
+
+char *cell_ionicConstraints_writer(Cell *self)
+{
+    char *ret = strdup("");
+    return ret;
+}
+
+char *cell_externalPressure_writer(Cell *self)
+{
+    char line[] = "    0.0000000000    0.0000000000    0.0000000000\n          "
+                  "          0.0000000000    0.0000000000\n                    "
+                  "                0.0000000000\n";
+    char *ret = strdup(line);
+    return ret;
+}
+
+char *cell_speciesMass_writer(Cell *self)
+{
+    int elmNums = 0;
+    char **elmList = sortedElementList(self, &elmNums);
+    int lineLens[elmNums];
+    char **tmpLines = malloc(sizeof(char *) * elmNums);
+    int totalLen = 0;
+    for (int i = 0; i < elmNums; ++i)
+    {
+        const char format[] = "%8s%18.10f\n";
+        CastepInfo *item = find_item(&self->infoTab, elmList[i]);
+        lineLens[i] =
+            1 + snprintf(NULL, 0, format, elmList[i], item->info->mass);
+        tmpLines[i] = malloc(lineLens[i]);
+        snprintf(tmpLines[i], lineLens[i], format, elmList[i],
+                 item->info->mass);
+        totalLen += lineLens[i];
+    }
+    char *ret = calloc(totalLen + 1, sizeof(char));
+    for (int i = 0; i < elmNums; ++i)
+    {
+        strncat(ret, tmpLines[i], lineLens[i]);
+        free(tmpLines[i]);
+    }
+    free(tmpLines);
+    return ret;
 }
 
 static int atomCmp(const void *a, const void *b)

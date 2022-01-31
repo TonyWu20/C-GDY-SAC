@@ -203,6 +203,30 @@ src/atom.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/atom.c.s
 .PHONY : src/atom.c.s
 
+src/castep_database.o: src/castep_database.c.o
+.PHONY : src/castep_database.o
+
+# target to build an object file
+src/castep_database.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_database.c.o
+.PHONY : src/castep_database.c.o
+
+src/castep_database.i: src/castep_database.c.i
+.PHONY : src/castep_database.i
+
+# target to preprocess a source file
+src/castep_database.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_database.c.i
+.PHONY : src/castep_database.c.i
+
+src/castep_database.s: src/castep_database.c.s
+.PHONY : src/castep_database.s
+
+# target to generate assembly for a file
+src/castep_database.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_database.c.s
+.PHONY : src/castep_database.c.s
+
 src/castep_output.o: src/castep_output.c.o
 .PHONY : src/castep_output.o
 
@@ -388,6 +412,9 @@ help:
 	@echo "... src/atom.o"
 	@echo "... src/atom.i"
 	@echo "... src/atom.s"
+	@echo "... src/castep_database.o"
+	@echo "... src/castep_database.i"
+	@echo "... src/castep_database.s"
 	@echo "... src/castep_output.o"
 	@echo "... src/castep_output.i"
 	@echo "... src/castep_output.s"
