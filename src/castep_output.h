@@ -35,20 +35,47 @@ struct Cell_textFunc
                          char *(*blockTextWriter)(Cell *self));
 };
 
+/* Initialize a Cell object and construct a new hashtable for the existing
+ * elements in the cell
+ * Will automatically sort the atoms in atomic number (1st) and atom Id
+ * (2nd) order
+ */
 Cell *createCell(Lattice *lat, CastepInfo *table);
+/* Create a hashtable for the exisiting elements in cell
+ */
 void cellLoadInfoTab(Cell *self, CastepInfo *table);
+/* Destroy and free memory of Cell object */
 void destroyCell(Cell *self);
+/* General method to produce BLOCK_XX in .cell
+ */
 char *cellWriteBlock(Cell *self, char *blockName,
                      char *(*blockTextWriter)(Cell *self));
 
+void cellExport(Cell *self, bool DOS);
+/* Methods to fill BLOCK_XX
+ */
+
+/* LATTICE_CART */
 char *cell_latticeVector_writer(Cell *self);
+/* POSITIONS_FRAC */
 char *cell_fracCoord_writer(Cell *self);
+
+/* BS_KPOINTS_LIST or KPOINTS_LIST */
 char *cell_kPointsList_writer(Cell *self);
+
+/* Non BLOCK wrapped options
+ * FIX_ALL_CELL and FIX_COM
+ */
 char *cell_miscOptions_writer(Cell *self);
+/* IONIC_CONSTRAINTS (empty) */
 char *cell_ionicConstraints_writer(Cell *self);
+/* EXTERNAL_PRESSURE */
 char *cell_externalPressure_writer(Cell *self);
+/* SPECIES_MASS */
 char *cell_speciesMass_writer(Cell *self);
+/* SPECIES_POT */
 char *cell_speciesPot_writer(Cell *self);
+/* SPECIES_LCAO_STATES */
 char *cell_speciesLCAOstates_writer(Cell *self);
 
 /* Sort array of [Atom *] by element atomic number and atom id

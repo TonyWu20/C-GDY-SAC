@@ -217,15 +217,42 @@ char *cell_speciesPot_writer(Cell *self)
     int lineLens[self->elmNums];
     char **tmpLines = malloc(sizeof(char *) * self->elmNums);
     int totalLen = 0;
+    const char format[] = "%8s  %s\n";
     for (int i = 0; i < self->elmNums; ++i)
     {
-        const char format[] = "%8s  %s\n";
         CastepInfo *item = find_item(self->infoTab, self->elmLists[i]);
-        lineLens[i] = 1 + snprintf(NULL, 0, format, self->elmLists[i],
-                                   item->info->potential_file);
+        char *potential_stem = strrchr(item->info->potential_file, '/') + 1;
+        lineLens[i] =
+            1 + snprintf(NULL, 0, format, self->elmLists[i], potential_stem);
         tmpLines[i] = malloc(lineLens[i]);
         snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
-                 item->info->potential_file);
+                 potential_stem);
+        totalLen += lineLens[i];
+    }
+    char *ret = calloc(totalLen + 1, sizeof(char));
+    for (int i = 0; i < self->elmNums; ++i)
+    {
+        strncat(ret, tmpLines[i], lineLens[i]);
+        free(tmpLines[i]);
+    }
+    free(tmpLines);
+    return ret;
+}
+
+char *cell_speciesLCAOstates_writer(Cell *self)
+{
+    int lineLens[self->elmNums];
+    char **tmpLines = malloc(sizeof(char *) * self->elmNums);
+    int totalLen = 0;
+    const char format[] = "%8s%10d\n";
+    for (int i = 0; i < self->elmNums; ++i)
+    {
+        CastepInfo *item = find_item(self->infoTab, self->elmLists[i]);
+        lineLens[i] =
+            1 + snprintf(NULL, 0, format, self->elmLists[i], item->info->LCAO);
+        tmpLines[i] = malloc(lineLens[i]);
+        snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
+                 item->info->LCAO);
         totalLen += lineLens[i];
     }
     char *ret = calloc(totalLen + 1, sizeof(char));

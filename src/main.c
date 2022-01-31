@@ -101,10 +101,14 @@ void test_cell()
                                               cell_speciesMass_writer);
     char *pot = cell->textTable->blockWriter(cell, "SPECIES_POT",
                                              cell_speciesPot_writer);
+    char *lcao = cell->textTable->blockWriter(cell, "SPECIES_LCAO_STATES",
+                                              cell_speciesLCAOstates_writer);
     printf("%s\n", mass);
     printf("%s\n", pot);
+    printf("%s\n", lcao);
     free(mass);
     free(pot);
+    free(lcao);
     /* free(vec); */
     cell->destroy(cell);
     delete_all(&table);
