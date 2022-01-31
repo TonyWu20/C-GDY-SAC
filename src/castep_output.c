@@ -197,6 +197,7 @@ char *cell_speciesMass_writer(Cell *self)
         snprintf(tmpLines[i], lineLens[i], format, elmList[i],
                  item->info->mass);
         totalLen += lineLens[i];
+        free(elmList[i]);
     }
     char *ret = calloc(totalLen + 1, sizeof(char));
     for (int i = 0; i < elmNums; ++i)
@@ -204,6 +205,7 @@ char *cell_speciesMass_writer(Cell *self)
         strncat(ret, tmpLines[i], lineLens[i]);
         free(tmpLines[i]);
     }
+    free(elmList);
     free(tmpLines);
     return ret;
 }
