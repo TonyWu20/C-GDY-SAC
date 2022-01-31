@@ -71,7 +71,7 @@ void test_table()
 {
     CastepInfo *table = initTable();
     CastepInfo *item;
-    item = find_item(&table, "Sc");
+    item = find_item(table, "Sc");
     printf("%s:\n\tLCAO:%d\n\tMass:%.12f\n\tPot:%s\n\tSpin:%d\n",
            item->info->elm, item->info->LCAO, item->info->mass,
            item->info->potential_file, item->info->spin);
@@ -92,22 +92,7 @@ void test_cell()
     t->vtable->destroy(t);
     ads->ads_vtable->destroy(ads);
     CastepInfo *table = initTable();
-    Cell *cell = createCell(result, &table);
-    cell->vtable->sortAtoms(cell);
-    int elmNum = 0;
-    char **elmList = cell->vtable->sortElmList(cell, &elmNum);
-    for (int i = 0; i < elmNum; ++i)
-    {
-        CastepInfo *item = find_item(&table, elmList[i]);
-        printf("%8s%18.10f\n", elmList[i], item->info->mass);
-    }
-    for (int i = 0; i < elmNum; ++i)
-    {
-        CastepInfo *item = find_item(&table, elmList[i]);
-        char *pos = strrchr(item->info->potential_file, '/');
-        printf("%8s  %s\n", elmList[i], pos + 1);
-        free(elmList[i]);
-    }
+    Cell *cell = createCell(result, table);
     char *vec = cell->textTable->blockWriter(cell, "POSITIONS_FRAC",
                                              cell_fracCoord_writer);
     printf("%s\n", vec);
@@ -117,7 +102,6 @@ void test_cell()
     printf("%s\n", mass);
     free(mass);
     free(vec);
-    free(elmList);
     cell->destroy(cell);
     delete_all(&table);
 }

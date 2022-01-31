@@ -1,4 +1,5 @@
 #include "castep_database.h"
+#include "stdio.h"
 
 struct ElmItem ads[] = {{"C", 2, 12.0109996796, "./Potentials/C_00PBE.usp", 0},
                         {"H", 1, 1.0080000162, "./Potentials/H_00PBE.usp", 0},
@@ -68,10 +69,14 @@ void add_item(CastepInfo **table, struct ElmItem *item)
                     tableItem);
 }
 
-CastepInfo *find_item(CastepInfo **table, const char *elm)
+CastepInfo *find_item(CastepInfo *table, const char *elm)
 {
     CastepInfo *ret;
-    HASH_FIND_STR(*table, elm, ret);
+    HASH_FIND_STR(table, elm, ret);
+    if (ret == NULL)
+    {
+        printf("Cannot find item with key %s\n", elm);
+    }
     return ret;
 }
 

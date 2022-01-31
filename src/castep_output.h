@@ -16,6 +16,8 @@ struct Cell
     Lattice *lattice;
     CastepInfo *infoTab;
     bool atomSorted;
+    int elmNums;
+    char **elmLists;
     struct Cell_vtable *vtable;
     struct Cell_textFunc *textTable;
     void (*destroy)(Cell *self);
@@ -33,8 +35,8 @@ struct Cell_textFunc
                          char *(*blockTextWriter)(Cell *self));
 };
 
-Cell *createCell(Lattice *lat, CastepInfo **table);
-void cellLoadInfoTab(Cell *self, CastepInfo **table);
+Cell *createCell(Lattice *lat, CastepInfo *table);
+void cellLoadInfoTab(Cell *self, CastepInfo *table);
 void destroyCell(Cell *self);
 char *cellWriteBlock(Cell *self, char *blockName,
                      char *(*blockTextWriter)(Cell *self));

@@ -17,7 +17,7 @@ struct ElmItem
 };
 void add_item(CastepInfo **table, struct ElmItem *item);
 
-CastepInfo *find_item(CastepInfo **table, const char *elm);
+CastepInfo *find_item(CastepInfo *table, const char *elm);
 
 void delete_all(CastepInfo **table);
 

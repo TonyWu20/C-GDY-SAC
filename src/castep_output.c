@@ -4,7 +4,7 @@
 #include <string.h>
 
 /* Cell starts */
-Cell *createCell(Lattice *lat, CastepInfo **table)
+Cell *createCell(Lattice *lat, CastepInfo *table)
 {
     Cell *new = malloc(sizeof(Cell));
     new->lattice = lat;
@@ -14,26 +14,28 @@ Cell *createCell(Lattice *lat, CastepInfo **table)
     new->textTable = &cellTextTable;
     new->infoTab = NULL;
     cellLoadInfoTab(new, table);
+    new->elmNums = 0;
+    new->elmLists = new->vtable->sortElmList(new, &new->elmNums);
     return new;
 }
 
-void cellLoadInfoTab(Cell *self, CastepInfo **table)
+void cellLoadInfoTab(Cell *self, CastepInfo *table)
 {
     int elmNums = 0;
-    char **elmList = self->vtable->sortElmList(self, &elmNums);
     for (int i = 0; i < elmNums; ++i)
     {
-        CastepInfo *get = find_item(table, elmList[i]);
+        CastepInfo *get = find_item(table, self->elmLists[i]);
         add_item(&self->infoTab, get->info);
-        free(elmList[i]);
     }
-    free(elmList);
 }
 
 void destroyCell(Cell *self)
 {
     self->lattice->vtable->destroy(self->lattice); // Destroy lattice here
     delete_all(&self->infoTab);
+    for (int i = 0; i < self->elmNums; ++i)
+        free(self->elmLists[i]);
+    free(self->elmLists);
     free(self);
 }
 
@@ -110,7 +112,7 @@ char *cell_fracCoord_writer(Cell *self)
         else
         {
             CastepInfo *metal =
-                find_item(&self->infoTab, self->lattice->metal_symbol);
+                find_item(self->infoTab, self->lattice->metal_symbol);
             if (metal->info->spin)
             {
                 lineLens[i] =
@@ -182,30 +184,52 @@ char *cell_externalPressure_writer(Cell *self)
 
 char *cell_speciesMass_writer(Cell *self)
 {
-    int elmNums = 0;
-    char **elmList = sortedElementList(self, &elmNums);
-    int lineLens[elmNums];
-    char **tmpLines = malloc(sizeof(char *) * elmNums);
+    int lineLens[self->elmNums];
+    char **tmpLines = malloc(sizeof(char *) * self->elmNums);
     int totalLen = 0;
-    for (int i = 0; i < elmNums; ++i)
+    for (int i = 0; i < self->elmNums; ++i)
     {
         const char format[] = "%8s%18.10f\n";
-        CastepInfo *item = find_item(&self->infoTab, elmList[i]);
+        CastepInfo *item = find_item(self->infoTab, self->elmLists[i]);
         lineLens[i] =
-            1 + snprintf(NULL, 0, format, elmList[i], item->info->mass);
+            1 + snprintf(NULL, 0, format, self->elmLists[i], item->info->mass);
         tmpLines[i] = malloc(lineLens[i]);
-        snprintf(tmpLines[i], lineLens[i], format, elmList[i],
+        snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
                  item->info->mass);
         totalLen += lineLens[i];
-        free(elmList[i]);
     }
     char *ret = calloc(totalLen + 1, sizeof(char));
-    for (int i = 0; i < elmNums; ++i)
+    for (int i = 0; i < self->elmNums; ++i)
     {
         strncat(ret, tmpLines[i], lineLens[i]);
         free(tmpLines[i]);
     }
-    free(elmList);
+    free(tmpLines);
+    return ret;
+}
+
+char *cell_speciesPot_writer(Cell *self)
+{
+    int lineLens[self->elmNums];
+    char **tmpLines = malloc(sizeof(char *) * self->elmNums);
+    int totalLen = 0;
+    for (int i = 0; i < self->elmNums; ++i)
+    {
+        const char format[] = "%8s  %s\n";
+        CastepInfo *item = find_item(self->infoTab, self->elmLists[i]);
+        lineLens[i] = 1 + snprintf(NULL, 0, format, self->elmLists[i],
+                                   item->info->potential_file);
+        tmpLines[i] = malloc(lineLens[i]);
+        snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
+                 item->info->potential_file);
+        totalLen += lineLens[i];
+    }
+    char *ret = calloc(totalLen + 1, sizeof(char));
+    for (int i = 0; i < self->elmNums; ++i)
+    {
+        strncat(ret, tmpLines[i], lineLens[i]);
+        free(tmpLines[i]);
+    }
     free(tmpLines);
     return ret;
 }
