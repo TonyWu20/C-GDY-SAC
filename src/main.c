@@ -93,15 +93,19 @@ void test_cell()
     ads->ads_vtable->destroy(ads);
     CastepInfo *table = initTable();
     Cell *cell = createCell(result, table);
-    char *vec = cell->textTable->blockWriter(cell, "POSITIONS_FRAC",
-                                             cell_fracCoord_writer);
-    printf("%s\n", vec);
+    /* char *vec = cell->textTable->blockWriter(cell, "POSITIONS_FRAC", */
+    /*                                          cell_fracCoord_writer); */
+    /* printf("%s\n", vec); */
     printf("%s\n", cell->lattice->_mol->name);
     char *mass = cell->textTable->blockWriter(cell, "SPECIES_MASS",
                                               cell_speciesMass_writer);
+    char *pot = cell->textTable->blockWriter(cell, "SPECIES_POT",
+                                             cell_speciesPot_writer);
     printf("%s\n", mass);
+    printf("%s\n", pot);
     free(mass);
-    free(vec);
+    free(pot);
+    /* free(vec); */
     cell->destroy(cell);
     delete_all(&table);
 }

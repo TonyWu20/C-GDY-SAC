@@ -12,17 +12,21 @@ Cell *createCell(Lattice *lat, CastepInfo *table)
     new->destroy = destroyCell;
     new->vtable = &cellVTable;
     new->textTable = &cellTextTable;
+    int elmNums = 0;
+    new->elmLists = new->vtable->sortElmList(new, &elmNums);
+    new->elmNums = elmNums;
     new->infoTab = NULL;
     cellLoadInfoTab(new, table);
-    new->elmNums = 0;
-    new->elmLists = new->vtable->sortElmList(new, &new->elmNums);
+    if (!new->infoTab)
+    {
+        printf("infoTab loading failed\n");
+    }
     return new;
 }
 
 void cellLoadInfoTab(Cell *self, CastepInfo *table)
 {
-    int elmNums = 0;
-    for (int i = 0; i < elmNums; ++i)
+    for (int i = 0; i < self->elmNums; ++i)
     {
         CastepInfo *get = find_item(table, self->elmLists[i]);
         add_item(&self->infoTab, get->info);
