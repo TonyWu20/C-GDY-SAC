@@ -227,29 +227,29 @@ src/castep_database.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_database.c.s
 .PHONY : src/castep_database.c.s
 
-src/castep_output.o: src/castep_output.c.o
-.PHONY : src/castep_output.o
+src/cell.o: src/cell.c.o
+.PHONY : src/cell.o
 
 # target to build an object file
-src/castep_output.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_output.c.o
-.PHONY : src/castep_output.c.o
+src/cell.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/cell.c.o
+.PHONY : src/cell.c.o
 
-src/castep_output.i: src/castep_output.c.i
-.PHONY : src/castep_output.i
+src/cell.i: src/cell.c.i
+.PHONY : src/cell.i
 
 # target to preprocess a source file
-src/castep_output.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_output.c.i
-.PHONY : src/castep_output.c.i
+src/cell.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/cell.c.i
+.PHONY : src/cell.c.i
 
-src/castep_output.s: src/castep_output.c.s
-.PHONY : src/castep_output.s
+src/cell.s: src/cell.c.s
+.PHONY : src/cell.s
 
 # target to generate assembly for a file
-src/castep_output.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_output.c.s
-.PHONY : src/castep_output.c.s
+src/cell.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/cell.c.s
+.PHONY : src/cell.c.s
 
 src/lattice.o: src/lattice.c.o
 .PHONY : src/lattice.o
@@ -415,9 +415,9 @@ help:
 	@echo "... src/castep_database.o"
 	@echo "... src/castep_database.i"
 	@echo "... src/castep_database.s"
-	@echo "... src/castep_output.o"
-	@echo "... src/castep_output.i"
-	@echo "... src/castep_output.s"
+	@echo "... src/cell.o"
+	@echo "... src/cell.i"
+	@echo "... src/cell.s"
 	@echo "... src/lattice.o"
 	@echo "... src/lattice.i"
 	@echo "... src/lattice.s"

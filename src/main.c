@@ -1,7 +1,7 @@
 #include "assemble.h"
 #include "atom.h"
 #include "castep_database.h"
-#include "castep_output.h"
+#include "cell.h"
 #include "matrix.h"
 #include "misc.h"
 #include "molecule.h"

@@ -1,4 +1,4 @@
-#include "castep_output.h"
+#include "cell.h"
 #include "castep_database.h"
 #include "misc.h"
 #include "my_maths.h"
