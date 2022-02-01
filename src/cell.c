@@ -4,6 +4,10 @@
 #include "my_maths.h"
 #include <string.h>
 
+struct Cell_vtable cellVTable = {sortAtomsByElement, sortedElementList,
+                                 cellExport};
+struct Cell_textFunc cellTextTable = {cellWriteBlock};
+
 /* Cell starts */
 Cell *createCell(Lattice *lat, CastepInfo *table)
 {
@@ -274,15 +278,19 @@ char *cell_speciesLCAOstates_writer(Cell *self)
 
 void cellExport(Cell *self, bool DOS)
 {
+    /* Filepath processing */
     char *stemName = self->lattice->_mol->name;
     char *exportDir = self->lattice->vtable->exportDir(self->lattice,
                                                        self->lattice->pathName);
+    /* dest dir with "_opt" suffix */
     int subDirLen = 1 + snprintf(NULL, 0, "%s%s_opt/", exportDir, stemName);
     char *subDir = malloc(subDirLen);
     snprintf(subDir, subDirLen, "%s%s_opt/", exportDir, stemName);
     free(exportDir);
+    /* Create directory routine in misc.h */
     createDirectory(subDir);
     char *fileName;
+    /* Differ for DOS or not */
     if (DOS == false)
     {
         int fileNameLen = 1 + snprintf(NULL, 0, "%s%s.cell", subDir, stemName);
@@ -296,7 +304,11 @@ void cellExport(Cell *self, bool DOS)
         fileName = malloc(fileNameLen);
         snprintf(fileName, fileNameLen, "%s%s_DOS.cell", subDir, stemName);
     }
+    /* Release malloc'd memory subDir */
+    free(subDir);
+    /* Ready to write */
     FILE *writeTo = fopen(fileName, "w");
+    /* Get,Write and Free strings for each section */
     char *latVec = self->textTable->blockWriter(self, "LATTICE_CART",
                                                 cell_latticeVector_writer);
     fputs(latVec, writeTo);
@@ -343,6 +355,7 @@ void cellExport(Cell *self, bool DOS)
                                                 cell_speciesLCAOstates_writer);
     fputs(spLCAO, writeTo);
     free(spLCAO);
+    /* Close file release pointer */
     fclose(writeTo);
 }
 

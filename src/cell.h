@@ -23,6 +23,7 @@ struct Cell
     void (*destroy)(Cell *self);
 };
 
+/* Virtual functions table for Cell */
 struct Cell_vtable
 {
     void (*sortAtoms)(Cell *self);
@@ -30,6 +31,7 @@ struct Cell_vtable
     void (*exportCell)(Cell *self, bool DOS);
 };
 
+/* Virtual functions table for dealing with text output for Cell */
 struct Cell_textFunc
 {
     char *(*blockWriter)(Cell *self, char *blockName,
@@ -94,7 +96,3 @@ void sortAtomsByElement(Cell *self);
  * A malloced array of pointers to strings
  */
 char **sortedElementList(Cell *self, int *returnSize);
-
-struct Cell_vtable cellVTable = {sortAtomsByElement, sortedElementList,
-                                 cellExport};
-struct Cell_textFunc cellTextTable = {cellWriteBlock};
