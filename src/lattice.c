@@ -14,6 +14,7 @@ struct Lattice_vtable lat_vtable = {lattice_get_carbon_chain_vector,
                                     lattice_get_carbon_metal_vector,
                                     lattice_attach_molecule,
                                     lattice_rotate_to_standard_orientation,
+                                    lattice_export_dest,
                                     lattice_export_MSI,
                                     destroyLattice};
 Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
@@ -25,6 +26,7 @@ Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
     new->metal_site_id = 73;
     new->vtable = &lat_vtable;
     new->attached_adsName = NULL;
+    new->pathName = NULL;
     lattice_metal_info(new);
     new->vtable->rotate_to_standard_orientation(new);
     return new;
@@ -38,6 +40,7 @@ void destroyLattice(Lattice *self)
     free(self->lattice_vectors);
     free(self->metal_family);
     free(self->attached_adsName);
+    free(self->pathName);
     free(self);
 }
 
@@ -54,7 +57,8 @@ Matrix *lattice_get_carbon_metal_vector(Lattice *self, int cId)
 
 /* Attach adsorbate to the lattice and update their atomId folloing the lattice
  * atoms */
-Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName)
+Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName,
+                                 char *pathName)
 {
     Molecule *lat_mol = self->_mol, *ads_mol = ads->_mol;
     Atom **cur_arr = lat_mol->atom_arr;
@@ -80,6 +84,7 @@ Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName)
     copy_matrix(self->lattice_vectors, &lattice_vectors);
     Lattice *new = createLattice(resMol, lattice_vectors);
     new->attached_adsName = strdup(ads->_mol->name);
+    new->pathName = strdup(pathName);
     return new;
 }
 
@@ -169,7 +174,7 @@ void lattice_export_MSI(Lattice *self, char *pathName)
     contentLines[lineSize - 1] = strdup(model_end);
     char *dest = lattice_export_dest(self, pathName);
     createDirectory(dest);
-    int exportNameLen = snprintf(NULL, 0, "%s%s.msi", dest, mol->name)+1;
+    int exportNameLen = snprintf(NULL, 0, "%s%s.msi", dest, mol->name) + 1;
     char *exportName = malloc(exportNameLen);
     snprintf(exportName, exportNameLen, "%s%s.msi", dest, mol->name);
     FILE *exportFile = fopen(exportName, "w");
@@ -211,17 +216,18 @@ char *lattice_export_dest(Lattice *self, char *pathName)
 {
     char *metal_family = self->metal_family;
     char *metal_symbol = self->metal_symbol;
+
     int destLen =
-        19 + strlen(pathName) + strlen(metal_family) + strlen(metal_symbol) + 3;
-    if (self->attached_adsName != NULL)
-        destLen += strlen(self->attached_adsName);
-    else
+        1 + snprintf(NULL, 0, "./C2_CO2RR_models/%s/%s/%s/%s/", pathName,
+                     metal_family, metal_symbol, self->attached_adsName);
+
+    if (self->attached_adsName == NULL)
     {
         printf("No attached adsorbate!\n");
         return 0;
     }
-    char *buffer = malloc(destLen + 1);
-    snprintf(buffer, destLen + 1, "./C2_CO2RR_models/%s/%s/%s/%s/", pathName,
+    char *buffer = malloc(destLen);
+    snprintf(buffer, destLen, "./C2_CO2RR_models/%s/%s/%s/%s/", pathName,
              metal_family, metal_symbol, self->attached_adsName);
     return buffer;
 }
