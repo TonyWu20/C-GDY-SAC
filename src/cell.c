@@ -308,6 +308,7 @@ void cellExport(Cell *self, bool DOS)
     free(subDir);
     /* Ready to write */
     FILE *writeTo = fopen(fileName, "w");
+    free(fileName);
     /* Get,Write and Free strings for each section */
     char *latVec = self->textTable->blockWriter(self, "LATTICE_CART",
                                                 cell_latticeVector_writer);
