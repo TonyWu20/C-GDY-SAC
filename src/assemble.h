@@ -15,5 +15,5 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to);
 /* Move the adsorbate to the target position (carbon chain ver)
  * The carbonId 1 and 2 must be the adjacent carbon atoms
  */
-Lattice *Add_mol_to_lattice(Lattice *, Adsorbate *, int, int);
+Lattice *Add_mol_to_lattice(Lattice *, Adsorbate *, int, int, char *pathName);
 /* Move the adsorbate to the carbon metal position */

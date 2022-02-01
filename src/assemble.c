@@ -64,7 +64,8 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to)
     return 0;
 }
 
-Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2)
+Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2,
+                            char *pathName)
 {
     // Init the adsorbate to be aligned with the carbon chain
     if (c2 != NULLSITE || ads->coordAtomNum == 2)
@@ -94,7 +95,8 @@ Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2)
     free(center_coords_of_carbon_sites);
     free(center_coords_of_cd_sites);
     char *newName = append_mol_name(lat, ads, c1, c2);
-    Lattice *newModel = lat->vtable->attach_molecule(lat, ads, newName);
+    Lattice *newModel =
+        lat->vtable->attach_molecule(lat, ads, newName, pathName);
     free(newName);
     return newModel;
 }

@@ -1,5 +1,6 @@
 #include "castep_output.h"
 #include "castep_database.h"
+#include "misc.h"
 #include "my_maths.h"
 #include <string.h>
 
@@ -176,6 +177,12 @@ char *cell_ionicConstraints_writer(Cell *self)
     char *ret = strdup("");
     return ret;
 }
+char *cell_externalEfield_writer(Cell *self)
+{
+    char text[] = "    0.0000000000     0.0000000000     0.0000000000\n";
+    char *ret = strdup(text);
+    return ret;
+}
 
 char *cell_externalPressure_writer(Cell *self)
 {
@@ -263,6 +270,80 @@ char *cell_speciesLCAOstates_writer(Cell *self)
     }
     free(tmpLines);
     return ret;
+}
+
+void cellExport(Cell *self, bool DOS)
+{
+    char *stemName = self->lattice->_mol->name;
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
+                                                       self->lattice->pathName);
+    int subDirLen = 1 + snprintf(NULL, 0, "%s%s_opt/", exportDir, stemName);
+    char *subDir = malloc(subDirLen);
+    snprintf(subDir, subDirLen, "%s%s_opt/", exportDir, stemName);
+    free(exportDir);
+    createDirectory(subDir);
+    char *fileName;
+    if (DOS == false)
+    {
+        int fileNameLen = 1 + snprintf(NULL, 0, "%s%s.cell", subDir, stemName);
+        fileName = malloc(fileNameLen);
+        snprintf(fileName, fileNameLen, "%s%s.cell", subDir, stemName);
+    }
+    else
+    {
+        int fileNameLen =
+            1 + snprintf(NULL, 0, "%s%s_DOS.cell", subDir, stemName);
+        fileName = malloc(fileNameLen);
+        snprintf(fileName, fileNameLen, "%s%s_DOS.cell", subDir, stemName);
+    }
+    FILE *writeTo = fopen(fileName, "w");
+    char *latVec = self->textTable->blockWriter(self, "LATTICE_CART",
+                                                cell_latticeVector_writer);
+    fputs(latVec, writeTo);
+    free(latVec);
+    char *fracCoord = self->textTable->blockWriter(self, "POSITIONS_FRAC",
+                                                   cell_fracCoord_writer);
+    fputs(fracCoord, writeTo);
+    free(fracCoord);
+    if (DOS)
+    {
+        char *BS_kPoints = self->textTable->blockWriter(
+            self, "BS_KPOINTS_LIST", cell_kPointsList_writer);
+        fputs(BS_kPoints, writeTo);
+        free(BS_kPoints);
+    }
+    char *kPoints = self->textTable->blockWriter(self, "KPOINTS_LIST",
+                                                 cell_kPointsList_writer);
+    fputs(kPoints, writeTo);
+    free(kPoints);
+    char *misc = cell_miscOptions_writer(self);
+    fputs(misc, writeTo);
+    free(misc);
+    char *ionicConstraint = self->textTable->blockWriter(
+        self, "IONIC_CONSTRAINTS", cell_ionicConstraints_writer);
+    fputs(ionicConstraint, writeTo);
+    free(ionicConstraint);
+    char *efield = self->textTable->blockWriter(self, "EXTERNAL_EFIELD",
+                                                cell_externalEfield_writer);
+    fputs(efield, writeTo);
+    free(efield);
+    char *ePressure = self->textTable->blockWriter(
+        self, "EXTERNAL_PRESSURE", cell_externalPressure_writer);
+    fputs(ePressure, writeTo);
+    free(ePressure);
+    char *spMass = self->textTable->blockWriter(self, "SPECIES_MASS",
+                                                cell_speciesMass_writer);
+    fputs(spMass, writeTo);
+    free(spMass);
+    char *spPot = self->textTable->blockWriter(self, "SPECIES_POT",
+                                               cell_speciesPot_writer);
+    fputs(spPot, writeTo);
+    free(spPot);
+    char *spLCAO = self->textTable->blockWriter(self, "SPECIES_LCAO_STATES",
+                                                cell_speciesLCAOstates_writer);
+    fputs(spLCAO, writeTo);
+    free(spLCAO);
+    fclose(writeTo);
 }
 
 static int atomCmp(const void *a, const void *b)

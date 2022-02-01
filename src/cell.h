@@ -27,6 +27,7 @@ struct Cell_vtable
 {
     void (*sortAtoms)(Cell *self);
     char **(*sortElmList)(Cell *self, int *returnSize);
+    void (*exportCell)(Cell *self, bool DOS);
 };
 
 struct Cell_textFunc
@@ -69,6 +70,8 @@ char *cell_kPointsList_writer(Cell *self);
 char *cell_miscOptions_writer(Cell *self);
 /* IONIC_CONSTRAINTS (empty) */
 char *cell_ionicConstraints_writer(Cell *self);
+/* EXTERNAL_EFIELD */
+char *cell_externalEfield_writer(Cell *self);
 /* EXTERNAL_PRESSURE */
 char *cell_externalPressure_writer(Cell *self);
 /* SPECIES_MASS */
@@ -92,5 +95,6 @@ void sortAtomsByElement(Cell *self);
  */
 char **sortedElementList(Cell *self, int *returnSize);
 
-struct Cell_vtable cellVTable = {sortAtomsByElement, sortedElementList};
+struct Cell_vtable cellVTable = {sortAtomsByElement, sortedElementList,
+                                 cellExport};
 struct Cell_textFunc cellTextTable = {cellWriteBlock};

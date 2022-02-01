@@ -55,7 +55,7 @@ void allocateTasks(char *pathName)
         {
             Lattice *result =
                 Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[k][0],
-                                   ads->taskLists->tasks[k][1]);
+                                   ads->taskLists->tasks[k][1], pathName);
             result->vtable->export_msi(result, pathName);
             double percentage = (double)(i + 1) / (double)total_tasks;
             printProgress(i + 1, total_tasks, percentage, result->_mol->name);
