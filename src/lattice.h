@@ -18,6 +18,7 @@ struct _Lattice
     char *metal_family;
     char *metal_symbol;
     char *attached_adsName;
+    char *pathName;
     struct Lattice_vtable *vtable;
 };
 
@@ -27,10 +28,12 @@ struct Lattice_vtable
 {
     Matrix *(*get_carbon_chain_vector)(Lattice *self);
     Matrix *(*get_carbon_metal_vector)(Lattice *self, int);
-    Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads, char *newName);
+    Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads, char *newName,
+                                char *pathName);
     /* Rotate lattice to standard orientation "C along Z, A in XZ plane"
      */
     void (*rotate_to_standard_orientation)(Lattice *self);
+    char *(*exportDir)(Lattice *self, char *pathName);
     void (*export_msi)(Lattice *self, char *pathName);
     void (*destroy)(Lattice *self);
 };
@@ -72,7 +75,8 @@ Matrix *lattice_get_carbon_metal_vector(Lattice *self, int);
  * of the atoms in mol will be updated to follow the order in current Lattice.
  * Returns a new Lattice struct pointer for future exports
  */
-Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName);
+Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName,
+                                 char *pathName);
 
 /* Rotate lattice to standard orientation "C along Z, A in XZ plane"
  */

@@ -24,8 +24,9 @@ void test_add(char *latFile, char *latName, char *adsFile, char *adsName,
 {
     Lattice *lat = load_lat(latFile, latName);
     Adsorbate *ads = parse_molecule_from_file(adsFile, adsName);
-    Lattice *result = Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[0][0],
-                                         ads->taskLists->tasks[0][1]);
+    Lattice *result =
+        Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[0][0],
+                           ads->taskLists->tasks[0][1], "ethylene");
     printf("%s\n", result->_mol->name);
     result->vtable->export_msi(result, "ethylene");
     result->vtable->destroy(result);
@@ -43,8 +44,9 @@ void test_fracCoordMat()
     Lattice *t = load_lat("./SAC_GDY_V.msi", "SAC_GDY_V");
     Adsorbate *ads = parse_molecule_from_file(
         "./C2_pathways_ads/ethylene_path/C2H4.msi", "C2H4");
-    Lattice *result = Add_mol_to_lattice(t, ads, ads->taskLists->tasks[0][0],
-                                         ads->taskLists->tasks[0][1]);
+    Lattice *result =
+        Add_mol_to_lattice(t, ads, ads->taskLists->tasks[0][0],
+                           ads->taskLists->tasks[0][1], "ethylene");
     Matrix *fracCoordMat = fractionalCoordMatrix(result->lattice_vectors);
     print_matrix(fracCoordMat);
     Matrix *t_coord = result->_mol->vtable->get_mol_coords(result->_mol);
@@ -87,8 +89,9 @@ void test_cell()
     Lattice *t = load_lat("./SAC_GDY_V.msi", "SAC_GDY_V");
     Adsorbate *ads = parse_molecule_from_file(
         "./C2_pathways_ads/ethylene_path/C2H4.msi", "C2H4");
-    Lattice *result = Add_mol_to_lattice(t, ads, ads->taskLists->tasks[0][0],
-                                         ads->taskLists->tasks[0][1]);
+    Lattice *result =
+        Add_mol_to_lattice(t, ads, ads->taskLists->tasks[0][0],
+                           ads->taskLists->tasks[0][1], "ethylene");
     t->vtable->destroy(t);
     ads->ads_vtable->destroy(ads);
     CastepInfo *table = initTable();
@@ -110,6 +113,7 @@ void test_cell()
     free(pot);
     free(lcao);
     /* free(vec); */
+    cell->vtable->exportCell(cell, false);
     cell->destroy(cell);
     delete_all(&table);
 }
