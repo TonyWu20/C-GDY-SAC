@@ -244,15 +244,12 @@ Matrix *fractionalCoordMatrix(Matrix *lat_vectors)
     double gamma = vector_angle(a, b);
     double vol;
     Matrix *bc_cross = cross_product(b, c);
-    printf("alpha: %f, beta : %f, gamma: %f\n", alpha * 180 / PI,
-           beta * 180 / PI, gamma * 180 / PI);
     vol = dot_product(a, bc_cross);
     destroy_matrix(bc_cross);
     free(bc_cross);
     double aLen = norm_of_vector(a);
     double bLen = norm_of_vector(b);
     double cLen = norm_of_vector(c);
-    printf("a: %f, b: %f , c: %f\n", aLen, bLen, cLen);
     destroy_matrix(a);
     destroy_matrix(b);
     destroy_matrix(c);
