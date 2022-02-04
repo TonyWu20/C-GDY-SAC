@@ -12,18 +12,37 @@ void printProgress(int cur, int total, double percentage, char *name)
     fflush(stdout);
 }
 
+int mkdir_p(char *dest)
+{
+    char *ret;
+    int status;
+    for (ret = strchr(dest, '/'); ret; ret= strchr(ret, '/'))
+    {
+        int pos = ret - dest;
+        dest[pos] = '\0';
+        struct stat s;
+        int err = stat(dest, &s);
+        if (err != -1)
+        {
+            dest[pos] = '/';
+            ret++;
+        }
+        else {
+            status = mkdir(dest, 0777);
+            if (status)
+            {
+                printf("Fail to create %s\n", dest);
+            }
+            dest[pos] = '/';
+            ret++;
+        }
+    }
+    return status;
+}
+
 void createDirectory(char *dest)
 {
-    struct stat s;
-    int err = stat(dest, &s);
-    if (err == -1)
-    {
-        int destStringLen = strlen(dest);
-        int commandLen = destStringLen + 9;
-        char mkdir_command[commandLen + 1];
-        snprintf(mkdir_command, commandLen + 1, "mkdir -p %s", dest);
-        system(mkdir_command);
-    }
+    mkdir_p(dest);
 }
 
 char *extractStemName(char *filepath)

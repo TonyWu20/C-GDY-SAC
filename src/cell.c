@@ -276,7 +276,7 @@ char *cell_speciesLCAOstates_writer(Cell *self)
     return ret;
 }
 
-void cellExport(Cell *self, bool DOS)
+void cellExport(Cell *self)
 {
     /* Filepath processing */
     char *stemName = self->lattice->_mol->name;
@@ -290,74 +290,79 @@ void cellExport(Cell *self, bool DOS)
     /* Create directory routine in misc.h */
     createDirectory(subDir);
     char *fileName;
+    char *DOSfileName;
     /* Differ for DOS or not */
-    if (DOS == false)
-    {
-        int fileNameLen = 1 + snprintf(NULL, 0, "%s%s.cell", subDir, stemName);
-        fileName = malloc(fileNameLen);
-        snprintf(fileName, fileNameLen, "%s%s.cell", subDir, stemName);
-    }
-    else
-    {
-        int fileNameLen =
+    int fileNameLen = 1 + snprintf(NULL, 0, "%s%s.cell", subDir, stemName);
+    fileName = malloc(fileNameLen);
+    snprintf(fileName, fileNameLen, "%s%s.cell", subDir, stemName);
+    int DOSfileNameLen =
             1 + snprintf(NULL, 0, "%s%s_DOS.cell", subDir, stemName);
-        fileName = malloc(fileNameLen);
-        snprintf(fileName, fileNameLen, "%s%s_DOS.cell", subDir, stemName);
-    }
+    DOSfileName = malloc(DOSfileNameLen);
+    snprintf(DOSfileName, DOSfileNameLen, "%s%s_DOS.cell", subDir, stemName);
     /* Release malloc'd memory subDir */
     free(subDir);
     /* Ready to write */
     FILE *writeTo = fopen(fileName, "w");
+    FILE *writeDOS = fopen(DOSfileName, "w");
     free(fileName);
+    free(DOSfileName);
     /* Get,Write and Free strings for each section */
     char *latVec = self->textTable->blockWriter(self, "LATTICE_CART",
                                                 cell_latticeVector_writer);
     fputs(latVec, writeTo);
+    fputs(latVec, writeDOS);
     free(latVec);
     char *fracCoord = self->textTable->blockWriter(self, "POSITIONS_FRAC",
                                                    cell_fracCoord_writer);
     fputs(fracCoord, writeTo);
+    fputs(fracCoord, writeDOS);
     free(fracCoord);
-    if (DOS)
-    {
-        char *BS_kPoints = self->textTable->blockWriter(
-            self, "BS_KPOINTS_LIST", cell_kPointsList_writer);
-        fputs(BS_kPoints, writeTo);
-        free(BS_kPoints);
-    }
+    char *BS_kPoints = self->textTable->blockWriter(
+        self, "BS_KPOINTS_LIST", cell_kPointsList_writer);
+    fputs(BS_kPoints, writeDOS);
+    free(BS_kPoints);
     char *kPoints = self->textTable->blockWriter(self, "KPOINTS_LIST",
                                                  cell_kPointsList_writer);
     fputs(kPoints, writeTo);
+    fputs(kPoints, writeDOS);
     free(kPoints);
     char *misc = cell_miscOptions_writer(self);
     fputs(misc, writeTo);
+    fputs(misc, writeDOS);
     free(misc);
     char *ionicConstraint = self->textTable->blockWriter(
         self, "IONIC_CONSTRAINTS", cell_ionicConstraints_writer);
     fputs(ionicConstraint, writeTo);
+    fputs(ionicConstraint, writeDOS);
     free(ionicConstraint);
     char *efield = self->textTable->blockWriter(self, "EXTERNAL_EFIELD",
                                                 cell_externalEfield_writer);
     fputs(efield, writeTo);
+    fputs(efield, writeDOS);
     free(efield);
     char *ePressure = self->textTable->blockWriter(
         self, "EXTERNAL_PRESSURE", cell_externalPressure_writer);
     fputs(ePressure, writeTo);
+    fputs(ePressure, writeDOS);
     free(ePressure);
     char *spMass = self->textTable->blockWriter(self, "SPECIES_MASS",
                                                 cell_speciesMass_writer);
     fputs(spMass, writeTo);
+    fputs(spMass, writeDOS);
     free(spMass);
     char *spPot = self->textTable->blockWriter(self, "SPECIES_POT",
                                                cell_speciesPot_writer);
     fputs(spPot, writeTo);
+    fputs(spPot, writeDOS);
     free(spPot);
     char *spLCAO = self->textTable->blockWriter(self, "SPECIES_LCAO_STATES",
                                                 cell_speciesLCAOstates_writer);
     fputs(spLCAO, writeTo);
+    fputs(spLCAO, writeDOS);
     free(spLCAO);
     /* Close file release pointer */
     fclose(writeTo);
+    fclose(writeDOS);
 }
 
 static int atomCmp(const void *a, const void *b)

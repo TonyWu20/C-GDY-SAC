@@ -28,7 +28,7 @@ struct Cell_vtable
 {
     void (*sortAtoms)(Cell *self);
     char **(*sortElmList)(Cell *self, int *returnSize);
-    void (*exportCell)(Cell *self, bool DOS);
+    void (*exportCell)(Cell *self);
 };
 
 /* Virtual functions table for dealing with text output for Cell */
@@ -54,7 +54,7 @@ void destroyCell(Cell *self);
 char *cellWriteBlock(Cell *self, char *blockName,
                      char *(*blockTextWriter)(Cell *self));
 
-void cellExport(Cell *self, bool DOS);
+void cellExport(Cell *self);
 /* Methods to fill BLOCK_XX
  */
 

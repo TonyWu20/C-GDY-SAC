@@ -50,8 +50,7 @@ void allocateTasks(char *pathName)
             double percentage = (double)(i + 1) / (double)total_tasks;
             printProgress(i + 1, total_tasks, percentage, result->_mol->name);
             Cell *cell = createCell(result, table);
-            cell->vtable->exportCell(cell, false);
-            cell->vtable->exportCell(cell, true);
+            cell->vtable->exportCell(cell);
             cell->destroy(cell);
         }
         ads->ads_vtable->destroy(ads);

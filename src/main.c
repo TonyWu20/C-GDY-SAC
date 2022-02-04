@@ -114,7 +114,7 @@ void test_cell()
     free(pot);
     free(lcao);
     /* free(vec); */
-    cell->vtable->exportCell(cell, false);
+    cell->vtable->exportCell(cell);
     cell->destroy(cell);
     delete_all(&table);
 }
