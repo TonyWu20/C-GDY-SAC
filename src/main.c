@@ -7,6 +7,7 @@
 #include "molecule.h"
 #include "my_maths.h"
 #include "parser.h"
+#include "tasks.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -120,6 +121,6 @@ void test_cell()
 
 int main(int argc, char *argv[])
 {
-    test_cell();
+    test_build();
     return 0;
 }

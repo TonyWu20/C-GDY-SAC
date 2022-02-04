@@ -3,15 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#define TOTAL_ELEMENT_NUM 44
+#define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
+#define PBWIDTH 60
 
+/* Simple progress bar */
+void printProgress(int cur, int total, double percentage, char *name);
+
+/* Create directory if not existed */
 void createDirectory(char *dest);
 
-void allocateTasks(char *pathName);
 /* Return filename without suffix */
 char *extractStemName(char *filepath);
-/* Malloc file path of the base model */
-char *findBaseByElementId(int i);
-
-/* return list of ads file paths */
-char **pathway_adsLists(char *pathName, int *adsListLen);

@@ -171,7 +171,7 @@ char *cell_kPointsList_writer(Cell *self)
 
 char *cell_miscOptions_writer(Cell *self)
 {
-    char line[] = "FIX_ALL_CELL : true\nFIX_COM : false\n";
+    char line[] = "FIX_ALL_CELL : true\n\nFIX_COM : false\n";
     char *ret = strdup(line);
     return ret;
 }

@@ -143,6 +143,19 @@ castepSeedGen/fast:
 .PHONY : castepSeedGen/fast
 
 #=============================================================================
+# Target rules for targets named task_control
+
+# Build rule for target.
+task_control: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 task_control
+.PHONY : task_control
+
+# fast build rule for target.
+task_control/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/build
+.PHONY : task_control/fast
+
+#=============================================================================
 # Target rules for targets named test.o
 
 # Build rule for target.
@@ -395,6 +408,30 @@ src/parser.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/parser.c.s
 .PHONY : src/parser.c.s
 
+src/tasks.o: src/tasks.c.o
+.PHONY : src/tasks.o
+
+# target to build an object file
+src/tasks.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/tasks.c.o
+.PHONY : src/tasks.c.o
+
+src/tasks.i: src/tasks.c.i
+.PHONY : src/tasks.i
+
+# target to preprocess a source file
+src/tasks.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/tasks.c.i
+.PHONY : src/tasks.c.i
+
+src/tasks.s: src/tasks.c.s
+.PHONY : src/tasks.s
+
+# target to generate assembly for a file
+src/tasks.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/tasks.c.s
+.PHONY : src/tasks.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -405,6 +442,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... castepSeedGen"
 	@echo "... msi_modeling"
+	@echo "... task_control"
 	@echo "... test.o"
 	@echo "... src/assemble.o"
 	@echo "... src/assemble.i"
@@ -436,6 +474,9 @@ help:
 	@echo "... src/parser.o"
 	@echo "... src/parser.i"
 	@echo "... src/parser.s"
+	@echo "... src/tasks.o"
+	@echo "... src/tasks.i"
+	@echo "... src/tasks.s"
 .PHONY : help
 
 

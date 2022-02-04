@@ -46,6 +46,11 @@
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
+  "command": "/opt/homebrew/bin/gcc-11 -Dtask_control_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib  -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/task_control.dir/src/tasks.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/tasks.c\"",
+  "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/tasks.c"
+},
+{
+  "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
   "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib  -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -o CMakeFiles/test.o.dir/src/main.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c"
 }
