@@ -16,7 +16,7 @@ int mkdir_p(char *dest)
 {
     char *ret;
     int status;
-    for (ret = strchr(dest, '/'); ret; ret= strchr(ret, '/'))
+    for (ret = strchr(dest, '/'); ret; ret = strchr(ret, '/'))
     {
         int pos = ret - dest;
         dest[pos] = '\0';
@@ -27,11 +27,12 @@ int mkdir_p(char *dest)
             dest[pos] = '/';
             ret++;
         }
-        else {
+        else
+        {
             status = mkdir(dest, 0777);
             if (status)
             {
-                printf("Fail to create %s\n", dest);
+                printf("Fail to create %s\n, ERROR:%d", dest, status);
             }
             dest[pos] = '/';
             ret++;

@@ -1,4 +1,5 @@
 #include "tasks.h"
+#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,35 +30,51 @@ void allocateTasks(char *pathName)
     char **adsList = pathway_adsLists(pathName, &adsListLen);
     int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
     CastepInfo *table = initTable();
-    for (int i = 0; i < total_tasks; ++i)
+    int i, k;
+    int pg = 0;
+    // clang-format off
+    #pragma omp parallel private(k) shared(table, adsList)
+    // clang-format on
     {
-        int currElement = i / adsListLen;
-        int currAds = i % adsListLen;
-        int baseNameLen = 8 + strlen(elements[currElement]);
-        char *baseName = malloc(baseNameLen + 1);
-        snprintf(baseName, baseNameLen + 1, "SAC_GDY_%s",
-                 elements[currElement]);
-        char *basePath = findBaseByElementId(currElement);
-        Lattice *lat = parse_lattice_from_file(basePath, baseName);
-        char *ads_name = extractStemName(adsList[currAds]);
-        Adsorbate *ads = parse_molecule_from_file(adsList[currAds], ads_name);
-        for (int k = 0; k < ads->taskLists->taskNum; ++k)
+        // clang-format off
+        #pragma omp for 
+        for (i = 0; i < total_tasks; ++i)
         {
-            Lattice *result =
-                Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[k][0],
-                                   ads->taskLists->tasks[k][1], pathName);
-            result->vtable->export_msi(result, pathName);
-            double percentage = (double)(i + 1) / (double)total_tasks;
-            printProgress(i + 1, total_tasks, percentage, result->_mol->name);
-            Cell *cell = createCell(result, table);
-            cell->vtable->exportCell(cell);
-            cell->destroy(cell);
+            int currElement = i / adsListLen;
+            int currAds = i % adsListLen;
+            int baseNameLen = 8 + strlen(elements[currElement]);
+            char *baseName = malloc(baseNameLen + 1);
+            snprintf(baseName, baseNameLen + 1, "SAC_GDY_%s",
+                     elements[currElement]);
+            char *basePath = findBaseByElementId(currElement);
+            Lattice *lat = parse_lattice_from_file(basePath, baseName);
+            char *ads_name = extractStemName(adsList[currAds]);
+            Adsorbate *ads =
+                parse_molecule_from_file(adsList[currAds], ads_name);
+            for (k = 0; k < ads->taskLists->taskNum; ++k)
+            {
+                Lattice *result =
+                    Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[k][0],
+                                       ads->taskLists->tasks[k][1], pathName);
+                result->vtable->export_msi(result, pathName);
+                Cell *cell = createCell(result, table);
+                cell->vtable->exportCell(cell);
+                cell->destroy(cell);
+            }
+            pg++;
+// clang-format off
+            #pragma omp critical
+            // clang-format on
+            {
+                double percentage = (double)(pg + 1) / (double)total_tasks;
+                printProgress(pg + 1, total_tasks, percentage, lat->_mol->name);
+                ads->ads_vtable->destroy(ads);
+                free(ads_name);
+                free(basePath);
+                free(baseName);
+                lat->vtable->destroy(lat);
+            }
         }
-        ads->ads_vtable->destroy(ads);
-        free(ads_name);
-        free(basePath);
-        free(baseName);
-        lat->vtable->destroy(lat);
     }
     for (int i = 0; i < adsListLen; ++i)
     {
