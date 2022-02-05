@@ -283,24 +283,24 @@ void cellExport(Cell *self)
     char *exportDir = self->lattice->vtable->exportDir(self->lattice,
                                                        self->lattice->pathName);
     /* dest dir with "_opt" suffix */
-    int subDirLen = 1 + snprintf(NULL, 0, "%s%s_opt/", exportDir, stemName);
-    char *subDir = malloc(subDirLen);
-    snprintf(subDir, subDirLen, "%s%s_opt/", exportDir, stemName);
-    free(exportDir);
+    /* int subDirLen = 1 + snprintf(NULL, 0, "%s%s_opt/", exportDir, stemName);
+     */
+    /* char *subDir = malloc(subDirLen); */
+    /* snprintf(subDir, subDirLen, "%s%s_opt/", exportDir, stemName); */
     /* Create directory routine in misc.h */
-    createDirectory(subDir);
+    createDirectory(exportDir);
     char *fileName;
     char *DOSfileName;
     /* Differ for DOS or not */
-    int fileNameLen = 1 + snprintf(NULL, 0, "%s%s.cell", subDir, stemName);
+    int fileNameLen = 1 + snprintf(NULL, 0, "%s%s.cell", exportDir, stemName);
     fileName = malloc(fileNameLen);
-    snprintf(fileName, fileNameLen, "%s%s.cell", subDir, stemName);
+    snprintf(fileName, fileNameLen, "%s%s.cell", exportDir, stemName);
     int DOSfileNameLen =
-            1 + snprintf(NULL, 0, "%s%s_DOS.cell", subDir, stemName);
+        1 + snprintf(NULL, 0, "%s%s_DOS.cell", exportDir, stemName);
     DOSfileName = malloc(DOSfileNameLen);
-    snprintf(DOSfileName, DOSfileNameLen, "%s%s_DOS.cell", subDir, stemName);
-    /* Release malloc'd memory subDir */
-    free(subDir);
+    snprintf(DOSfileName, DOSfileNameLen, "%s%s_DOS.cell", exportDir, stemName);
+    /* Release malloc'd memory exportDir */
+    free(exportDir);
     /* Ready to write */
     FILE *writeTo = fopen(fileName, "w");
     FILE *writeDOS = fopen(DOSfileName, "w");
@@ -317,8 +317,8 @@ void cellExport(Cell *self)
     fputs(fracCoord, writeTo);
     fputs(fracCoord, writeDOS);
     free(fracCoord);
-    char *BS_kPoints = self->textTable->blockWriter(
-        self, "BS_KPOINTS_LIST", cell_kPointsList_writer);
+    char *BS_kPoints = self->textTable->blockWriter(self, "BS_KPOINTS_LIST",
+                                                    cell_kPointsList_writer);
     fputs(BS_kPoints, writeDOS);
     free(BS_kPoints);
     char *kPoints = self->textTable->blockWriter(self, "KPOINTS_LIST",

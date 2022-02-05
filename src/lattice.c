@@ -217,9 +217,9 @@ char *lattice_export_dest(Lattice *self, char *pathName)
     char *metal_family = self->metal_family;
     char *metal_symbol = self->metal_symbol;
 
-    int destLen =
-        1 + snprintf(NULL, 0, "./C2_CO2RR_models/%s/%s/%s/%s/", pathName,
-                     metal_family, metal_symbol, self->attached_adsName);
+    int destLen = 1 + snprintf(NULL, 0, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/",
+                               pathName, metal_family, metal_symbol,
+                               self->attached_adsName, self->_mol->name);
 
     if (self->attached_adsName == NULL)
     {
@@ -227,7 +227,8 @@ char *lattice_export_dest(Lattice *self, char *pathName)
         return 0;
     }
     char *buffer = malloc(destLen);
-    snprintf(buffer, destLen, "./C2_CO2RR_models/%s/%s/%s/%s/", pathName,
-             metal_family, metal_symbol, self->attached_adsName);
+    snprintf(buffer, destLen, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/", pathName,
+             metal_family, metal_symbol, self->attached_adsName,
+             self->_mol->name);
     return buffer;
 }
