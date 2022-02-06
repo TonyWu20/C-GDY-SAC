@@ -16,3 +16,5 @@ void createDirectory(char *dest);
 
 /* Return filename without suffix */
 char *extractStemName(char *filepath);
+
+char *readWholeFile(const char *filePath);

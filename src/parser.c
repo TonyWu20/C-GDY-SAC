@@ -2,6 +2,7 @@
 #include "atom.h"
 #include "lattice.h"
 #include "matrix.h"
+#include "misc.h"
 #include "molecule.h"
 #include "pcre2.h"
 #include <stdio.h>
@@ -332,14 +333,7 @@ static Atom *parse_atom(char *atom_block)
 
 Adsorbate *parse_molecule_from_file(char *fileName, char *name)
 {
-    FILE *f = fopen(fileName, "r");
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    rewind(f);
-    char *body = malloc(fsize + 1);
-    fread(body, fsize, 1, f);
-    fclose(f);
-    body[fsize] = 0;
+    char *body = readWholeFile(fileName);
     int atom_nums = 0;
     Atom **atom_arr = get_all_atoms(body, &atom_nums);
     Molecule *mol = NULL;
@@ -362,14 +356,7 @@ Adsorbate *parse_molecule_from_file(char *fileName, char *name)
 
 Lattice *parse_lattice_from_file(char *fileName, char *name)
 {
-    FILE *f = fopen(fileName, "r");
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    rewind(f);
-    char *body = malloc(fsize + 1);
-    fread(body, fsize, 1, f);
-    fclose(f);
-    body[fsize] = 0;
+    char *body = readWholeFile((const char *)fileName);
     int atom_nums = 0;
     Atom **atom_arr = get_all_atoms(body, &atom_nums);
     Molecule *lat_mol = createMolecule(name, atom_nums, atom_arr);

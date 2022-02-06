@@ -270,3 +270,9 @@ Matrix *fractionalCoordMatrix(Matrix *lat_vectors)
     Matrix *frac_coord = matrix_view_array(tmp_frac_coord, 4, 4);
     return frac_coord;
 }
+
+int roundupBiggerTenth(int number)
+{
+    int rounded = (number / 10 + 1) * 10;
+    return rounded;
+}

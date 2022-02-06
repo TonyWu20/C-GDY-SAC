@@ -96,3 +96,15 @@ void sortAtomsByElement(Cell *self);
  * A malloced array of pointers to strings
  */
 char **sortedElementList(Cell *self, int *returnSize);
+
+/* Other required seed files */
+
+/* Adjust necessary parameters according to the constitutional elements
+ *, write to target directory
+ */
+void write_param(Cell *self);
+
+/* Write kptaux content out to the target directory */
+void write_kptaux(Cell *self);
+
+void write_trjaux(Cell *self);

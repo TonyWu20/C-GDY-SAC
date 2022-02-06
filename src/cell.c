@@ -282,12 +282,6 @@ void cellExport(Cell *self)
     char *stemName = self->lattice->_mol->name;
     char *exportDir = self->lattice->vtable->exportDir(self->lattice,
                                                        self->lattice->pathName);
-    /* dest dir with "_opt" suffix */
-    /* int subDirLen = 1 + snprintf(NULL, 0, "%s%s_opt/", exportDir, stemName);
-     */
-    /* char *subDir = malloc(subDirLen); */
-    /* snprintf(subDir, subDirLen, "%s%s_opt/", exportDir, stemName); */
-    /* Create directory routine in misc.h */
     createDirectory(exportDir);
     char *fileName;
     char *DOSfileName;
@@ -411,3 +405,10 @@ char **sortedElementList(Cell *self, int *returnSize)
 }
 
 /* Cell ends */
+
+void write_param(Cell *self)
+{
+    CastepInfo *table = self->infoTab;
+    char **elmLists = self->elmLists;
+    FILE **potFile_arr = malloc(sizeof(FILE *) * self->elmNums);
+}

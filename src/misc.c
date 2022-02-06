@@ -59,3 +59,16 @@ char *extractStemName(char *filepath)
     free(buffer);
     return ret;
 }
+
+char *readWholeFile(const char *filePath)
+{
+    FILE *f = fopen(filePath, "r");
+    fseek(f, 0, SEEK_END);
+    long fSize = ftell(f);
+    rewind(f);
+    char *ret = malloc(fSize + 1);
+    fread(ret, fSize, 1, f);
+    fclose(f);
+    ret[fSize] = 0;
+    return ret;
+}

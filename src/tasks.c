@@ -14,20 +14,27 @@ enum
     T5D,
     LM
 };
-char *pathways[] = {"ethylene"};
+char *pathways[] = {"ethylene", "acetic_acid", "ethanol", "ethanol_other_ads"};
 char *ethylene_ads[] = {"COCHO.msi",   "COCHOH.msi",   "OCH2CO.msi",
                         "OCH2COH.msi", "OCH2CHOH.msi", "OCH2CH.msi",
                         "OCH2CH2.msi", "C2H4.msi"};
+char *acetic_acid_ads[] = {"OCH2C_cyc_OH.msi", "CH3COOH.msi"};
+char *ethanol_ads[] = {"Glyoxal.msi",  "HOCCHO.msi",   "HOHCCHO.msi",
+                       "CH2OHCHO.msi", "CH2CHO.msi",   "CH2CHOH.msi",
+                       "CH2CH2OH.msi", "CH3CH2OH.msi", "acetaldehyde.msi"};
+char *ethanol_other_ads[] = {"Glycolaldehyde.msi", "CH2OHCH2OH.msi",
+                             "ethlylene_glycol.msi"};
+
 char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Zn", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
                     "Ag", "Cd", "Hf", "Ta", "W",  "Re", "Os", "Ir", "Pt",
                     "Au", "Hg", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
                     "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"};
 
-void allocateTasks(char *pathName)
+void allocateTasks(int pathNameCode)
 {
     int adsListLen = 0;
-    char **adsList = pathway_adsLists(pathName, &adsListLen);
+    char **adsList = pathway_adsLists(pathNameCode, &adsListLen);
     int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
     CastepInfo *table = initTable();
     int i, k;
@@ -55,8 +62,8 @@ void allocateTasks(char *pathName)
             {
                 Lattice *result =
                     Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[k][0],
-                                       ads->taskLists->tasks[k][1], pathName);
-                result->vtable->export_msi(result, pathName);
+                                       ads->taskLists->tasks[k][1], pathways[pathNameCode]);
+                result->vtable->export_msi(result, pathways[pathNameCode]);
                 Cell *cell = createCell(result, table);
                 cell->vtable->exportCell(cell);
                 cell->destroy(cell);
@@ -97,30 +104,53 @@ static char *findBaseByElementId(int i)
     else
         family = strdup("lm");
 
-    int filePathLen = 14 + 3 + 13 + strlen(elements[i]);
-    char *filePath = malloc(filePathLen + 1);
+    int filePathLen = 1 + snprintf(NULL, 0, "./msi_models/%s/SAC_GDY_%s.msi",
+                                   family, elements[i]);
+    char *filePath = malloc(filePathLen);
     snprintf(filePath, filePathLen, "./msi_models/%s/SAC_GDY_%s.msi", family,
              elements[i]);
     free(family);
     return filePath;
 }
 
-char **pathway_adsLists(char *pathName, int *adsListLen)
+char **pathway_adsLists(int pathNameCode, int *adsListLen)
 {
     *adsListLen = 0;
     char **list = NULL;
-    int baseLen = 25 + strlen(pathName);
-    if (!strcmp(pathName, "ethylene"))
+    switch (pathNameCode)
     {
+    case ETHYLENE:
         *adsListLen = 8;
-        list = malloc(sizeof(char *) * (*adsListLen));
-        for (int i = 0; i < 8; ++i)
-        {
-            int filePathLen = baseLen + strlen(ethylene_ads[i]);
-            list[i] = malloc(filePathLen + 1);
-            snprintf(list[i], filePathLen + 1, "./C2_pathways_ads/%s_path/%s",
-                     pathName, ethylene_ads[i]);
-        }
+        list = adsListBuild("ethylene", ethylene_ads, *adsListLen);
+        break;
+    case ACETIC_ACID:
+        *adsListLen = 2;
+        list = adsListBuild("acetic_acid", acetic_acid_ads, *adsListLen);
+        break;
+    case ETHANOL:
+        *adsListLen = 9;
+        list = adsListBuild("ethanol", ethanol_ads, *adsListLen);
+        break;
+    case ETHANOL_OTHER:
+        *adsListLen = 3;
+        list = adsListBuild("ethanol_other", ethanol_other_ads, *adsListLen);
+        break;
+    default:
+        break;
+    }
+    return list;
+}
+
+char **adsListBuild(char *pathName, char *adsList[], int listLen)
+{
+    char **list = malloc(sizeof(char *) * listLen);
+    for (int i = 0; i < listLen; ++i)
+    {
+        int filePathLen = 1 + snprintf(NULL, 0, "./C2_pathways_ads/%s_path/%s",
+                                       pathName, adsList[i]);
+        list[i] = malloc(filePathLen);
+        snprintf(list[i], filePathLen, "./C2_pathways_ads/%s_path/%s", pathName,
+                 adsList[i]);
     }
     return list;
 }

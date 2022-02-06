@@ -37,7 +37,7 @@ void test_add(char *latFile, char *latName, char *adsFile, char *adsName,
 
 void test_build()
 {
-    allocateTasks("ethylene");
+    allocateTasks(ETHYLENE);
 }
 
 void test_fracCoordMat()

@@ -7,8 +7,17 @@
 #include "misc.h"
 #include "molecule.h"
 #include "parser.h"
+enum
+{
+    ETHYLENE,
+    ACETIC_ACID,
+    ETHANOL,
+    ETHANOL_OTHER
+};
 
 /* Perform all tasks in one go */
-void allocateTasks(char *pathName);
-/* return list of ads file paths */
-char **pathway_adsLists(char *pathName, int *adsListLen);
+void allocateTasks(int pathNameCode);
+/* return list of ads file paths based on pathway name*/
+char **pathway_adsLists(int pathNameCode, int *adsListLen);
+/* Helper of pathway_adsLists */
+char **adsListBuild(char *pathName, char *adsList[], int listLen);

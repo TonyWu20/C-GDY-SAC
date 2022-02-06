@@ -19,3 +19,10 @@ Matrix *translate_mat_a_to_b(double *center_a, double *center_b);
 void translate_a_to_b(Matrix *trans_mat, Matrix *coords, Matrix **result);
 
 Matrix *fractionalCoordMatrix(Matrix *lat_vectors);
+
+/* Round up number to the bigger nearest tenth.
+ * E.g.: 374 -> 380; 376 -> 380;
+ * Args: number, double type
+ * Returns: rounded double
+ */
+int roundupBiggerTenth(int number);
