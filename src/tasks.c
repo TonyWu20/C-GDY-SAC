@@ -81,6 +81,7 @@ void allocateTasks(char *pathName)
         free(adsList[i]);
     }
     free(adsList);
+    delete_all(&table);
 }
 
 /* Malloc file path of the base model */
