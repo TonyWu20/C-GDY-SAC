@@ -39,12 +39,13 @@ void allocateTasks(int pathNameCode)
     CastepInfo *table = initTable();
     int i, k;
     int pg = 0;
-    // clang-format off
+// clang-format off
     #pragma omp parallel private(k) shared(table, adsList)
     // clang-format on
     {
-        // clang-format off
-        #pragma omp for 
+// clang-format off
+        #pragma omp for
+        // clang-format on
         for (i = 0; i < total_tasks; ++i)
         {
             int currElement = i / adsListLen;
@@ -60,16 +61,16 @@ void allocateTasks(int pathNameCode)
                 parse_molecule_from_file(adsList[currAds], ads_name);
             for (k = 0; k < ads->taskLists->taskNum; ++k)
             {
-                Lattice *result =
-                    Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[k][0],
-                                       ads->taskLists->tasks[k][1], pathways[pathNameCode]);
+                Lattice *result = Add_mol_to_lattice(
+                    lat, ads, ads->taskLists->tasks[k][0],
+                    ads->taskLists->tasks[k][1], pathways[pathNameCode]);
                 result->vtable->export_msi(result, pathways[pathNameCode]);
                 Cell *cell = createCell(result, table);
                 cell->vtable->exportCell(cell);
                 cell->destroy(cell);
             }
             pg++;
-// clang-format off
+            // clang-format off
             #pragma omp critical
             // clang-format on
             {

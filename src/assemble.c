@@ -85,7 +85,7 @@ Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2,
     Matrix *trans_m = translate_mat_a_to_b(center_coords_of_cd_sites,
                                            center_coords_of_carbon_sites);
     /* Set the hanging height on the GDY plane */
-    trans_m->value[2][3] += 1.5;
+    trans_m->value[2][3] += 1.8;
     /* Apply transformation */
     ads->_mol->vtable->apply_transformation(ads->_mol, trans_m,
                                             translate_a_to_b);
