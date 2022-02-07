@@ -213,7 +213,7 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
     Matrix *y_base = col_vector_view_array(y_axis, 4);
     Matrix *stemVector = adsPtr->ads_vtable->get_stem_vector(adsPtr);
     double rot_angle;
-    if (stemVector->value[0][0] < 0)
+    if (plane_normal->value[2][0] < 0)
         rot_angle = vector_angle(plane_normal, y_base) - PI;
     else
         rot_angle = vector_angle(plane_normal, y_base);
