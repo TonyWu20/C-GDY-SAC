@@ -28,7 +28,6 @@ Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
     new->attached_adsName = NULL;
     new->pathName = NULL;
     lattice_metal_info(new);
-    new->vtable->rotate_to_standard_orientation(new);
     return new;
 }
 

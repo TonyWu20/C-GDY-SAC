@@ -13,6 +13,7 @@ Cell *createCell(Lattice *lat, CastepInfo *table)
 {
     Cell *new = malloc(sizeof(Cell));
     new->lattice = lat;
+    new->lattice->vtable->rotate_to_standard_orientation(new->lattice);
     new->atomSorted = false;
     new->destroy = destroyCell;
     new->vtable = &cellVTable;
