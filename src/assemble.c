@@ -44,8 +44,6 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to)
                "carbon site\n");
         return -1;
     }
-    if (strcmp(ads->_mol->name, "C2H4"))
-        ads->ads_vtable->make_upright(ads);
     /* Get the stem vector to determine the direction of the adsorbate*/
     Matrix *ads_stem_vec = ads->ads_vtable->get_stem_vector(ads);
     /* Get the target direction vector */
@@ -54,6 +52,8 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to)
     Matrix *rot_mat = rotate_u_to_v(ads_stem_vec, direction_vec);
     ads->_mol->vtable->apply_transformation(ads->_mol, rot_mat,
                                             rotate_around_origin);
+    if (strcmp(ads->_mol->name, "C2H4"))
+        ads->ads_vtable->make_upright(ads);
     /* Clean memory */
     destroy_matrix(ads_stem_vec);
     destroy_matrix(direction_vec);

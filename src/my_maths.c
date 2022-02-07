@@ -177,15 +177,24 @@ Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
 Matrix *rotate_u_to_v(Matrix *u, Matrix *v)
 {
     Matrix *n = cross_product(u, v);
-    double n1, n2, n3;
-    normalize_vector(n);
-    n1 = n->value[0][0];
-    n2 = n->value[1][0];
-    n3 = n->value[2][0];
     double angle = vector_angle(u, v);
-    double a = cos(angle);
+    Matrix *T = rotate_angle_around_axis(n, angle);
+    return T;
+}
+
+Matrix *rotate_angle_around_axis(Matrix *axis, double rad)
+{
+    double n1, n2, n3;
+    Matrix *unit_axis = create_matrix(4, 1);
+    copy_matrix(axis, &unit_axis);
+    normalize_vector(unit_axis);
+    unit_axis->value[3][0] = 1;
+    n1 = unit_axis->value[0][0];
+    n2 = unit_axis->value[1][0];
+    n3 = unit_axis->value[2][0];
+    double a = cos(rad);
     double b = 1 - a;
-    double c = sin(angle);
+    double c = sin(rad);
     double Rij_n_T[] = {a + n1 * n1 * b,
                         n1 * n2 * b - n3 * c,
                         n1 * n3 * b + n2 * c,
@@ -203,8 +212,8 @@ Matrix *rotate_u_to_v(Matrix *u, Matrix *v)
                         0,
                         1};
     Matrix *T = matrix_view_array(Rij_n_T, 4, 4);
-    destroy_matrix(n);
-    free(n);
+    destroy_matrix(unit_axis);
+    free(unit_axis);
     return T;
 }
 
