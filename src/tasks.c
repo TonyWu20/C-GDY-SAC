@@ -39,11 +39,11 @@ void allocateTasks(int pathNameCode)
     CastepInfo *table = initTable();
     int i, k;
     int pg = 0;
-// clang-format off
+    // clang-format off
     #pragma omp parallel private(k) shared(table, adsList)
     // clang-format on
     {
-// clang-format off
+        // clang-format off
         #pragma omp for
         // clang-format on
         for (i = 0; i < total_tasks; ++i)
@@ -70,12 +70,12 @@ void allocateTasks(int pathNameCode)
                 cell->destroy(cell);
             }
             pg++;
-            // clang-format off
+// clang-format off
             #pragma omp critical
             // clang-format on
             {
-                double percentage = (double)(pg + 1) / (double)total_tasks;
-                printProgress(pg + 1, total_tasks, percentage, lat->_mol->name);
+                double percentage = (double)(pg) / (double)total_tasks;
+                printProgress(pg, total_tasks, percentage, lat->_mol->name);
                 ads->ads_vtable->destroy(ads);
                 free(ads_name);
                 free(basePath);
