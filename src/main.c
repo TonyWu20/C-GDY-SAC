@@ -38,6 +38,7 @@ void test_add(char *latFile, char *latName, char *adsFile, char *adsName,
 void test_build()
 {
     allocateTasks(ETHYLENE);
+    allocateTasks(ACETIC_ACID);
 }
 
 void test_fracCoordMat()

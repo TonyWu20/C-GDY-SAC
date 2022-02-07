@@ -14,6 +14,22 @@ int getFinalCutoffEnergy(Cell *cell)
     return energy;
 }
 
+int parse_fineCutoffEnergy(const char *fileName)
+{
+    FILE *f = fopen(fileName, "r");
+    int n = 4;
+    char str[16];
+    for (int i = 0; i < n; ++i)
+    {
+        fgets(str, 16, f);
+    }
+    char quality[4];
+    int energy;
+    sscanf(str, "%d %s", &energy, quality);
+    fclose(f);
+    return energy;
+}
+
 char *load_geomParamFile(void)
 {
     const char geomParamPath[] = "./resources/geom.param";
