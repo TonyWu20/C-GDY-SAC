@@ -211,8 +211,12 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
         adsPtr->ads_vtable->get_plane_normal(adsPtr); // malloced
     double y_axis[] = {0, 1, 0, 1};
     Matrix *y_base = col_vector_view_array(y_axis, 4);
-    double rot_angle = vector_angle(plane_normal, y_base) - PI;
     Matrix *stemVector = adsPtr->ads_vtable->get_stem_vector(adsPtr);
+    double rot_angle;
+    if (stemVector->value[0][0] < 0)
+        rot_angle = vector_angle(plane_normal, y_base) - PI;
+    else
+        rot_angle = vector_angle(plane_normal, y_base);
     Matrix *rot_mat = rotate_angle_around_axis(stemVector, rot_angle);
     mPtr->vtable->apply_transformation(mPtr, rot_mat, rotate_around_origin);
     destroy_matrix(y_base);
