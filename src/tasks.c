@@ -31,6 +31,8 @@ char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Au", "Hg", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
                     "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"};
 
+double heightChoice[] = {1.5, 1.7};
+
 void allocateTasks(int pathNameCode)
 {
     int adsListLen = 0;
@@ -65,7 +67,8 @@ void allocateTasks(int pathNameCode)
                     parse_molecule_from_file(adsList[currAds], ads_name);
                 Lattice *result = Add_mol_to_lattice(
                     lat, ads_copy, ads_copy->taskLists->tasks[k][0],
-                    ads_copy->taskLists->tasks[k][1], pathways[pathNameCode]);
+                    ads_copy->taskLists->tasks[k][1], pathways[pathNameCode],
+                    heightChoice[pathNameCode]);
                 result->vtable->export_msi(result, pathways[pathNameCode]);
                 Cell *cell = createCell(result, table);
                 cell->vtable->exportCell(cell);

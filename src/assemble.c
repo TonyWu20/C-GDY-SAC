@@ -65,7 +65,7 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to)
 }
 
 Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2,
-                            char *pathName)
+                            char *pathName, double height)
 {
     // Init the adsorbate to be aligned with the carbon chain
     if (c2 != NULLSITE || ads->coordAtomNum == 2)
