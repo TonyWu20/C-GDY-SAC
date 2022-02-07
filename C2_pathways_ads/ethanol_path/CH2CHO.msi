@@ -1,0 +1,44 @@
+# MSI CERIUS2 DataModel File Version 4 0
+# cd_num: 1
+# cd_ids: 5
+# stem_ids: 1,2
+# plane_ids: 1,2,5
+# Symmetric: 0
+(1 Model
+  (2 Atom
+    (A C ACL "6 C")
+    (A C Label "C")
+    (A D XYZ (5.764761344953 -5.661776432793 0.2209032119864))
+    (A I Id 1)
+  )
+  (3 Atom
+    (A C ACL "6 C")
+    (A C Label "C")
+    (A D XYZ (7.295504675905 -5.493346849487 0.225014243173))
+    (A I Id 2)
+  )
+  (4 Atom
+    (A C ACL "0 H")
+    (A C Label "H")
+    (A D XYZ (7.853470148434 -5.376143402555 1.212166631209))
+    (A I Id 3)
+  )
+  (5 Atom
+    (A C ACL "0 H")
+    (A C Label "H")
+    (A D XYZ (5.189469362308 -5.669053455993 1.20515697146))
+    (A I Id 4)
+  )
+  (6 Atom
+    (A C ACL "8 O")
+    (A C Label "O")
+    (A D XYZ (8.057224521661 -5.482721105983 -1.078710846467))
+    (A I Id 5)
+  )
+  (7 Atom
+    (A C ACL "0 H")
+    (A C Label "H")
+    (A D XYZ (5.206961023422 -5.779415184382 -0.7661919164441))
+    (A I Id 6)
+  )
+)

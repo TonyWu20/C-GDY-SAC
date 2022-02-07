@@ -39,6 +39,7 @@ void test_build()
 {
     allocateTasks(ETHYLENE);
     allocateTasks(ACETIC_ACID);
+    allocateTasks(ETHANOL);
 }
 
 void test_fracCoordMat()
