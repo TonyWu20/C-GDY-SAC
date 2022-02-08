@@ -21,9 +21,9 @@ enum
 
 int task_cd2_sym[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
                          {NR, C1}, {C1, M},  {C2, M}};
-int task_cd2_asym[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
-                          {FR, C4}, {NR, C1}, {C1, NR}, {C1, M},
-                          {M, C1},  {C2, M},  {M, C2}};
+int task_cd2_asym[][2] = {{C1, C2}, {C2, C1}, {C2, C3}, {C3, C2}, {C3, C4},
+                          {C4, C3}, {C4, FR}, {FR, C4}, {NR, C1}, {C1, NR},
+                          {C1, M},  {M, C1},  {C2, M},  {M, C2}};
 int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
                      {C4, NULLSITE}, {FR, NULLSITE}, {NR, NULLSITE},
                      {M, NULLSITE}};
@@ -272,15 +272,18 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
 
 struct taskTable *createTasks(Adsorbate *self)
 {
-    struct taskTable *tab;
-    if (self->coordAtomNum == 2)
+    struct taskTable *tab = NULL;
+    switch (self->coordAtomNum)
     {
-        if (self->bSym == 1)
+    case 2:
+        switch (self->bSym)
+        {
+        case 1:
         {
             tab = malloc(sizeof(*tab));
-            tab->taskNum = 7;
-            tab->tasks = malloc(sizeof(int *) * 7);
-            for (int i = 0; i < 7; ++i)
+            tab->taskNum = sizeof(task_cd2_sym) / sizeof(task_cd2_sym[0]);
+            tab->tasks = malloc(sizeof(int *) * tab->taskNum);
+            for (int i = 0; i < tab->taskNum; ++i)
             {
                 tab->tasks[i] = malloc(sizeof(int) * 2);
                 for (int j = 0; j < 2; ++j)
@@ -288,24 +291,28 @@ struct taskTable *createTasks(Adsorbate *self)
                     tab->tasks[i][j] = task_cd2_sym[i][j];
                 }
             }
+            break;
         }
-        else
+        case 0:
         {
             tab = malloc(sizeof(*tab));
-            tab->taskNum = 11;
-            tab->tasks = malloc(sizeof(int *) * 11);
-            for (int i = 0; i < 11; ++i)
+            tab->taskNum = sizeof(task_cd2_asym) / sizeof(task_cd2_asym[0]);
+            tab->tasks = malloc(sizeof(int *) * tab->taskNum);
+            for (int i = 0; i < tab->taskNum; ++i)
             {
                 tab->tasks[i] = malloc(sizeof(int) * 2);
                 for (int j = 0; j < 2; ++j)
                     tab->tasks[i][j] = task_cd2_asym[i][j];
             }
+            break;
         }
-    }
-    else
-    {
+        default:
+            break;
+        }
+        break;
+    case 1:
         tab = malloc(sizeof(*tab));
-        tab->taskNum = 7;
+        tab->taskNum = sizeof(task_cd1) / sizeof(task_cd1[0]);
         tab->tasks = malloc(sizeof(int *) * 7);
         for (int i = 0; i < 7; ++i)
         {
@@ -313,6 +320,9 @@ struct taskTable *createTasks(Adsorbate *self)
             for (int j = 0; j < 2; ++j)
                 tab->tasks[i][j] = task_cd1[i][j];
         }
+        break;
+    default:
+        break;
     }
     return tab;
 }
