@@ -152,9 +152,6 @@ char *get_carbon_site_name(int siteId)
 
 void lattice_export_MSI(Lattice *self, char *pathName)
 {
-    struct stat s;
-    if (stat(pathName, &s) == 0)
-        return;
     char header_line[] = "# MSI CERIUS2 DataModel File Version 4 0\n";
     char model_start[] = "(1 Model\n";
     char model_misc[] = "  (A I CRY/DISPLAY (192 256))\n  (A I PeriodicType "
