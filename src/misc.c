@@ -14,6 +14,11 @@ void printProgress(int cur, int total, double percentage, char *name)
 
 int mkdir_p(char *dest)
 {
+    struct stat s;
+    if (stat(dest, &s) != -1)
+    {
+        return 0;
+    }
     char *ret;
     int status;
     for (ret = strchr(dest, '/'); ret; ret = strchr(ret, '/'))
@@ -32,7 +37,7 @@ int mkdir_p(char *dest)
             status = mkdir(dest, 0777);
             if (status)
             {
-                printf("Fail to create %s\n, ERROR:%d", dest, status);
+                printf("Fail to create %s, ERROR:%d\n", dest, status);
             }
             dest[pos] = '/';
             ret++;
