@@ -1,5 +1,6 @@
 #include "misc.h"
 #include "tasks.h"
+#include <errno.h>
 
 void printProgress(int cur, int total, double percentage, char *name)
 {
@@ -21,6 +22,7 @@ int mkdir_p(char *dest)
     }
     char *ret;
     int status;
+    errno = 0;
     for (ret = strchr(dest, '/'); ret; ret = strchr(ret, '/'))
     {
         int pos = ret - dest;
@@ -34,7 +36,7 @@ int mkdir_p(char *dest)
         else
         {
             status = mkdir(dest, 0777);
-            if (status)
+            if (status && errno != EEXIST)
             {
                 printf("Fail to create %s, ERROR:%d\n", dest, status);
             }

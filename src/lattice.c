@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 struct carbon_site siteDict[] = {
     {"c1", 41},       {"c2", 42},        {"c3", 54},   {"c4", 43},
@@ -151,6 +152,9 @@ char *get_carbon_site_name(int siteId)
 
 void lattice_export_MSI(Lattice *self, char *pathName)
 {
+    struct stat s;
+    if (stat(pathName, &s) == 0)
+        return;
     char header_line[] = "# MSI CERIUS2 DataModel File Version 4 0\n";
     char model_start[] = "(1 Model\n";
     char model_misc[] = "  (A I CRY/DISPLAY (192 256))\n  (A I PeriodicType "
