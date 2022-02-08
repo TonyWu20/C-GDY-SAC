@@ -30,14 +30,19 @@ int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
 
 // Implementation of Molecule struct
 
-struct Molecule_vtable vtable = {
-    Molecule_get_Atom_by_Id,     Molecule_get_coords,
-    Molecule_update_Atom_coords, Molecule_get_vector_ab,
-    Molecule_get_centroid_ab,    Molecule_apply_transformation,
-    Molecule_textblock,          destroyMolecule};
+struct Molecule_vtable vtable = {Molecule_get_Atom_by_Id,
+                                 Molecule_get_coords,
+                                 Molecule_update_Atom_coords,
+                                 Molecule_get_vector_ab,
+                                 Molecule_get_centroid_ab,
+                                 Molecule_apply_transformation,
+                                 Molecule_textblock,
+                                 Molecule_duplicate,
+                                 destroyMolecule};
 struct Adsorbate_vtable ads_vtable = {
     Adsorbate_get_stem_vector, Adsorbate_get_plane_normal,
-    Adsorbate_make_upright, Adsorbate_export_MSI, destroyAdsorbate};
+    Adsorbate_make_upright,    Adsorbate_export_MSI,
+    Adsorbate_duplicate,       destroyAdsorbate};
 
 Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr)
 {
@@ -47,6 +52,17 @@ Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr)
     newMol->atom_arr = atom_arr;
     newMol->vtable = &vtable;
     return newMol;
+}
+
+Molecule *Molecule_duplicate(Molecule *self)
+{
+    Atom **dupAtoms = malloc(sizeof(Atom *) * self->atomNum);
+    for (int i = 0; i < self->atomNum; ++i)
+    {
+        dupAtoms[i] = dupAtom(self->atom_arr[i]);
+    }
+    Molecule *dup = createMolecule(self->name, self->atomNum, dupAtoms);
+    return dup;
 }
 
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
@@ -64,6 +80,15 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
     ads->bSym = bSym;
     ads->taskLists = createTasks(ads);
     return ads;
+}
+
+Adsorbate *Adsorbate_duplicate(Adsorbate *self)
+{
+    Molecule *molCopy = self->_mol->vtable->duplicate(self->_mol);
+    Adsorbate *dup =
+        createAdsorbate(molCopy, self->coordAtomNum, self->coordAtomIds,
+                        self->stemAtomIds, self->planeAtomIds, self->bSym);
+    return dup;
 }
 
 void destroyMolecule(Molecule *self)

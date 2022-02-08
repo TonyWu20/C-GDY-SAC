@@ -7,7 +7,7 @@
 static char *findBaseByElementId(int i);
 
 #define TOTAL_ELEMENT_NUM 44
-#define TOTAL_MODELS 9546
+#define TOTAL_MODELS 9548
 enum
 {
     T3D,
@@ -32,7 +32,7 @@ char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Au", "Hg", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
                     "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"};
 
-double heightChoice[] = {1.5, 1.7, 1.5, 1.5};
+double heightChoice[] = {1.4, 1.6, 1.4, 1.4};
 
 void allocateTasks(int pathNameCode, int *progress)
 {
@@ -42,7 +42,7 @@ void allocateTasks(int pathNameCode, int *progress)
     CastepInfo *table = initTable();
     int i, k;
 // clang-format off
-    #pragma omp parallel private(k) shared(table, adsList)
+    #pragma omp parallel private(i,k) shared(table, adsList, progress)
     // clang-format on
     {
 // clang-format off
@@ -69,13 +69,13 @@ void allocateTasks(int pathNameCode, int *progress)
                                     ads->taskLists->tasks[k][1]);
                 if (stat(newFileName, &s) == 0)
                     continue;
-                Adsorbate *ads_copy =
-                    parse_molecule_from_file(adsList[currAds], ads_name);
+                Adsorbate *ads_copy = ads->ads_vtable->duplicate(ads);
                 Lattice *result = Add_mol_to_lattice(
                     lat, ads_copy, ads_copy->taskLists->tasks[k][0],
                     ads_copy->taskLists->tasks[k][1], pathways[pathNameCode],
                     heightChoice[pathNameCode]);
                 result->vtable->export_msi(result, pathways[pathNameCode]);
+                (*progress)++;
                 double percentage = (double)(*progress) / (double)TOTAL_MODELS;
                 printProgress((*progress), TOTAL_MODELS, percentage,
                               result->_mol->name);
@@ -83,7 +83,6 @@ void allocateTasks(int pathNameCode, int *progress)
                 cell->vtable->exportCell(cell);
                 cell->destroy(cell);
                 ads_copy->ads_vtable->destroy(ads_copy);
-                (*progress)++;
             }
             // clang-format off
             #pragma omp critical

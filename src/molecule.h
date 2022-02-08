@@ -41,6 +41,7 @@ struct Molecule_vtable
                                                     Matrix *coords,
                                                     Matrix **result));
     char **(*export_text)(Molecule *);
+    Molecule *(*duplicate)(Molecule *);
     void (*destroy)(Molecule *self);
 };
 
@@ -50,15 +51,20 @@ struct Adsorbate_vtable
     Matrix *(*get_plane_normal)(Adsorbate *self);
     void (*make_upright)(Adsorbate *self);
     void (*export_msi)(Adsorbate *self, char *dest);
+    Adsorbate *(*duplicate)(Adsorbate *self);
     void (*destroy)(Adsorbate *self);
 };
 
 // Memory Management
 Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr);
+/* Duplicate the molecule */
+Molecule *Molecule_duplicate(Molecule *self);
 // Memory Management
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
                            int *planeAtomIds, int bSym);
+/* Duplicate the adsorbate */
+Adsorbate *Adsorbate_duplicate(Adsorbate *self);
 
 // Memory Management
 void destroyMolecule(Molecule *self);
