@@ -7,7 +7,7 @@
 static char *findBaseByElementId(int i);
 
 #define TOTAL_ELEMENT_NUM 44
-#define TOTAL_MODELS 8228
+#define TOTAL_MODELS 9546
 enum
 {
     T3D,
@@ -41,11 +41,11 @@ void allocateTasks(int pathNameCode, int *progress)
     int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
     CastepInfo *table = initTable();
     int i, k;
-    // clang-format off
+// clang-format off
     #pragma omp parallel private(k) shared(table, adsList)
     // clang-format on
     {
-        // clang-format off
+// clang-format off
         #pragma omp for
         // clang-format on
         for (i = 0; i < total_tasks; ++i)
@@ -85,7 +85,7 @@ void allocateTasks(int pathNameCode, int *progress)
                 ads_copy->ads_vtable->destroy(ads_copy);
                 (*progress)++;
             }
-// clang-format off
+            // clang-format off
             #pragma omp critical
             // clang-format on
             {
