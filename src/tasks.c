@@ -7,6 +7,7 @@
 static char *findBaseByElementId(int i);
 
 #define TOTAL_ELEMENT_NUM 44
+#define TOTAL_MODELS 8228
 enum
 {
     T3D,
@@ -23,7 +24,7 @@ char *ethanol_ads[] = {
     "Glyoxal.msi",        "HOCCHO.msi",   "HOHCCHO.msi",
     "Glycolaldehyde.msi", "CH2CHO.msi",   "CH2CHOH.msi",
     "CH2CH2OH.msi",       "CH3CH2OH.msi", "acetaldehyde.msi"};
-char *ethanol_other_ads[] = {"CH2OHCH2OH.msi", "ethlylene_glycol.msi"};
+char *ethanol_other_ads[] = {"CH2OHCH2OH.msi", "ethylene_glycol.msi"};
 
 char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Zn", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
@@ -31,16 +32,15 @@ char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Au", "Hg", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
                     "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"};
 
-double heightChoice[] = {1.5, 1.7, 1.5};
+double heightChoice[] = {1.5, 1.7, 1.5, 1.5};
 
-void allocateTasks(int pathNameCode)
+void allocateTasks(int pathNameCode, int *progress)
 {
     int adsListLen = 0;
     char **adsList = pathway_adsLists(pathNameCode, &adsListLen);
     int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
     CastepInfo *table = initTable();
     int i, k;
-    int pg = 0;
 // clang-format off
     #pragma omp parallel private(k) shared(table, adsList)
     // clang-format on
@@ -74,14 +74,15 @@ void allocateTasks(int pathNameCode)
                 cell->vtable->exportCell(cell);
                 cell->destroy(cell);
                 ads_copy->ads_vtable->destroy(ads_copy);
+                (*progress)++;
             }
-            pg++;
             // clang-format off
             #pragma omp critical
             // clang-format on
             {
-                double percentage = (double)(pg) / (double)total_tasks;
-                printProgress(pg, total_tasks, percentage, lat->_mol->name);
+                double percentage = (double)(*progress) / (double)TOTAL_MODELS;
+                printProgress((*progress), TOTAL_MODELS, percentage,
+                              lat->_mol->name);
                 ads->ads_vtable->destroy(ads);
                 free(ads_name);
                 free(basePath);

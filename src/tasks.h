@@ -16,7 +16,7 @@ enum
 };
 
 /* Perform all tasks in one go */
-void allocateTasks(int pathNameCode);
+void allocateTasks(int pathNameCode, int *progress);
 /* return list of ads file paths based on pathway name*/
 char **pathway_adsLists(int pathNameCode, int *adsListLen);
 /* Helper of pathway_adsLists */
