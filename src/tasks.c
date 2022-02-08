@@ -19,11 +19,11 @@ char *ethylene_ads[] = {"COCHO.msi",   "COCHOH.msi",   "OCH2CO.msi",
                         "OCH2COH.msi", "OCH2CHOH.msi", "OCH2CH.msi",
                         "OCH2CH2.msi", "C2H4.msi"};
 char *acetic_acid_ads[] = {"OCH2C_cyc_OH.msi", "CH3COOH.msi"};
-char *ethanol_ads[] = {"Glyoxal.msi",  "HOCCHO.msi",   "HOHCCHO.msi",
-                       "CH2OHCHO.msi", "CH2CHO.msi",   "CH2CHOH.msi",
-                       "CH2CH2OH.msi", "CH3CH2OH.msi", "acetaldehyde.msi"};
-char *ethanol_other_ads[] = {"Glycolaldehyde.msi", "CH2OHCH2OH.msi",
-                             "ethlylene_glycol.msi"};
+char *ethanol_ads[] = {
+    "Glyoxal.msi",        "HOCCHO.msi",   "HOHCCHO.msi",
+    "Glycolaldehyde.msi", "CH2CHO.msi",   "CH2CHOH.msi",
+    "CH2CH2OH.msi",       "CH3CH2OH.msi", "acetaldehyde.msi"};
+char *ethanol_other_ads[] = {"CH2OHCH2OH.msi", "ethlylene_glycol.msi"};
 
 char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Zn", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
@@ -41,11 +41,11 @@ void allocateTasks(int pathNameCode)
     CastepInfo *table = initTable();
     int i, k;
     int pg = 0;
-    // clang-format off
+// clang-format off
     #pragma omp parallel private(k) shared(table, adsList)
     // clang-format on
     {
-        // clang-format off
+// clang-format off
         #pragma omp for
         // clang-format on
         for (i = 0; i < total_tasks; ++i)
@@ -76,7 +76,7 @@ void allocateTasks(int pathNameCode)
                 ads_copy->ads_vtable->destroy(ads_copy);
             }
             pg++;
-// clang-format off
+            // clang-format off
             #pragma omp critical
             // clang-format on
             {
@@ -127,19 +127,19 @@ char **pathway_adsLists(int pathNameCode, int *adsListLen)
     switch (pathNameCode)
     {
     case ETHYLENE:
-        *adsListLen = 8;
+        *adsListLen = sizeof(ethylene_ads) / sizeof(char *);
         list = adsListBuild("ethylene", ethylene_ads, *adsListLen);
         break;
     case ACETIC_ACID:
-        *adsListLen = 2;
+        *adsListLen = sizeof(acetic_acid_ads) / sizeof(char *);
         list = adsListBuild("acetic_acid", acetic_acid_ads, *adsListLen);
         break;
     case ETHANOL:
-        *adsListLen = 9;
+        *adsListLen = sizeof(ethanol_ads) / sizeof(char *);
         list = adsListBuild("ethanol", ethanol_ads, *adsListLen);
         break;
     case ETHANOL_OTHER:
-        *adsListLen = 3;
+        *adsListLen = sizeof(ethanol_other_ads) / sizeof(char *);
         list = adsListBuild("ethanol_other", ethanol_other_ads, *adsListLen);
         break;
     default:
