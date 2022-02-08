@@ -30,7 +30,6 @@ int mkdir_p(char *dest)
         if (err != -1)
         {
             dest[pos] = '/';
-            ret++;
         }
         else
         {
@@ -40,8 +39,8 @@ int mkdir_p(char *dest)
                 printf("Fail to create %s, ERROR:%d\n", dest, status);
             }
             dest[pos] = '/';
-            ret++;
         }
+        ret++;
     }
     return status;
 }
