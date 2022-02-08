@@ -76,6 +76,9 @@ void allocateTasks(int pathNameCode, int *progress)
                     ads_copy->taskLists->tasks[k][1], pathways[pathNameCode],
                     heightChoice[pathNameCode]);
                 result->vtable->export_msi(result, pathways[pathNameCode]);
+                double percentage = (double)(*progress) / (double)TOTAL_MODELS;
+                printProgress((*progress), TOTAL_MODELS, percentage,
+                              result->_mol->name);
                 Cell *cell = createCell(result, table);
                 cell->vtable->exportCell(cell);
                 cell->destroy(cell);
@@ -86,9 +89,6 @@ void allocateTasks(int pathNameCode, int *progress)
             #pragma omp critical
             // clang-format on
             {
-                double percentage = (double)(*progress) / (double)TOTAL_MODELS;
-                printProgress((*progress), TOTAL_MODELS, percentage,
-                              lat->_mol->name);
                 ads->ads_vtable->destroy(ads);
                 free(ads_name);
                 free(basePath);
