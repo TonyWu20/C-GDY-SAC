@@ -38,10 +38,10 @@ void test_add(char *latFile, char *latName, char *adsFile, char *adsName,
 void test_build()
 {
     int progCount = 0;
-    allocateTasks(ETHYLENE, &progCount);
-    allocateTasks(ACETIC_ACID, &progCount);
+    /* allocateTasks(ETHYLENE, &progCount); */
+    /* allocateTasks(ACETIC_ACID, &progCount); */
     allocateTasks(ETHANOL, &progCount);
-    allocateTasks(ETHANOL_OTHER, &progCount);
+    /* allocateTasks(ETHANOL_OTHER, &progCount); */
 }
 
 void test_fracCoordMat()

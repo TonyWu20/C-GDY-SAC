@@ -8,9 +8,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
-struct carbon_site siteDict[] = {
-    {"c1", 41},       {"c2", 42},        {"c3", 54},   {"c4", 43},
-    {"far_ring", 52}, {"near_ring", 40}, {"metal", 73}};
+struct carbon_site siteDict[] = {{"c1", 41}, {"c2", 42}, {"c3", 54}, {"c4", 43},
+                                 {"FR", 52}, {"NR", 40}, {"M", 73}};
 struct Lattice_vtable lat_vtable = {lattice_get_carbon_chain_vector,
                                     lattice_get_carbon_metal_vector,
                                     lattice_attach_molecule,

@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 static char *findBaseByElementId(int i);
 
-#define TOTAL_ELEMENT_NUM 44
+#define TOTAL_ELEMENT_NUM 1
 #define TOTAL_MODELS 9548
 enum
 {
@@ -32,7 +32,7 @@ char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Au", "Hg", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
                     "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"};
 
-double heightChoice[] = {1.4, 1.6, 1.4, 1.4};
+double heightChoice[] = {1.4, 1.6, 1.8, 1.4};
 
 void allocateTasks(int pathNameCode, int *progress)
 {

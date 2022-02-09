@@ -238,20 +238,38 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
     Matrix *y_base = col_vector_view_array(y_axis, 4);
     Matrix *stemVector = adsPtr->ads_vtable->get_stem_vector(adsPtr);
     double rot_angle;
-    if (plane_normal->value[2][0] < 0)
-        rot_angle = vector_angle(plane_normal, y_base) - PI;
+    plane_normal->value[0][0] = 0;
+    if (stemVector->value[0][0] < 0)
+        rot_angle = 2 * PI - vector_angle(plane_normal, y_base);
     else
         rot_angle = vector_angle(plane_normal, y_base);
-    Matrix *rot_mat = rotate_angle_around_axis(stemVector, rot_angle);
-    mPtr->vtable->apply_transformation(mPtr, rot_mat, rotate_around_origin);
     destroy_matrix(y_base);
     destroy_matrix(plane_normal);
     destroy_matrix(stemVector);
-    destroy_matrix(rot_mat);
+    free(stemVector);
     free(y_base);
     free(plane_normal);
-    free(stemVector);
+    Matrix *rot_mat = rotate_angle_around_axis(stemVector, rot_angle);
+    mPtr->vtable->apply_transformation(mPtr, rot_mat, rotate_around_origin);
+    // Release rot_mat
+    destroy_matrix(rot_mat);
     free(rot_mat);
+    Matrix *after_cd = mPtr->vtable->get_mol_coords(mPtr);
+    double *centroid = centroid_of_points(after_cd);
+    destroy_matrix(after_cd);
+    free(after_cd);
+    double cd_to_centroid_z =
+        mPtr->vtable->get_atom_by_Id(mPtr, adsPtr->coordAtomIds[0])
+            ->coord->value[2][0] -
+        centroid[2];
+    free(centroid);
+    if (cd_to_centroid_z < 0)
+    {
+        rot_mat = rotate_angle_around_axis(stemVector, PI);
+        mPtr->vtable->apply_transformation(mPtr, rot_mat, rotate_around_origin);
+        destroy_matrix(rot_mat);
+        free(rot_mat);
+    }
 }
 
 void Adsorbate_export_MSI(Adsorbate *self, char *dest)
