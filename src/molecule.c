@@ -245,14 +245,14 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
         rot_angle = vector_angle(plane_normal, y_base);
     destroy_matrix(y_base);
     destroy_matrix(plane_normal);
-    destroy_matrix(stemVector);
-    free(stemVector);
     free(y_base);
     free(plane_normal);
     Matrix *rot_mat = rotate_angle_around_axis(stemVector, rot_angle);
     mPtr->vtable->apply_transformation(mPtr, rot_mat, rotate_around_origin);
     // Release rot_mat
     destroy_matrix(rot_mat);
+    destroy_matrix(stemVector);
+    free(stemVector);
     free(rot_mat);
     Matrix *after_cd = mPtr->vtable->get_mol_coords(mPtr);
     double *centroid = centroid_of_points(after_cd);
@@ -265,10 +265,10 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
     free(centroid);
     if (cd_to_centroid_z < 0)
     {
-        rot_mat = rotate_angle_around_axis(stemVector, PI);
-        mPtr->vtable->apply_transformation(mPtr, rot_mat, rotate_around_origin);
-        destroy_matrix(rot_mat);
-        free(rot_mat);
+        Matrix *invert = rotate_angle_around_axis(stemVector, PI);
+        mPtr->vtable->apply_transformation(mPtr, invert, rotate_around_origin);
+        destroy_matrix(invert);
+        free(invert);
     }
 }
 
