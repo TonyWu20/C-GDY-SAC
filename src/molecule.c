@@ -264,7 +264,7 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
             ->coord->value[2][0] -
         centroid[2];
     free(centroid);
-    if (cd_to_centroid_z < 0)
+    if (cd_to_centroid_z > 0)
     {
         Matrix *invert = rotate_angle_around_axis(stemVector, PI);
         mPtr->vtable->apply_transformation(mPtr, invert, rotate_around_origin);
