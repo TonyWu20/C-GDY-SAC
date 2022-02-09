@@ -263,6 +263,7 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
         mPtr->vtable->get_atom_by_Id(mPtr, adsPtr->coordAtomIds[0])
             ->coord->value[2][0] -
         centroid[2];
+    printf("%s, %f\n", mPtr->name, cd_to_centroid_z);
     free(centroid);
     if (cd_to_centroid_z > 0)
     {
@@ -270,6 +271,13 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
         mPtr->vtable->apply_transformation(mPtr, invert, rotate_around_origin);
         destroy_matrix(invert);
         free(invert);
+        after_cd = mPtr->vtable->get_mol_coords(mPtr);
+        centroid = centroid_of_points(after_cd);
+        cd_to_centroid_z =
+            mPtr->vtable->get_atom_by_Id(mPtr, adsPtr->coordAtomIds[0])
+                ->coord->value[2][0] -
+            centroid[2];
+        printf("After: %s, %f\n", mPtr->name, cd_to_centroid_z);
     }
     destroy_matrix(stemVector);
     free(stemVector);
