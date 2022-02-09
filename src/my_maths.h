@@ -12,7 +12,6 @@ double vector_angle(Matrix *u, Matrix *v);
 Matrix *cross_product(Matrix *a, Matrix *b);
 Matrix *rotationMatrix(double rad, char axis);
 double *centroid_of_points(Matrix *coords);
-void rotate_around_origin(Matrix *rot_mat, Matrix *coords, Matrix **result);
 Matrix *cross_product(Matrix *a, Matrix *b); // Return normalized vector
 Matrix *rotate_u_to_v(Matrix *u, Matrix *v);
 Matrix *rotate_angle_around_axis(Matrix *axis, double rad);

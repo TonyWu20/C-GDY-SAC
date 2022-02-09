@@ -32,7 +32,7 @@ char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Au", "Hg", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
                     "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"};
 
-double heightChoice[] = {1.4, 1.6, 1.8, 1.4};
+double heightChoice[] = {1.4, 1.6, 1.4, 1.4};
 
 void allocateTasks(int pathNameCode, int *progress)
 {
@@ -41,11 +41,11 @@ void allocateTasks(int pathNameCode, int *progress)
     int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
     CastepInfo *table = initTable();
     int i, k;
-// clang-format off
+    // clang-format off
     #pragma omp parallel private(i,k) shared(table, adsList, progress)
     // clang-format on
     {
-// clang-format off
+        // clang-format off
         #pragma omp for
         // clang-format on
         for (i = 0; i < total_tasks; ++i)
@@ -84,7 +84,7 @@ void allocateTasks(int pathNameCode, int *progress)
                 cell->destroy(cell);
                 ads_copy->ads_vtable->destroy(ads_copy);
             }
-            // clang-format off
+// clang-format off
             #pragma omp critical
             // clang-format on
             {

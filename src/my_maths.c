@@ -136,27 +136,6 @@ double *centroid_of_points(Matrix *coords)
     return ans;
 }
 
-void rotate_around_origin(Matrix *rot_mat, Matrix *coords, Matrix **result)
-{
-    double *centroid = centroid_of_points(coords);
-    for (int i = 0; i < 3; ++i)
-    {
-        rot_mat->value[i][3] = -centroid[i];
-    }
-    Matrix *tmp;
-    multiply_matrices(rot_mat, coords, &tmp);
-    double trans_m[] = {1, 0, 0, centroid[0], 0, 1, 0, centroid[1],
-                        0, 0, 1, centroid[2], 0, 0, 0, 1};
-    Matrix *trans_mat = matrix_view_array(trans_m, 4, 4);
-    multiply_matrices(trans_mat, tmp, result);
-    // Operations done. Tidy up memory
-    free(centroid);
-    destroy_matrix(tmp);
-    destroy_matrix(trans_mat);
-    free(tmp);
-    free(trans_mat);
-}
-
 Matrix *cross_product(Matrix *a, Matrix *b) // Return normalized vector
 {
     double a1 = a->value[0][0], a2 = a->value[1][0], a3 = a->value[2][0];

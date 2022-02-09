@@ -3,11 +3,14 @@
 #include "matrix.h"
 #include "misc.h"
 #include "my_maths.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #define NULLSITE 255
+
+static bool faceUp(Adsorbate *self);
 enum
 {
     C1 = 41,
@@ -17,7 +20,7 @@ enum
     FR = 52,
     NR = 40,
     M = 73
-};
+} site_codes;
 
 int task_cd2_sym[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
                          {NR, C1}, {C1, M},  {C2, M}};
@@ -44,6 +47,17 @@ struct Adsorbate_vtable ads_vtable = {
     Adsorbate_make_upright,    Adsorbate_export_MSI,
     Adsorbate_duplicate,       destroyAdsorbate};
 
+static bool faceUp(Adsorbate *self)
+{
+    Molecule *mol = self->_mol;
+    Atom *cdAtom = mol->vtable->get_atom_by_Id(mol, self->coordAtomIds[0]);
+    Atom *upAtom = mol->vtable->get_atom_by_Id(mol, self->upperAtomId);
+    if (cdAtom->coord->value[2][0] < upAtom->coord->value[2][0])
+        return true;
+    else
+        return false;
+}
+
 Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr)
 {
     Molecule *newMol = malloc(sizeof(Molecule));
@@ -67,7 +81,7 @@ Molecule *Molecule_duplicate(Molecule *self)
 
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
-                           int *planeAtomIds, int bSym)
+                           int *planeAtomIds, int bSym, int upperAtomId)
 {
     Adsorbate *ads = malloc(sizeof(Adsorbate));
     ads->_mol = newMol;
@@ -79,15 +93,16 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
     ads->ads_vtable = &ads_vtable;
     ads->bSym = bSym;
     ads->taskLists = createTasks(ads);
+    ads->upperAtomId = upperAtomId;
     return ads;
 }
 
 Adsorbate *Adsorbate_duplicate(Adsorbate *self)
 {
     Molecule *molCopy = self->_mol->vtable->duplicate(self->_mol);
-    Adsorbate *dup =
-        createAdsorbate(molCopy, self->coordAtomNum, self->coordAtomIds,
-                        self->stemAtomIds, self->planeAtomIds, self->bSym);
+    Adsorbate *dup = createAdsorbate(
+        molCopy, self->coordAtomNum, self->coordAtomIds, self->stemAtomIds,
+        self->planeAtomIds, self->bSym, self->upperAtomId);
     return dup;
 }
 
@@ -240,10 +255,13 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
     plane_normal->value[0][0] = 0;
 
     Matrix *stemVector = adsPtr->ads_vtable->get_stem_vector(adsPtr);
-    if (stemVector->value[0][0] < 0)
-        rot_angle = 2 * PI - vector_angle(plane_normal, y_base);
+    double deviate_angle = vector_angle(plane_normal, y_base);
+    double stem_X = stemVector->value[0][0];
+    double plane_Z = plane_normal->value[2][0];
+    if ((stem_X < 0 && plane_Z > 0) || (stem_X > 0 && plane_Z < 0))
+        rot_angle = deviate_angle;
     else
-        rot_angle = vector_angle(plane_normal, y_base);
+        rot_angle = -deviate_angle;
 
     destroy_matrix(y_base);
     destroy_matrix(plane_normal);
@@ -251,33 +269,18 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
     free(plane_normal);
 
     Matrix *rot_mat = rotate_angle_around_axis(stemVector, rot_angle);
-    mPtr->vtable->apply_transformation(mPtr, rot_mat, rotate_around_origin);
+    mPtr->vtable->apply_transformation(mPtr, rot_mat,
+                                       (void(*))multiply_matrices);
     // Release rot_mat
     destroy_matrix(rot_mat);
     free(rot_mat);
-    Matrix *after_cd = mPtr->vtable->get_mol_coords(mPtr);
-    double *centroid = centroid_of_points(after_cd);
-    destroy_matrix(after_cd);
-    free(after_cd);
-    double cd_to_centroid_z =
-        mPtr->vtable->get_atom_by_Id(mPtr, adsPtr->coordAtomIds[0])
-            ->coord->value[2][0] -
-        centroid[2];
-    printf("%s, %f\n", mPtr->name, cd_to_centroid_z);
-    free(centroid);
-    if (cd_to_centroid_z > 0)
+    if (!faceUp(adsPtr))
     {
         Matrix *invert = rotate_angle_around_axis(stemVector, PI);
-        mPtr->vtable->apply_transformation(mPtr, invert, rotate_around_origin);
+        mPtr->vtable->apply_transformation(mPtr, invert,
+                                           (void(*))multiply_matrices);
         destroy_matrix(invert);
         free(invert);
-        after_cd = mPtr->vtable->get_mol_coords(mPtr);
-        centroid = centroid_of_points(after_cd);
-        cd_to_centroid_z =
-            mPtr->vtable->get_atom_by_Id(mPtr, adsPtr->coordAtomIds[0])
-                ->coord->value[2][0] -
-            centroid[2];
-        printf("After: %s, %f\n", mPtr->name, cd_to_centroid_z);
     }
     destroy_matrix(stemVector);
     free(stemVector);

@@ -18,6 +18,7 @@ typedef struct
     int stemAtomIds[2];
     int planeAtomIds[3];
     int bSym;
+    int upperAtomId;
     struct Adsorbate_vtable *ads_vtable;
     struct taskTable *taskLists;
 } Adsorbate;
@@ -62,7 +63,7 @@ Molecule *Molecule_duplicate(Molecule *self);
 // Memory Management
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
-                           int *planeAtomIds, int bSym);
+                           int *planeAtomIds, int bSym, int upperAtomId);
 /* Duplicate the adsorbate */
 Adsorbate *Adsorbate_duplicate(Adsorbate *self);
 

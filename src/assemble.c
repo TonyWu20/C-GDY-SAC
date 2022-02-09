@@ -51,7 +51,7 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to)
         lat->_mol->vtable->get_vector_ab(lat->_mol, id_from, id_to);
     Matrix *rot_mat = rotate_u_to_v(ads_stem_vec, direction_vec);
     ads->_mol->vtable->apply_transformation(ads->_mol, rot_mat,
-                                            rotate_around_origin);
+                                            (void(*))multiply_matrices);
     if (strcmp(ads->_mol->name, "C2H4") && strcmp(ads->_mol->name, "CH2CHOH"))
         ads->ads_vtable->make_upright(ads);
     /* Clean memory */
