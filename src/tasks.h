@@ -6,7 +6,6 @@
 #include "lattice.h"
 #include "misc.h"
 #include "molecule.h"
-#include "param.h"
 #include "parser.h"
 enum
 {

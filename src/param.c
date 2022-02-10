@@ -1,4 +1,3 @@
-#pragma once
 #include "param.h"
 #include "parser.h"
 
@@ -10,7 +9,7 @@ int getFinalCutoffEnergy(Cell *cell)
     {
         CastepInfo *item = find_item(table, cell->elmLists[i]);
         int fineEnergy = parse_fineCutoffEnergy(item->info->potential_file);
-        int ultraFineEnergy = roundupBiggerTenth(fineEnergy) * 1.1;
+        int ultraFineEnergy = roundupBiggerTenth(fineEnergy * 1.1);
         energy = (ultraFineEnergy > energy) ? ultraFineEnergy : energy;
     }
     return energy;
@@ -89,7 +88,6 @@ void write_param(Cell *self)
     char *exportDir = self->lattice->vtable->exportDir(self->lattice,
                                                        self->lattice->pathName);
     char *stemName = self->lattice->_mol->name;
-    createDirectory(exportDir);
     char *geomParamName;
     int fileNameLen = 1 + snprintf(NULL, 0, "%s%s.param", exportDir, stemName);
     geomParamName = malloc(fileNameLen);

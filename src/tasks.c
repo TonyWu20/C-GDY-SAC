@@ -1,4 +1,5 @@
 #include "tasks.h"
+#include "param.h"
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,8 +7,8 @@
 #include <sys/stat.h>
 static char *findBaseByElementId(int i);
 
-#define TOTAL_ELEMENT_NUM 1
-#define TOTAL_MODELS 231 * TOTAL_ELEMENT_NUM
+#define TOTAL_ELEMENT_NUM 44
+#define TOTAL_MODELS (231 * TOTAL_ELEMENT_NUM)
 enum
 {
     T3D,
@@ -69,15 +70,15 @@ void allocateTasks(int pathNameCode, int *progress)
                     ads_copy->taskLists->tasks[k][1], pathways[pathNameCode],
                     heightChoice[pathNameCode]);
                 result->vtable->export_msi(result, pathways[pathNameCode]);
-                (*progress)++;
-                double percentage = (double)(*progress) / (double)TOTAL_MODELS;
-                printProgress((*progress), TOTAL_MODELS, percentage,
-                              result->_mol->name);
                 Cell *cell = createCell(result, table);
                 cell->vtable->exportCell(cell);
                 write_param(cell);
                 write_kptaux(cell);
                 write_trjaux(cell);
+                (*progress)++;
+                double percentage = (double)(*progress) / (double)TOTAL_MODELS;
+                printProgress((*progress), TOTAL_MODELS, percentage,
+                              result->_mol->name);
                 cell->destroy(cell);
                 ads_copy->ads_vtable->destroy(ads_copy);
             }
