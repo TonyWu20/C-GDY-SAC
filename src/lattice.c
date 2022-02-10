@@ -102,6 +102,10 @@ void lattice_rotate_to_standard_orientation(Lattice *self)
     b->value[0][0] = 1;
     b->value[3][0] = 1;
     double a_to_x = vector_angle(a, b);
+    destroy_matrix(a);
+    destroy_matrix(b);
+    free(a);
+    free(b);
     if (a_to_x == 0)
     {
         destroy_matrix(a);
@@ -113,17 +117,15 @@ void lattice_rotate_to_standard_orientation(Lattice *self)
     double ZAxis_db[] = {0, 0, 1, 1};
     Matrix *zAxis = col_vector_view_array(ZAxis_db, 4);
     Matrix *rot_mat = rotate_angle_around_axis(zAxis, a_to_x);
+    destroy_matrix(zAxis);
+    free(zAxis);
     Matrix *new_lat_vec;
     multiply_matrices(rot_mat, lat_vectors, &new_lat_vec);
     self->lattice_vectors = new_lat_vec;
     mol->vtable->apply_transformation(mol, rot_mat, (void(*))multiply_matrices);
     destroy_matrix(lat_vectors);
-    destroy_matrix(a);
-    destroy_matrix(b);
     destroy_matrix(rot_mat);
     free(lat_vectors);
-    free(a);
-    free(b);
     free(rot_mat);
 }
 
