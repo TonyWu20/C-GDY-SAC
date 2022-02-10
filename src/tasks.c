@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 static char *findBaseByElementId(int i);
 
 #define TOTAL_ELEMENT_NUM 44
@@ -35,18 +36,16 @@ char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
 
 double heightChoice[] = {1.4, 1.6, 1.4, 1.4};
 
-void allocateTasks(int pathNameCode, int *progress)
+void generateModels(int total_tasks, int pathNameCode, int adsListLen,
+                    char **adsList, char **elements, char **pathways,
+                    CastepInfo *table, PotentialFile *potTable, int *progress)
 {
-    int adsListLen = 0;
-    char **adsList = pathway_adsLists(pathNameCode, &adsListLen);
-    int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
-    CastepInfo *table = initTable();
     int i, k;
 // clang-format off
-    #pragma omp parallel private(i,k) shared(table, adsList, progress)
+    #pragma omp parallel private(i,k) shared (adsList, table, potTable, progress)
     // clang-format on
     {
-// clang-format off
+        // clang-format off
         #pragma omp for
         // clang-format on
         for (i = 0; i < total_tasks; ++i)
@@ -75,9 +74,11 @@ void allocateTasks(int pathNameCode, int *progress)
                 write_param(cell);
                 write_kptaux(cell);
                 write_trjaux(cell);
+                copy_potentials(cell, potTable);
                 (*progress)++;
-                double percentage = (double)(*progress) / (double)TOTAL_MODELS;
-                printProgress((*progress), TOTAL_MODELS, percentage,
+                double percentage =
+                    (double)(*progress) / (double)(TOTAL_MODELS);
+                printProgress(*progress, TOTAL_MODELS, percentage,
                               result->_mol->name);
                 cell->destroy(cell);
                 ads_copy->ads_vtable->destroy(ads_copy);
@@ -94,12 +95,29 @@ void allocateTasks(int pathNameCode, int *progress)
             }
         }
     }
+}
+
+void allocateTasks(int pathNameCode, int *progress, CastepInfo *table,
+                   PotentialFile *potTable)
+{
+    int adsListLen = 0;
+    char **adsList = pathway_adsLists(pathNameCode, &adsListLen);
+    int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
+    generateModels(total_tasks, pathNameCode, adsListLen, adsList, elements,
+                   pathways, table, potTable, progress);
+    // clang-format off
+    /* #pragma omp parallel private(i,k) shared(table, adsList, progress) */
+    // clang-format on
+    /* { */
+    // clang-format off
+        /* #pragma omp for */
+    // clang-format on
+    /* } */
     for (int i = 0; i < adsListLen; ++i)
     {
         free(adsList[i]);
     }
     free(adsList);
-    delete_all(&table);
 }
 
 /* Malloc file path of the base model */

@@ -1,4 +1,5 @@
 #include "castep_database.h"
+#include "misc.h"
 #include "stdio.h"
 
 struct ElmItem ads[] = {{"C", 2, 12.0109996796, "./Potentials/C_00PBE.usp", 0},
@@ -122,3 +123,64 @@ CastepInfo *initTable()
     return table;
 }
 /* CastepInfo hash table related functions ends */
+PotentialFile *initPotTable(void)
+{
+    PotentialFile *potTable = NULL;
+    for (int i = 0; i < 3; ++i)
+    {
+        struct ElmItem cur = ads[i];
+        add_PotItem(&potTable, &cur);
+    }
+    for (int i = 0; i < 10; ++i)
+    {
+        struct ElmItem cur = metal3D[i];
+        add_PotItem(&potTable, &cur);
+    }
+    for (int i = 0; i < 10; ++i)
+    {
+        struct ElmItem cur = metal4D[i];
+        add_PotItem(&potTable, &cur);
+    }
+    for (int i = 0; i < 9; ++i)
+    {
+        struct ElmItem cur = metal5D[i];
+        add_PotItem(&potTable, &cur);
+    }
+    for (int i = 0; i < 15; ++i)
+    {
+        struct ElmItem cur = metalLM[i];
+        add_PotItem(&potTable, &cur);
+    }
+    return potTable;
+}
+
+void add_PotItem(PotentialFile **table, struct ElmItem *item)
+{
+    PotentialFile *potItem = malloc(sizeof(PotentialFile));
+    potItem->elm = item->elm;
+    potItem->potential_file = item->potential_file;
+    potItem->fileContent = readWholeFile(item->potential_file);
+    HASH_ADD_KEYPTR(hh, *table, potItem->elm, strlen(potItem->elm), potItem);
+}
+
+PotentialFile *find_PotItem(PotentialFile *table, const char *elm)
+{
+    PotentialFile *ret;
+    HASH_FIND_STR(table, elm, ret);
+    if (!ret)
+    {
+        printf("Cannot find item with key %s\n", elm);
+    }
+    return ret;
+}
+
+void delete_PotAll(PotentialFile **table)
+{
+    PotentialFile *currItem, *tmp;
+    HASH_ITER(hh, *table, currItem, tmp)
+    {
+        HASH_DEL(*table, currItem);
+        free(currItem->fileContent);
+        free(currItem);
+    }
+}

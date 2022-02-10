@@ -241,18 +241,6 @@ char *cell_speciesPot_writer(Cell *self)
         tmpLines[i] = malloc(lineLens[i]);
         snprintf(tmpLines[i], lineLens[i], format, item->name, potential_stem);
         totalLen += lineLens[i];
-        int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir, potential_stem);
-        char *potPath = malloc(pathLen);
-        snprintf(potPath, pathLen, "%s%s", exportDir, potential_stem);
-        FILE *srcPotFile = fopen(item->info->potential_file, "r");
-        FILE *copiedPotFile = fopen(potPath, "w");
-        for (char c = fgetc(srcPotFile); c != EOF; c = fgetc(srcPotFile))
-        {
-            fputc(c, copiedPotFile);
-        }
-        free(potPath);
-        fclose(srcPotFile);
-        fclose(copiedPotFile);
         i++;
     }
     /* for (int i = 0; i < self->elmNums; ++i) */

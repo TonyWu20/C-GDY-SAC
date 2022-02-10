@@ -38,10 +38,14 @@ void test_add(char *latFile, char *latName, char *adsFile, char *adsName,
 void test_build()
 {
     int progCount = 0;
-    allocateTasks(ETHYLENE, &progCount);
-    allocateTasks(ACETIC_ACID, &progCount);
-    allocateTasks(ETHANOL, &progCount);
-    allocateTasks(ETHANOL_OTHER, &progCount);
+    CastepInfo *table = initTable();
+    PotentialFile *potTable = initPotTable();
+    allocateTasks(ETHYLENE, &progCount, table, potTable);
+    allocateTasks(ACETIC_ACID, &progCount, table, potTable);
+    allocateTasks(ETHANOL, &progCount, table, potTable);
+    allocateTasks(ETHANOL_OTHER, &progCount, table, potTable);
+    delete_all(&table);
+    delete_PotAll(&potTable);
 }
 
 void test_fracCoordMat()
