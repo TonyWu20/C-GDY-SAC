@@ -230,17 +230,58 @@ char *cell_speciesPot_writer(Cell *self)
     char **tmpLines = malloc(sizeof(char *) * self->elmNums);
     int totalLen = 0;
     const char format[] = "%8s  %s\n";
-    for (int i = 0; i < self->elmNums; ++i)
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
+                                                       self->lattice->pathName);
+    CastepInfo *item, *tmp;
+    int i = 0;
+    HASH_ITER(hh, self->infoTab, item, tmp)
     {
-        CastepInfo *item = find_item(self->infoTab, self->elmLists[i]);
         char *potential_stem = strrchr(item->info->potential_file, '/') + 1;
-        lineLens[i] =
-            1 + snprintf(NULL, 0, format, self->elmLists[i], potential_stem);
+        lineLens[i] = 1 + snprintf(NULL, 0, format, item->name, potential_stem);
         tmpLines[i] = malloc(lineLens[i]);
-        snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
-                 potential_stem);
+        snprintf(tmpLines[i], lineLens[i], format, item->name, potential_stem);
         totalLen += lineLens[i];
+        int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir, potential_stem);
+        char *potPath = malloc(pathLen);
+        snprintf(potPath, pathLen, "%s%s", exportDir, potential_stem);
+        FILE *srcPotFile = fopen(item->info->potential_file, "r");
+        FILE *copiedPotFile = fopen(potPath, "w");
+        for (char c = fgetc(srcPotFile); c != EOF; c = fgetc(srcPotFile))
+        {
+            fputc(c, copiedPotFile);
+        }
+        free(potPath);
+        fclose(srcPotFile);
+        fclose(copiedPotFile);
+        i++;
     }
+    /* for (int i = 0; i < self->elmNums; ++i) */
+    /* { */
+    /*     CastepInfo *item = find_item(self->infoTab, self->elmLists[i]); */
+    /*     char *potential_stem = strrchr(item->info->potential_file, '/') + 1;
+     */
+    /*     lineLens[i] = */
+    /*         1 + snprintf(NULL, 0, format, self->elmLists[i], potential_stem);
+     */
+    /*     tmpLines[i] = malloc(lineLens[i]); */
+    /*     snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i], */
+    /*              potential_stem); */
+    /*     totalLen += lineLens[i]; */
+    /*     int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir,
+     * potential_stem); */
+    /*     char *potPath = malloc(pathLen); */
+    /*     snprintf(potPath, pathLen, "%s%s", exportDir, potential_stem); */
+    /*     FILE *srcPotFile = fopen(item->info->potential_file, "r"); */
+    /*     FILE *copiedPotFile = fopen(potPath, "w"); */
+    /*     for (char c = fgetc(srcPotFile); c != EOF; c = fgetc(srcPotFile)) */
+    /*     { */
+    /*         fputc(c, copiedPotFile); */
+    /*     } */
+    /*     free(potPath); */
+    /*     fclose(srcPotFile); */
+    /*     fclose(copiedPotFile); */
+    /* } */
+    free(exportDir);
     char *ret = calloc(totalLen + 1, sizeof(char));
     for (int i = 0; i < self->elmNums; ++i)
     {

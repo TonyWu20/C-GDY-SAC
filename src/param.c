@@ -209,3 +209,24 @@ void write_trjaux(Cell *self)
     free(trjauxName);
     fclose(trjauxFile);
 }
+
+void copy_potentials(Cell *self)
+{
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
+                                                       self->lattice->pathName);
+    for (int i = 0; i < self->elmNums; ++i)
+    {
+        CastepInfo *item = find_item(self->infoTab, self->elmLists[i]);
+        char *potential_stem = strrchr(item->info->potential_file, '/') + 1;
+        int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir, potential_stem);
+        char *potPath = malloc(pathLen);
+        snprintf(potPath, pathLen, "%s%s", exportDir, potential_stem);
+        char *potContent = readWholeFile(item->info->potential_file);
+        FILE *copiedPotFile = fopen(potPath, "w");
+        free(potPath);
+        fputs(potContent, copiedPotFile);
+        free(potContent);
+        fclose(copiedPotFile);
+    }
+    free(exportDir);
+}

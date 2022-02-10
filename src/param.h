@@ -22,3 +22,5 @@ void write_param(Cell *self);
 void write_kptaux(Cell *self);
 
 void write_trjaux(Cell *self);
+
+void copy_potentials(Cell *self);
