@@ -63,12 +63,6 @@ void allocateTasks(int pathNameCode, int *progress)
                 parse_molecule_from_file(adsList[currAds], ads_name);
             for (k = 0; k < ads->taskLists->taskNum; ++k)
             {
-                struct stat s;
-                char *newFileName =
-                    append_mol_name(lat, ads, ads->taskLists->tasks[k][0],
-                                    ads->taskLists->tasks[k][1]);
-                if (stat(newFileName, &s) == 0)
-                    continue;
                 Adsorbate *ads_copy = ads->ads_vtable->duplicate(ads);
                 Lattice *result = Add_mol_to_lattice(
                     lat, ads_copy, ads_copy->taskLists->tasks[k][0],
@@ -81,6 +75,9 @@ void allocateTasks(int pathNameCode, int *progress)
                               result->_mol->name);
                 Cell *cell = createCell(result, table);
                 cell->vtable->exportCell(cell);
+                write_param(cell);
+                write_kptaux(cell);
+                write_trjaux(cell);
                 cell->destroy(cell);
                 ads_copy->ads_vtable->destroy(ads_copy);
             }

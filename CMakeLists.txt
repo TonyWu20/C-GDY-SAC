@@ -20,7 +20,7 @@ add_library (msi_modeling src/atom.c src/molecule.c src/lattice.c src/misc.c src
 target_link_libraries(msi_modeling -L/opt/homebrew/lib -lpcre2-8 -lMatrix -lm)
 add_library (castepSeedGen src/cell.c src/castep_database.c)
 target_link_libraries(castepSeedGen msi_modeling)
-add_library(task_control src/tasks.c)
+add_library(task_control src/tasks.c src/param.c)
 target_link_libraries(task_control castepSeedGen msi_modeling -fopenmp)
 add_executable(test.o src/main.c)
 target_link_libraries(test.o msi_modeling castepSeedGen task_control)

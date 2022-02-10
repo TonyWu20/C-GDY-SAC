@@ -13,3 +13,12 @@ int getFinalCutoffEnergy(Cell *cell);
 
 /* Parse fine cutoff energy from given potential file */
 int parse_fineCutoffEnergy(const char *fileName);
+/* Adjust necessary parameters according to the constitutional elements
+ *, write to target directory
+ */
+void write_param(Cell *self);
+
+/* Write kptaux content out to the target directory */
+void write_kptaux(Cell *self);
+
+void write_trjaux(Cell *self);

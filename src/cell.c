@@ -406,10 +406,3 @@ char **sortedElementList(Cell *self, int *returnSize)
 }
 
 /* Cell ends */
-
-void write_param(Cell *self)
-{
-    CastepInfo *table = self->infoTab;
-    char **elmLists = self->elmLists;
-    FILE **potFile_arr = malloc(sizeof(FILE *) * self->elmNums);
-}

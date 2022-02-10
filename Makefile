@@ -384,6 +384,30 @@ src/my_maths.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/my_maths.c.s
 .PHONY : src/my_maths.c.s
 
+src/param.o: src/param.c.o
+.PHONY : src/param.o
+
+# target to build an object file
+src/param.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.o
+.PHONY : src/param.c.o
+
+src/param.i: src/param.c.i
+.PHONY : src/param.i
+
+# target to preprocess a source file
+src/param.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.i
+.PHONY : src/param.c.i
+
+src/param.s: src/param.c.s
+.PHONY : src/param.s
+
+# target to generate assembly for a file
+src/param.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.s
+.PHONY : src/param.c.s
+
 src/parser.o: src/parser.c.o
 .PHONY : src/parser.o
 
@@ -471,6 +495,9 @@ help:
 	@echo "... src/my_maths.o"
 	@echo "... src/my_maths.i"
 	@echo "... src/my_maths.s"
+	@echo "... src/param.o"
+	@echo "... src/param.i"
+	@echo "... src/param.s"
 	@echo "... src/parser.o"
 	@echo "... src/parser.i"
 	@echo "... src/parser.s"
