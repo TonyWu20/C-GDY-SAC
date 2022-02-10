@@ -247,33 +247,58 @@ Matrix *Adsorbate_get_plane_normal(Adsorbate *adsPtr)
 void Adsorbate_make_upright(Adsorbate *adsPtr)
 {
     Molecule *mPtr = adsPtr->_mol;
-    Matrix *plane_normal =
-        adsPtr->ads_vtable->get_plane_normal(adsPtr); // malloced
-    double y_axis[] = {0, 1, 0, 1};
-    Matrix *y_base = col_vector_view_array(y_axis, 4);
-    double rot_angle;
-    plane_normal->value[0][0] = 0;
-
     Matrix *stemVector = adsPtr->ads_vtable->get_stem_vector(adsPtr);
-    double deviate_angle = vector_angle(plane_normal, y_base);
-    double stem_X = stemVector->value[0][0];
-    double plane_Z = plane_normal->value[2][0];
-    if ((stem_X < 0 && plane_Z > 0) || (stem_X > 0 && plane_Z < 0))
-        rot_angle = deviate_angle;
+    if (!strcmp(mPtr->name, "CO"))
+    {
+        double z_axis[] = {0, 0, 1, 1};
+        Matrix *z_base = col_vector_view_array(z_axis, 4);
+        Matrix *rot_mat = rotate_u_to_v(stemVector, z_base);
+        mPtr->vtable->apply_transformation(mPtr, rot_mat,
+                                           (void(*))multiply_matrices);
+        destroy_matrix(z_base);
+        destroy_matrix(rot_mat);
+        free(z_base);
+        free(rot_mat);
+    }
     else
-        rot_angle = -deviate_angle;
+    {
+        Matrix *plane_normal =
+            adsPtr->ads_vtable->get_plane_normal(adsPtr); // malloced
+        double y_axis[] = {0, 1, 0, 1};
+        Matrix *y_base = col_vector_view_array(y_axis, 4);
+        double rot_angle;
+        plane_normal->value[0][0] = 0;
 
-    destroy_matrix(y_base);
-    destroy_matrix(plane_normal);
-    free(y_base);
-    free(plane_normal);
+        double deviate_angle = vector_angle(plane_normal, y_base);
+        double stem_X = stemVector->value[0][0];
+        double plane_Z = plane_normal->value[2][0];
+        if ((stem_X < 0 && plane_Z > 0) || (stem_X > 0 && plane_Z < 0))
+            rot_angle = deviate_angle;
+        else if (!strcmp(mPtr->name, "CH3COOH"))
+        {
+            Matrix *z_base = create_matrix(4, 1);
+            copy_matrix(y_base, &z_base);
+            z_base->value[1][0] = 0;
+            z_base->value[2][0] = 1;
+            rot_angle = vector_angle(plane_normal, z_base);
+            destroy_matrix(z_base);
+            free(z_base);
+        }
+        else
+            rot_angle = -deviate_angle;
 
-    Matrix *rot_mat = rotate_angle_around_axis(stemVector, rot_angle);
-    mPtr->vtable->apply_transformation(mPtr, rot_mat,
-                                       (void(*))multiply_matrices);
-    // Release rot_mat
-    destroy_matrix(rot_mat);
-    free(rot_mat);
+        destroy_matrix(y_base);
+        destroy_matrix(plane_normal);
+        free(y_base);
+        free(plane_normal);
+
+        Matrix *rot_mat = rotate_angle_around_axis(stemVector, rot_angle);
+        mPtr->vtable->apply_transformation(mPtr, rot_mat,
+                                           (void(*))multiply_matrices);
+        // Release rot_mat
+        destroy_matrix(rot_mat);
+        free(rot_mat);
+    }
     if (!faceUp(adsPtr))
     {
         Matrix *invert = rotate_angle_around_axis(stemVector, PI);
