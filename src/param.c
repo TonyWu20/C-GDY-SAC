@@ -96,6 +96,7 @@ void write_param(Cell *self)
     fputs(newGeomParam, geomParam);
     fclose(geomParam);
     free(geomParamName);
+    free(newGeomParam);
     char template_dos[] = "task : BandStructure\n"
                           "continuation : default\n"
                           "comment : CASTEP calculation from Materials Studio\n"
@@ -141,6 +142,7 @@ void write_param(Cell *self)
     fputs(newDosParam, dosParamFile);
     fclose(dosParamFile);
     free(dosParamName);
+    free(newDosParam);
 }
 
 void write_kptaux(Cell *self)
