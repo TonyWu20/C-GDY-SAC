@@ -7,7 +7,7 @@
 static char *findBaseByElementId(int i);
 
 #define TOTAL_ELEMENT_NUM 1
-#define TOTAL_MODELS 9548
+#define TOTAL_MODELS 231 * TOTAL_ELEMENT_NUM
 enum
 {
     T3D,
@@ -16,15 +16,15 @@ enum
     LM
 };
 char *pathways[] = {"ethylene", "acetic_acid", "ethanol", "ethanol_other_ads"};
-char *ethylene_ads[] = {"COCHO.msi",   "COCHOH.msi",   "OCH2CO.msi",
-                        "OCH2COH.msi", "OCH2CHOH.msi", "OCH2CH.msi",
-                        "OCH2CH2.msi", "C2H4.msi"};
+char *ethylene_ads[] = {
+    "CO.msi",      "CHO.msi",      "COCHO.msi",  "COCHOH.msi",  "OCH2CO.msi",
+    "OCH2COH.msi", "OCH2CHOH.msi", "OCH2CH.msi", "OCH2CH2.msi", "C2H4.msi"};
 char *acetic_acid_ads[] = {"OCH2C_cyc_OH.msi", "CH3COOH.msi"};
 char *ethanol_ads[] = {
     "Glyoxal.msi",        "HOCCHO.msi",   "HOHCCHO.msi",
     "Glycolaldehyde.msi", "CH2CHO.msi",   "CH2CHOH.msi",
     "CH2CH2OH.msi",       "CH3CH2OH.msi", "acetaldehyde.msi"};
-char *ethanol_other_ads[] = {"CH2OHCH2OH.msi", "ethylene_glycol.msi"};
+char *ethanol_other_ads[] = {"CH2OHCH2O.msi", "ethylene_glycol.msi"};
 
 char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                     "Zn", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
@@ -41,11 +41,11 @@ void allocateTasks(int pathNameCode, int *progress)
     int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
     CastepInfo *table = initTable();
     int i, k;
-    // clang-format off
+// clang-format off
     #pragma omp parallel private(i,k) shared(table, adsList, progress)
     // clang-format on
     {
-        // clang-format off
+// clang-format off
         #pragma omp for
         // clang-format on
         for (i = 0; i < total_tasks; ++i)
@@ -84,7 +84,7 @@ void allocateTasks(int pathNameCode, int *progress)
                 cell->destroy(cell);
                 ads_copy->ads_vtable->destroy(ads_copy);
             }
-// clang-format off
+            // clang-format off
             #pragma omp critical
             // clang-format on
             {
