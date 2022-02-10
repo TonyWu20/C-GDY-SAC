@@ -138,6 +138,7 @@ void write_param(Cell *self)
     fileNameLen = 1 + snprintf(NULL, 0, "%s%s_DOS.param", exportDir, stemName);
     dosParamName = malloc(fileNameLen);
     snprintf(dosParamName, fileNameLen, "%s%s_DOS.param", exportDir, stemName);
+    free(exportDir);
     FILE *dosParamFile = fopen(dosParamName, "w");
     fputs(newDosParam, dosParamFile);
     fclose(dosParamFile);
@@ -168,6 +169,7 @@ void write_kptaux(Cell *self)
     char *kptauxDosName;
     kptauxDosName = malloc(len);
     snprintf(kptauxDosName, len, "%s%s_DOS.kptaux", exportDir, stemName);
+    free(exportDir);
     FILE *kptauxDosFile = fopen(kptauxDosName, "w");
     free(kptauxDosName);
     fputs(kptauxText, kptauxDosFile);
@@ -183,6 +185,7 @@ void write_trjaux(Cell *self)
     int len = 1 + snprintf(NULL, 0, "%s%s.trjaux", exportDir, stemName);
     trjauxName = malloc(len);
     snprintf(trjauxName, len, "%s%s.trjaux", exportDir, stemName);
+    free(exportDir);
     FILE *trjauxFile = fopen(trjauxName, "w");
     char trjauxHeader[] =
         "# Atom IDs to appear in any .trj file to be generated.\n"
