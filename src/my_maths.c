@@ -158,6 +158,8 @@ Matrix *rotate_u_to_v(Matrix *u, Matrix *v)
     Matrix *n = cross_product(u, v);
     double angle = vector_angle(u, v);
     Matrix *T = rotate_angle_around_axis(n, angle);
+    destroy_matrix(n);
+    free(n);
     return T;
 }
 
