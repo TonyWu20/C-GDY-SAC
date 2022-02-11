@@ -1,0 +1,63 @@
+# MSI CERIUS2 DataModel File Version 4 0
+# cd_num: 2
+# cd_ids: 1,6
+# stem_ids: 1,6
+# plane_ids: 1,2,3
+# Symmetric: 0
+# Up_atom: 4
+(1 Model
+  (2 Atom
+    (A C ACL "8 O")
+    (A C Label "O")
+    (A D XYZ (4.993297356884 -6.943143972453 0.1383486798062))
+    (A I Id 1)
+  )
+  (3 Atom
+    (A C ACL "6 C")
+    (A C Label "C")
+    (A D XYZ (5.721109293719 -5.620985547219 0.07992580964936))
+    (A I Id 2)
+  )
+  (4 Atom
+    (A C ACL "6 C")
+    (A C Label "C")
+    (A D XYZ (7.26000751053 -5.579266028432 0.152192184493))
+    (A I Id 3)
+  )
+  (5 Atom
+    (A C ACL "0 H")
+    (A C Label "H")
+    (A D XYZ (7.545172438266 -4.908308723478 1.028603740459))
+    (A I Id 4)
+  )
+  (6 Atom
+    (A C ACL "0 H")
+    (A C Label "H")
+    (A D XYZ (5.319216996517 -4.969396671411 0.9246236697658))
+    (A I Id 5)
+  )
+  (7 Atom
+    (A C ACL "8 O")
+    (A C Label "O")
+    (A D XYZ (8.049833419114 -6.860041580443 0.2828745972764))
+    (A I Id 6)
+  )
+  (8 Atom
+    (A C ACL "0 H")
+    (A C Label "H")
+    (A D XYZ (5.479393807538 -5.097284017808 -0.9033901560223))
+    (A I Id 7)
+  )
+  (9 Atom
+    (A C ACL "0 H")
+    (A C Label "H")
+    (A D XYZ (4.003571186056 -6.799715254603 0.6199816633597))
+    (A I Id 8)
+  )
+  (10 Atom
+    (A C ACL "0 H")
+    (A C Label "H")
+    (A D XYZ (7.67211423132 -5.099803576113 -0.7964298498332))
+    (A I Id 9)
+  )
+)
