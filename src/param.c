@@ -234,3 +234,28 @@ void copy_potentials(Cell *self, PotentialFile *table)
     }
     free(exportDir);
 }
+
+void write_pbsScript(Cell *self)
+{
+    char *exportDir = self->lattice->vtable->exportDir(
+        self->lattice, self->lattice->pathName); /* Malloced String Created */
+    char *pbsScriptTemplate = readWholeFile(
+        "./resource/pbs_template.sh"); /* Malloced String Created */
+    int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir, "hpc.pbs.sh");
+    char *pathName = malloc(pathLen); /* Malloced String Created */
+    snprintf(pathName, pathLen, "%s%s", exportDir, "hpc.pbs.sh");
+    free(exportDir);                     /* Malloced String Freed */
+    FILE *script = fopen(pathName, "w"); /* FILE opened */
+    free(pathName);                      /* Malloced String Freed */
+    fputs(pbsScriptTemplate, script);
+    free(pbsScriptTemplate); /* Malloced String Freed */
+    char cmdFormat[] = "mpirun --mca btl ^tcp --hostfile hostfile "
+                       "/home/bhuang/castep.mpi %s\n";
+    int cmdLen = 1 + snprintf(NULL, 0, cmdFormat, self->lattice->_mol->name);
+    char *cmdLine = malloc(cmdLen); /* Malloced String Created */
+    snprintf(cmdLine, cmdLen, cmdFormat, self->lattice->_mol->name);
+    fputs(cmdLine, script);
+    free(cmdLine); /* Malloced String Freed */
+    fputs("rm ./hostfile", script);
+    fclose(script); /* FILE closed */
+}
