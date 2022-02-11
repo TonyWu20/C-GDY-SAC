@@ -1,6 +1,18 @@
 #include "param.h"
 #include "parser.h"
 
+static char *exportFileName(Cell *self, const char *format,
+                            const char *desiredName)
+{
+    char *exportDir = self->lattice->vtable->exportDir(
+        self->lattice, self->lattice->pathName); /* Malloced String Created */
+    int fileNameLen = 1 + snprintf(NULL, 0, format, exportDir, desiredName);
+    char *ret = malloc(fileNameLen);
+    snprintf(ret, fileNameLen, format, exportDir, desiredName);
+    free(exportDir);
+    return ret;
+}
+
 int getFinalCutoffEnergy(Cell *cell)
 {
     CastepInfo *table = cell->infoTab;
@@ -88,10 +100,7 @@ void write_param(Cell *self)
     char *exportDir = self->lattice->vtable->exportDir(self->lattice,
                                                        self->lattice->pathName);
     char *stemName = self->lattice->_mol->name;
-    char *geomParamName;
-    int fileNameLen = 1 + snprintf(NULL, 0, "%s%s.param", exportDir, stemName);
-    geomParamName = malloc(fileNameLen);
-    snprintf(geomParamName, fileNameLen, "%s%s.param", exportDir, stemName);
+    char *geomParamName = exportFileName(self, "%s%s.param", stemName);
     FILE *geomParam = fopen(geomParamName, "w");
     fputs(newGeomParam, geomParam);
     fclose(geomParam);
@@ -134,10 +143,7 @@ void write_param(Cell *self)
                           "pdos_calculate_weights : true\n"
                           "bs_write_eigenvalues : true\n";
     char *newDosParam = formatParam(template_dos, spin, cutoff_energy);
-    char *dosParamName;
-    fileNameLen = 1 + snprintf(NULL, 0, "%s%s_DOS.param", exportDir, stemName);
-    dosParamName = malloc(fileNameLen);
-    snprintf(dosParamName, fileNameLen, "%s%s_DOS.param", exportDir, stemName);
+    char *dosParamName = exportFileName(self, "%s%s_DOS.param", stemName);
     free(exportDir);
     FILE *dosParamFile = fopen(dosParamName, "w");
     fputs(newDosParam, dosParamFile);
@@ -157,18 +163,12 @@ void write_kptaux(Cell *self)
     char *exportDir = self->lattice->vtable->exportDir(self->lattice,
                                                        self->lattice->pathName);
     char *stemName = self->lattice->_mol->name;
-    char *kptauxName;
-    int len = 1 + snprintf(NULL, 0, "%s%s.kptaux", exportDir, stemName);
-    kptauxName = malloc(len);
-    snprintf(kptauxName, len, "%s%s.kptaux", exportDir, stemName);
+    char *kptauxName = exportFileName(self, "%s%s.kptaux", stemName);
     FILE *kptauxFile = fopen(kptauxName, "w");
     free(kptauxName);
     fputs(kptauxText, kptauxFile);
     fclose(kptauxFile);
-    len = 1 + snprintf(NULL, 0, "%s%s_DOS.kptaux", exportDir, stemName);
-    char *kptauxDosName;
-    kptauxDosName = malloc(len);
-    snprintf(kptauxDosName, len, "%s%s_DOS.kptaux", exportDir, stemName);
+    char *kptauxDosName = exportFileName(self, "%s%s_DOS.kptaux", stemName);
     free(exportDir);
     FILE *kptauxDosFile = fopen(kptauxDosName, "w");
     free(kptauxDosName);
@@ -181,12 +181,10 @@ void write_trjaux(Cell *self)
     char *exportDir = self->lattice->vtable->exportDir(self->lattice,
                                                        self->lattice->pathName);
     char *stemName = self->lattice->_mol->name;
-    char *trjauxName;
-    int len = 1 + snprintf(NULL, 0, "%s%s.trjaux", exportDir, stemName);
-    trjauxName = malloc(len);
-    snprintf(trjauxName, len, "%s%s.trjaux", exportDir, stemName);
+    char *trjauxName = exportFileName(self, "%s%s.trjaux", stemName);
     free(exportDir);
     FILE *trjauxFile = fopen(trjauxName, "w");
+    free(trjauxName);
     char trjauxHeader[] =
         "# Atom IDs to appear in any .trj file to be generated.\n"
         "# Correspond to atom IDs which will be used in exported .msi file\n"
@@ -206,7 +204,6 @@ void write_trjaux(Cell *self)
     char trjauxEnding[] = "#Origin  0.000000000000000e+000  "
                           "0.000000000000000e+000  0.000000000000000e+000";
     fputs(trjauxEnding, trjauxFile);
-    free(trjauxName);
     fclose(trjauxFile);
 }
 
@@ -218,9 +215,7 @@ void copy_potentials(Cell *self, PotentialFile *table)
     {
         PotentialFile *potItem = find_PotItem(table, self->elmLists[i]);
         char *potential_stem = strrchr(potItem->potential_file, '/') + 1;
-        int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir, potential_stem);
-        char *potPath = malloc(pathLen);
-        snprintf(potPath, pathLen, "%s%s", exportDir, potential_stem);
+        char *potPath = exportFileName(self, "%s%s", potential_stem);
         struct stat s;
         if (stat(potPath, &s) == 0)
         {
@@ -241,12 +236,11 @@ void write_pbsScript(Cell *self)
         self->lattice, self->lattice->pathName); /* Malloced String Created */
     char *pbsScriptTemplate = readWholeFile(
         "./resource/pbs_template.sh"); /* Malloced String Created */
-    int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir, "hpc.pbs.sh");
-    char *pathName = malloc(pathLen); /* Malloced String Created */
-    snprintf(pathName, pathLen, "%s%s", exportDir, "hpc.pbs.sh");
-    free(exportDir);                     /* Malloced String Freed */
-    FILE *script = fopen(pathName, "w"); /* FILE opened */
-    free(pathName);                      /* Malloced String Freed */
+    char *pathName = exportFileName(self, "%s%s",
+                                    "hpc.pbs.sh"); /* Malloced String Created */
+    free(exportDir);                               /* Malloced String Freed */
+    FILE *script = fopen(pathName, "w");           /* FILE opened */
+    free(pathName);                                /* Malloced String Freed */
     fputs(pbsScriptTemplate, script);
     free(pbsScriptTemplate); /* Malloced String Freed */
     char cmdFormat[] = "mpirun --mca btl ^tcp --hostfile hostfile "
@@ -258,4 +252,15 @@ void write_pbsScript(Cell *self)
     free(cmdLine); /* Malloced String Freed */
     fputs("rm ./hostfile", script);
     fclose(script); /* FILE closed */
+}
+
+void write_SMCastepExtensions(Cell *self)
+{
+    char *fileName = exportFileName(self, "%sSMCastep_Extension_%s.xms",
+                                    self->lattice->_mol->name);
+    char *content = readWholeFile("./resource/SMCastep_Extension.xms");
+    FILE *ext = fopen(fileName, "w");
+    free(fileName);
+    fputs(content, ext);
+    free(content);
 }
