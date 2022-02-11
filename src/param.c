@@ -254,7 +254,7 @@ void write_pbsScript(Cell *self)
     fclose(script); /* FILE closed */
 }
 
-void write_SMCastepExtensions(Cell *self)
+void write_SMCastepExtension(Cell *self)
 {
     char *fileName = exportFileName(self, "%sSMCastep_Extension_%s.xms",
                                     self->lattice->_mol->name);
