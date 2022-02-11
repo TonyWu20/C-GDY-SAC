@@ -1,6 +1,7 @@
 #include "tasks.h"
 #include "misc.h"
 #include "param.h"
+#include "parser.h"
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,32 +38,46 @@ char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
 
 double heightChoice[] = {1.4, 1.6, 1.4, 1.4};
 
+Lattice *getLattice_from_i(int i, int adsListLen, char **elements)
+{
+    int currElement = i / adsListLen;
+    int baseNameLen =
+        1 + snprintf(NULL, 0, "SAC_GDY_%s", elements[currElement]);
+    char *baseName = malloc(baseNameLen);
+    snprintf(baseName, baseNameLen, "SAC_GDY_%s", elements[currElement]);
+    char *basePath = findBaseByElementId(currElement);
+    Lattice *lat = parse_lattice_from_file(basePath, baseName);
+    free(basePath);
+    free(baseName);
+    return lat;
+}
+
+Adsorbate *getAds_from_i(int i, char **adsList, int adsListLen)
+{
+    int currAds = i % adsListLen;
+    char *ads_name = extractStemName(adsList[currAds]);
+    Adsorbate *ads = parse_molecule_from_file(adsList[currAds], ads_name);
+    free(ads_name);
+    return ads;
+}
+
 void generateModels(int total_tasks, int pathNameCode, int adsListLen,
                     char **adsList, char **elements, char **pathways,
                     CastepInfo *table, PotentialFile *potTable, int *progress)
 {
-    int i, k;
+    /* int i, k; */
     // clang-format off
-    #pragma omp parallel private(i,k) shared (adsList, table, potTable, progress)
+    #pragma omp parallel  shared (adsList, table, potTable, progress)
     // clang-format on
     {
-// clang-format off
+        // clang-format off
         #pragma omp for
         // clang-format on
-        for (i = 0; i < total_tasks; ++i)
+        for (int i = 0; i < total_tasks; ++i)
         {
-            int currElement = i / adsListLen;
-            int currAds = i % adsListLen;
-            int baseNameLen = 8 + strlen(elements[currElement]);
-            char *baseName = malloc(baseNameLen + 1);
-            snprintf(baseName, baseNameLen + 1, "SAC_GDY_%s",
-                     elements[currElement]);
-            char *basePath = findBaseByElementId(currElement);
-            Lattice *lat = parse_lattice_from_file(basePath, baseName);
-            char *ads_name = extractStemName(adsList[currAds]);
-            Adsorbate *ads =
-                parse_molecule_from_file(adsList[currAds], ads_name);
-            for (k = 0; k < ads->taskLists->taskNum; ++k)
+            Lattice *lat = getLattice_from_i(i, adsListLen, elements);
+            Adsorbate *ads = getAds_from_i(i, adsList, adsListLen);
+            for (int k = 0; k < ads->taskLists->taskNum; ++k)
             {
                 Adsorbate *ads_copy = ads->ads_vtable->duplicate(ads);
                 Lattice *result = Add_mol_to_lattice(
@@ -75,7 +90,9 @@ void generateModels(int total_tasks, int pathNameCode, int adsListLen,
                 write_param(cell);
                 write_kptaux(cell);
                 write_trjaux(cell);
-                copy_potentials(cell, potTable);
+                write_pbsScript(cell);
+                write_SMCastepExtension(cell);
+                /* copy_potentials(cell, potTable); */
                 (*progress)++;
                 double percentage =
                     (double)(*progress) / (double)(TOTAL_MODELS);
@@ -89,9 +106,6 @@ void generateModels(int total_tasks, int pathNameCode, int adsListLen,
             // clang-format on
             {
                 ads->ads_vtable->destroy(ads);
-                free(ads_name);
-                free(basePath);
-                free(baseName);
                 lat->vtable->destroy(lat);
             }
         }
