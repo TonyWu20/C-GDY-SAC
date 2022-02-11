@@ -7,18 +7,18 @@ void printProgress(int cur, int total, double percentage, char *name)
     int val = (int)(percentage * 100);
     int lpad = (int)(percentage * PBWIDTH);
     int rpad = PBWIDTH - lpad;
-    int strPad = 34 - strlen(name);
-    printf("\e[32m \r%.*s%*s %d/%d %3d%% [%.*s%*s]\e[m", 34, name, strPad, "",
+    int strPad = 32 - strlen(name);
+    printf("\e[32m \r%.*s%*s %d/%d %3d%% [%.*s%*s]\e[m", 32, name, strPad, "",
            cur, total, val, lpad, PBSTR, rpad, "");
     fflush(stdout);
 }
 
-int mkdir_p(char *dest)
+void createDirectory(char *dest)
 {
     struct stat s;
     if (stat(dest, &s) != -1)
     {
-        return 0;
+        return;
     }
     char *ret;
     int status;
@@ -44,12 +44,6 @@ int mkdir_p(char *dest)
         }
         ret++;
     }
-    return status;
-}
-
-void createDirectory(char *dest)
-{
-    mkdir_p(dest);
 }
 
 char *extractStemName(char *filepath)
