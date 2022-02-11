@@ -263,4 +263,5 @@ void write_SMCastepExtension(Cell *self)
     free(fileName);
     fputs(content, ext);
     free(content);
+    fclose(ext);
 }
