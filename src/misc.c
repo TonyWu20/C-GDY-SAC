@@ -7,9 +7,9 @@ void printProgress(int cur, int total, double percentage, char *name)
     int val = (int)(percentage * 100);
     int lpad = (int)(percentage * PBWIDTH);
     int rpad = PBWIDTH - lpad;
-    int strPad = 40 - strlen(name);
-    printf("\e[32m \rNow %.*s%*s %d/%d %3d%% [%.*s%*s]\e[m", 40, name, strPad,
-           "", cur, total, val, lpad, PBSTR, rpad, "");
+    int strPad = 34 - strlen(name);
+    printf("\e[32m \r%.*s%*s %d/%d %3d%% [%.*s%*s]\e[m", 34, name, strPad, "",
+           cur, total, val, lpad, PBSTR, rpad, "");
     fflush(stdout);
 }
 

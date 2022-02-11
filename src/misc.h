@@ -4,7 +4,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
-#define PBWIDTH 60
+#define PBWIDTH 40
 
 /* Simple progress bar */
 void printProgress(int cur, int total, double percentage, char *name);
