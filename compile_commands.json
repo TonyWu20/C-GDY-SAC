@@ -1,62 +1,62 @@
 [
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/msi_modeling.dir/src/atom.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c\"",
+  "command": "/usr/bin/llvm-gcc -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/msi_modeling.dir/src/atom.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/msi_modeling.dir/src/molecule.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c\"",
+  "command": "/usr/bin/llvm-gcc -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/msi_modeling.dir/src/molecule.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/msi_modeling.dir/src/lattice.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/lattice.c\"",
+  "command": "/usr/bin/llvm-gcc -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/msi_modeling.dir/src/lattice.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/lattice.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/lattice.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/msi_modeling.dir/src/misc.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/misc.c\"",
+  "command": "/usr/bin/llvm-gcc -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/msi_modeling.dir/src/misc.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/misc.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/misc.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/msi_modeling.dir/src/my_maths.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c\"",
+  "command": "/usr/bin/llvm-gcc -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/msi_modeling.dir/src/my_maths.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/msi_modeling.dir/src/assemble.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/assemble.c\"",
+  "command": "/usr/bin/llvm-gcc -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/msi_modeling.dir/src/assemble.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/assemble.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/assemble.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/msi_modeling.dir/src/parser.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c\"",
+  "command": "/usr/bin/llvm-gcc -Dmsi_modeling_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/msi_modeling.dir/src/parser.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -DcastepSeedGen_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/castepSeedGen.dir/src/cell.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/cell.c\"",
+  "command": "/usr/bin/llvm-gcc -DcastepSeedGen_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/castepSeedGen.dir/src/cell.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/cell.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/cell.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -DcastepSeedGen_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/castepSeedGen.dir/src/castep_database.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/castep_database.c\"",
+  "command": "/usr/bin/llvm-gcc -DcastepSeedGen_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/castepSeedGen.dir/src/castep_database.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/castep_database.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/castep_database.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dtask_control_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/task_control.dir/src/tasks.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/tasks.c\"",
+  "command": "/usr/bin/llvm-gcc -Dtask_control_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/task_control.dir/src/tasks.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/tasks.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/tasks.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dtask_control_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -fPIC -o CMakeFiles/task_control.dir/src/param.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/param.c\"",
+  "command": "/usr/bin/llvm-gcc -Dtask_control_EXPORTS  -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -fPIC -o CMakeFiles/task_control.dir/src/param.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/param.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/param.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -fopenmp -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.0 -o CMakeFiles/test.o.dir/src/main.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
+  "command": "/usr/bin/llvm-gcc   -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -O3 -framework Accelerate -Xpreprocessor -fopenmp -lomp -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=11.00 -o CMakeFiles/test.o.dir/src/main.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c"
 }
 ]
