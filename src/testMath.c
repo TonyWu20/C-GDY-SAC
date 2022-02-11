@@ -1,5 +1,6 @@
 #include "my_maths.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 double molCoords[] = {
     -0.04576804, 0.04703987,  0, 1, 0.95426804,  0.04456013, 0, 1,
@@ -33,6 +34,7 @@ void test_centroid()
 
 int main(int argc, char *argv[])
 {
-    test_centroid();
+    for (int i = 0; i < 10000; ++i)
+        test_centroid();
     return 0;
 }
