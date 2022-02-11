@@ -221,6 +221,12 @@ void copy_potentials(Cell *self, PotentialFile *table)
         int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir, potential_stem);
         char *potPath = malloc(pathLen);
         snprintf(potPath, pathLen, "%s%s", exportDir, potential_stem);
+        struct stat s;
+        if (stat(potPath, &s) == 0)
+        {
+            free(potPath);
+            continue;
+        }
         FILE *copiedPotFile = fopen(potPath, "w");
         free(potPath);
         fputs(potItem->fileContent, copiedPotFile);

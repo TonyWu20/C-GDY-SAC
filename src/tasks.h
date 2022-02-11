@@ -4,7 +4,6 @@
 #include "castep_database.h"
 #include "cell.h"
 #include "lattice.h"
-#include "misc.h"
 #include "molecule.h"
 #include "parser.h"
 enum

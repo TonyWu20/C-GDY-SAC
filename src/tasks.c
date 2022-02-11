@@ -1,4 +1,5 @@
 #include "tasks.h"
+#include "misc.h"
 #include "param.h"
 #include <omp.h>
 #include <stdio.h>
@@ -41,11 +42,11 @@ void generateModels(int total_tasks, int pathNameCode, int adsListLen,
                     CastepInfo *table, PotentialFile *potTable, int *progress)
 {
     int i, k;
-// clang-format off
+    // clang-format off
     #pragma omp parallel private(i,k) shared (adsList, table, potTable, progress)
     // clang-format on
     {
-        // clang-format off
+// clang-format off
         #pragma omp for
         // clang-format on
         for (i = 0; i < total_tasks; ++i)
@@ -83,7 +84,7 @@ void generateModels(int total_tasks, int pathNameCode, int adsListLen,
                 cell->destroy(cell);
                 ads_copy->ads_vtable->destroy(ads_copy);
             }
-            // clang-format off
+// clang-format off
             #pragma omp critical
             // clang-format on
             {
@@ -105,14 +106,6 @@ void allocateTasks(int pathNameCode, int *progress, CastepInfo *table,
     int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
     generateModels(total_tasks, pathNameCode, adsListLen, adsList, elements,
                    pathways, table, potTable, progress);
-    // clang-format off
-    /* #pragma omp parallel private(i,k) shared(table, adsList, progress) */
-    // clang-format on
-    /* { */
-    // clang-format off
-        /* #pragma omp for */
-    // clang-format on
-    /* } */
     for (int i = 0; i < adsListLen; ++i)
     {
         free(adsList[i]);
