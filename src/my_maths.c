@@ -31,6 +31,12 @@ double *create_vector_a_to_b(double *a, double *b, int vectorSize)
     return c;
 }
 
+void normalize_vector(double *u)
+{
+    double norm = cblas_dnrm2(3, u, 1);
+    cblas_dscal(3, 1 / norm, u, 1);
+}
+
 double dot_product(double *u, double *v)
 {
     double ret = cblas_ddot(3, u, 1, v, 1);
@@ -62,6 +68,13 @@ double *centroid_of_points(double *coords, int rowSize, int colSize)
 
 double *cross_product(double *a, double *b) // Return normalized vector
 {
+    double a_skew_mat[16] = {0,     a[2],  -a[1], 0, //
+                             -a[2], 0,     a[0],  0, //
+                             a[1],  -a[0], 0,     0, 0, 0, 0, 1};
+    double *cProduct = calloc(4, sizeof(double));
+    cblas_dgemv(CblasColMajor, CblasNoTrans, 4, 4, 1, a_skew_mat, 4, b, 1, 0,
+                cProduct, 1);
+    return cProduct;
 }
 
 // Determine the transform matrix to make u parallel to v
