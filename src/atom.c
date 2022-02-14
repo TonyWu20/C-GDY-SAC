@@ -11,7 +11,7 @@ struct Atom_vtable atom_vtable = {
 Atom *createAtom(char *element, simd_double3 coord, int atomId)
 {
     Atom *newAtom = malloc(sizeof(Atom));
-    newAtom->element = strdup(element);
+    strncpy(newAtom->element, element, strlen(element));
     newAtom->coord = coord.xyz;
     newAtom->atomId = atomId;
     newAtom->vtable = &atom_vtable;
@@ -25,7 +25,6 @@ Atom *dupAtom(Atom *self)
 }
 void destroyAtom(Atom *atomPtr)
 {
-    free(atomPtr->element);
     free(atomPtr);
 }
 
