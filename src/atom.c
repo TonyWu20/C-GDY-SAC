@@ -8,12 +8,11 @@
 struct Atom_vtable atom_vtable = {
     Atom_get_coord, Atom_update_coord, Atom_get_atomId, Atom_set_atomId,
     dupAtom,        Atom_textblock,    destroyAtom};
-Atom *createAtom(char *element, char *label, simd_double3 coord, int atomId)
+Atom *createAtom(char *element, simd_double3 coord, int atomId)
 {
     Atom *newAtom = malloc(sizeof(Atom));
     newAtom->element = strdup(element);
-    newAtom->ACL_Label = strdup(label);
-    newAtom->coord = simd_double(coord);
+    newAtom->coord = coord.xyz;
     newAtom->atomId = atomId;
     newAtom->vtable = &atom_vtable;
     return newAtom;
@@ -21,14 +20,12 @@ Atom *createAtom(char *element, char *label, simd_double3 coord, int atomId)
 
 Atom *dupAtom(Atom *self)
 {
-    Atom *dup =
-        createAtom(self->element, self->ACL_Label, self->coord, self->atomId);
+    Atom *dup = createAtom(self->element, self->coord, self->atomId);
     return dup;
 }
 void destroyAtom(Atom *atomPtr)
 {
     free(atomPtr->element);
-    free(atomPtr->ACL_Label);
     free(atomPtr);
 }
 
@@ -61,21 +58,21 @@ void Atom_set_treeId(Atom *self, int newId)
 
 char *Atom_textblock(Atom *self)
 {
-    int textLen = snprintf(
-        NULL, 0,
-        "  (%d Atom\n    (A C ACL \"%s\")\n    (A C Label \"%s\")\n    (A "
-        "D XYZ (%.12f %.12f %.12f))\n    (A I Id %d)\n  )\n",
-        self->atomId + 1, self->ACL_Label, self->element, self->coord.x,
-        self->coord.y, self->coord.z, self->atomId);
-    textLen += 1;
+    int textLen =
+        1 + snprintf(NULL, 0,
+                     "  (%d Atom\n    (A C ACL \"%d %s\")\n    (A C Label "
+                     "\"%s\")\n    (A "
+                     "D XYZ (%.12f %.12f %.12f))\n    (A I Id %d)\n  )\n",
+                     self->atomId + 1, self->elementId, self->element,
+                     self->element, self->coord.x, self->coord.y, self->coord.z,
+                     self->atomId);
     char *buffer = malloc(textLen); // freed after export to msi
     snprintf(
         buffer, textLen,
         "  (%d Atom\n    (A C ACL \"%d %s\")\n    (A C Label \"%s\")\n    (A "
         "D XYZ (%.12f %.12f %.12f))\n    (A I Id %d)\n  )\n",
-        self->atomId + 1, self->elementId, self->ACL_Label, self->element,
+        self->atomId + 1, self->elementId, self->element, self->element,
         self->coord.x, self->coord.y, self->coord.z, self->atomId);
-    buffer = realloc(buffer, strlen(buffer) + 1);
     return buffer;
 }
 // End of Atom

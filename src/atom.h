@@ -2,8 +2,7 @@
 #include <simd/simd.h>
 struct _Atom
 {
-    char *element;
-    char *ACL_Label;
+    char element[2];
     int elementId;
     simd_double3 coord;
     int atomId;
@@ -22,7 +21,9 @@ struct Atom_vtable
 };
 
 // Memory management
-Atom *createAtom(char *element, char *label, simd_double3 coord, int atomId);
+
+/* Create an Atom struct with element name, coord in simd_double3 and atomId */
+Atom *createAtom(char *element, simd_double3 coord, int atomId);
 
 Atom *dupAtom(Atom *self);
 void destroyAtom(Atom *);
