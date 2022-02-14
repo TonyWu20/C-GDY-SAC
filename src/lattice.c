@@ -101,7 +101,7 @@ void lattice_rotate_to_standard_orientation(Lattice *self)
     {
         return;
     }
-    simd_double3 rotAxis = simd_cross(a, xAxis);
+    simd_double3 rotAxis = simd_normalize(simd_cross(a, xAxis));
     simd_quatd rotQuad = simd_quaternion(a_to_x, rotAxis);
     simd_double3x3 new_latVectors;
     for (int i = 0; i < 3; ++i)
