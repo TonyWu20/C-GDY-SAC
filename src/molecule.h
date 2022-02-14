@@ -1,12 +1,12 @@
 #pragma once
 #include "atom.h"
+#include "my_maths.h"
 
 struct _Molecule
 {
     char *name;
     int atomNum;
     Atom **atom_arr;
-    double *coordMatrix;
     struct Molecule_vtable *vtable;
 };
 typedef struct _Molecule Molecule;
@@ -20,7 +20,7 @@ typedef struct
     int planeAtomIds[3];
     int bSym;
     int upperAtomId;
-    struct Adsorbate_vtable *ads_vtable;
+    struct Adsorbate_vtable *vtable;
     struct taskTable *taskLists;
 } Adsorbate;
 
@@ -34,14 +34,9 @@ struct taskTable *createTasks(Adsorbate *self);
 struct Molecule_vtable
 {
     Atom *(*get_atom_by_Id)(Molecule *self, int atomId);
-    double *(*get_mol_coords)(Molecule *self);
-    void (*update_atom_coords)(Molecule *self, double *MolCoords);
-    double *(*get_vector_ab)(Molecule *self, int aId, int bId);
-    double *(*get_centroid_ab)(Molecule *self, int aId, int bId);
-    void (*apply_transformation)(Molecule *self, double *trans_m,
-                                 void (*trans_func)(double *trans_m,
-                                                    double *coords,
-                                                    double **result));
+    simd_double3 (*get_vector_ab)(Molecule *self, int aId, int bId);
+    simd_double3 (*get_centroid_ab)(Molecule *self, int aId, int bId);
+    void (*rotateMol)(Molecule *self, simd_quatd rotation);
     char **(*export_text)(Molecule *);
     Molecule *(*duplicate)(Molecule *);
     void (*destroy)(Molecule *self);
@@ -49,8 +44,8 @@ struct Molecule_vtable
 
 struct Adsorbate_vtable
 {
-    double *(*get_stem_vector)(Adsorbate *self);
-    double *(*get_plane_normal)(Adsorbate *self);
+    simd_double3 (*get_stem_vector)(Adsorbate *self);
+    simd_double3 (*get_plane_normal)(Adsorbate *self);
     void (*make_upright)(Adsorbate *self);
     void (*export_msi)(Adsorbate *self, char *dest);
     Adsorbate *(*duplicate)(Adsorbate *self);
@@ -77,20 +72,13 @@ void destroyAdsorbate(Adsorbate *self);
 
 // Returns an atom by AtomId
 Atom *Molecule_get_Atom_by_Id(Molecule *, int);
-// Returns the molecule coords in 4xN matrix
-double *Molecule_get_coords(Molecule *);
-// Updates the coords to atoms from the input matrix
-void Molecule_update_Atom_coords(Molecule *, double *);
 // Returns a vector from a to b by Id
-double *Molecule_get_vector_ab(Molecule *, int a, int b);
-double *Molecule_get_centroid_ab(Molecule *, int a, int b);
-double *Adsorbate_get_stem_vector(Adsorbate *);
-double *Adsorbate_get_plane_normal(Adsorbate *);
+simd_double3 Molecule_get_vector_ab(Molecule *, int a, int b);
+simd_double3 Molecule_get_centroid_ab(Molecule *, int a, int b);
+void Molecule_apply_rotation(Molecule *, simd_quatd rotation);
+simd_double3 Adsorbate_get_stem_vector(Adsorbate *);
+simd_double3 Adsorbate_get_plane_normal(Adsorbate *);
 void Adsorbate_make_upright(Adsorbate *mol);
-void Molecule_apply_transformation(Molecule *mPtr, double *trans_mat,
-                                   void (*transform_func)(double *coords,
-                                                          double *trans_mat,
-                                                          double **result));
 char **Molecule_textblock(Molecule *);
 
 /* Format adsorbate data and write to .msi.

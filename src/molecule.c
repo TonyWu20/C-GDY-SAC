@@ -1,4 +1,5 @@
 #include "molecule.h"
+#include "ads_database.h"
 #include "atom.h"
 #include "misc.h"
 #include "my_maths.h"
@@ -21,26 +22,12 @@ enum
     M = 73
 } site_codes;
 
-int task_cd2_sym[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
-                         {NR, C1}, {C1, M},  {C2, M}};
-int task_cd2_asym[][2] = {{C1, C2}, {C2, C1}, {C2, C3}, {C3, C2}, {C3, C4},
-                          {C4, C3}, {C4, FR}, {FR, C4}, {NR, C1}, {C1, NR},
-                          {C1, M},  {M, C1},  {C2, M},  {M, C2}};
-int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
-                     {C4, NULLSITE}, {FR, NULLSITE}, {NR, NULLSITE},
-                     {M, NULLSITE}};
-
 // Implementation of Molecule struct
 
-struct Molecule_vtable vtable = {Molecule_get_Atom_by_Id,
-                                 Molecule_get_coords,
-                                 Molecule_update_Atom_coords,
-                                 Molecule_get_vector_ab,
-                                 Molecule_get_centroid_ab,
-                                 Molecule_apply_transformation,
-                                 Molecule_textblock,
-                                 Molecule_duplicate,
-                                 destroyMolecule};
+struct Molecule_vtable vtable = {
+    Molecule_get_Atom_by_Id, Molecule_get_vector_ab, Molecule_get_centroid_ab,
+    Molecule_apply_rotation, Molecule_textblock,     Molecule_duplicate,
+    destroyMolecule};
 struct Adsorbate_vtable ads_vtable = {
     Adsorbate_get_stem_vector, Adsorbate_get_plane_normal,
     Adsorbate_make_upright,    Adsorbate_export_MSI,
@@ -51,7 +38,7 @@ static bool faceUp(Adsorbate *self)
     Molecule *mol = self->_mol;
     Atom *cdAtom = mol->vtable->get_atom_by_Id(mol, self->coordAtomIds[0]);
     Atom *upAtom = mol->vtable->get_atom_by_Id(mol, self->upperAtomId);
-    if (cdAtom->coord[2] < upAtom->coord[2])
+    if (cdAtom->coord.z < upAtom->coord.z)
         return true;
     else
         return false;
@@ -63,14 +50,6 @@ Molecule *createMolecule(char *name, int atomNum, Atom **atom_arr)
     newMol->name = strdup(name);
     newMol->atomNum = atomNum;
     newMol->atom_arr = atom_arr;
-    newMol->coordMatrix = malloc(sizeof(double) * 4 * atomNum);
-    for (int i = 0; i < atomNum; ++i)
-    {
-        for (int j = 0; j < 4; ++j)
-        {
-            newMol->coordMatrix[i / 4 + j] = atom_arr[i]->coord[j];
-        }
-    }
     newMol->vtable = &vtable;
     return newMol;
 }
@@ -97,7 +76,7 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
     memcpy(ads->coordAtomIds, coordAtomIds, sizeof(int) * coordAtomNum);
     memcpy(ads->stemAtomIds, stemAtomIds, 2 * sizeof(int));
     memcpy(ads->planeAtomIds, planeAtomIds, 3 * sizeof(int));
-    ads->ads_vtable = &ads_vtable;
+    ads->vtable = &ads_vtable;
     ads->bSym = bSym;
     ads->taskLists = createTasks(ads);
     ads->upperAtomId = upperAtomId;
@@ -121,7 +100,6 @@ void destroyMolecule(Molecule *self)
         Atom *cur = self->atom_arr[i];
         cur->vtable->destroy(cur);
     }
-    free(self->coordMatrix);
     free(self->atom_arr);
     free(self);
 }
@@ -142,57 +120,29 @@ Atom *Molecule_get_Atom_by_Id(Molecule *mPtr, int atomId)
     return mPtr->atom_arr[atomId - 1];
 }
 
-double *Molecule_get_coords(Molecule *self)
-{
-    return self->coordMatrix;
-}
-
-double *Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
+simd_double3 Molecule_get_vector_ab(Molecule *mPtr, int aId, int bId)
 {
     Atom *a = mPtr->vtable->get_atom_by_Id(mPtr, aId);
     Atom *b = mPtr->vtable->get_atom_by_Id(mPtr, bId);
-    double *a_coord = a->vtable->get_coord(a);
-    double *b_coord = b->vtable->get_coord(b);
-    double *minus_b = create_matrix(b_coord->lines, b_coord->columns);
-    copy_matrix(b_coord, &minus_b);
-    multiply_matrix_with_scalar(minus_b, -1.0);
-    double *res;
-    add_matrices(a_coord, minus_b, &res);
-    destroy_matrix(minus_b);
-    free(minus_b);
-    res->value[3][0] = 1;
-    return res;
+    return b->coord - a->coord;
 }
 
-double *Molecule_get_centroid_ab(Molecule *mPtr, int aId, int bId)
+simd_double3 Molecule_get_centroid_ab(Molecule *mPtr, int aId, int bId)
 {
     Atom *a = mPtr->vtable->get_atom_by_Id(mPtr, aId);
     Atom *b = mPtr->vtable->get_atom_by_Id(mPtr, bId);
-    double *ab = create_matrix(3, 2);
-    for (int i = 0; i < 3; ++i)
-    {
-        ab->value[i][0] = a->coord->value[i][0];
-        ab->value[i][1] = b->coord->value[i][0];
-    }
-    double *c_ab = centroid_of_points(ab);
-    destroy_matrix(ab);
-    free(ab);
+    simd_double3 ab[2] = {a->coord, b->coord};
+    simd_double3 c_ab = simd_centroid_of_points(ab, 2);
     return c_ab;
 }
 
-void Molecule_apply_transformation(Molecule *mPtr, double *trans_mat,
-                                   void (*transform_func)(double *trans_mat,
-                                                          double *coords,
-                                                          double **result))
+void Molecule_apply_rotation(Molecule *self, simd_quatd rotation)
 {
-    double *mol_coords = mPtr->vtable->get_mol_coords(mPtr);
-    double *result;
-    transform_func(trans_mat, mol_coords, &result);
-    mPtr->vtable->update_atom_coords(mPtr, result);
-    destroy_matrix(mol_coords);
-    destroy_matrix(result);
-    free(result);
-    free(mol_coords);
+    for (int i = 0; i < self->atomNum; ++i)
+    {
+        Atom *curAtom = self->atom_arr[i];
+        curAtom->coord = simd_act(rotation, curAtom->coord);
+    }
 }
 
 char **Molecule_textblock(Molecule *self)
@@ -206,97 +156,65 @@ char **Molecule_textblock(Molecule *self)
     return atom_blocks;
 }
 
-double *Adsorbate_get_stem_vector(Adsorbate *adsPtr)
+simd_double3 Adsorbate_get_stem_vector(Adsorbate *adsPtr)
 {
     Molecule *mPtr = adsPtr->_mol;
     return mPtr->vtable->get_vector_ab(mPtr, adsPtr->stemAtomIds[0],
                                        adsPtr->stemAtomIds[1]);
 }
 
-double *Adsorbate_get_plane_normal(Adsorbate *adsPtr)
+simd_double3 Adsorbate_get_plane_normal(Adsorbate *adsPtr)
 {
     Molecule *mPtr = adsPtr->_mol;
-    double *ba = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
-                                             adsPtr->planeAtomIds[1]);
-    double *ca = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
-                                             adsPtr->planeAtomIds[2]);
-    double y_axis[] = {0, 1, 0, 1};
-    double *y_base = col_vector_view_array((double *)y_axis, 4);
-    double *normal = cross_product(ba, ca);
-    destroy_matrix(ba);
-    destroy_matrix(ca);
-    destroy_matrix(y_base);
-    free(ba);
-    free(ca);
-    free(y_base);
-    return normal;
+    simd_double3 ba = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
+                                                  adsPtr->planeAtomIds[1]);
+    simd_double3 ca = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
+                                                  adsPtr->planeAtomIds[2]);
+    simd_double3 pNormal = simd_normalize(simd_cross(ba, ca));
+    return pNormal;
 }
 
 void Adsorbate_make_upright(Adsorbate *adsPtr)
 {
     Molecule *mPtr = adsPtr->_mol;
-    double *stemVector = adsPtr->ads_vtable->get_stem_vector(adsPtr);
+    simd_double3 stemVector = adsPtr->vtable->get_stem_vector(adsPtr);
     if (!strcmp(mPtr->name, "CO"))
     {
-        double z_axis[] = {0, 0, 1, 1};
-        double *z_base = col_vector_view_array(z_axis, 4);
-        double *rot_mat = rotate_u_to_v(stemVector, z_base);
-        mPtr->vtable->apply_transformation(mPtr, rot_mat,
-                                           (void(*))multiply_matrices);
-        destroy_matrix(z_base);
-        destroy_matrix(rot_mat);
-        free(z_base);
-        free(rot_mat);
+        simd_double3 zAxis = {0, 0, 1};
+        double angle = simd_vector_angle(stemVector, zAxis);
+        simd_double3 rotAxis = simd_normalize(simd_cross(stemVector, zAxis));
+        simd_quatd rotation = simd_quaternion(angle, rotAxis);
+        mPtr->vtable->rotateMol(mPtr, rotation);
     }
     else
     {
-        double *plane_normal =
-            adsPtr->ads_vtable->get_plane_normal(adsPtr); // malloced
-        double y_axis[] = {0, 1, 0, 1};
-        double *y_base = col_vector_view_array(y_axis, 4);
-        double rot_angle;
-        plane_normal->value[0][0] = 0;
-
-        double deviate_angle = vector_angle(plane_normal, y_base);
-        double stem_X = stemVector->value[0][0];
-        double plane_Z = plane_normal->value[2][0];
-        if ((stem_X < 0 && plane_Z > 0) || (stem_X > 0 && plane_Z < 0))
-            rot_angle = deviate_angle;
-        else if (!strcmp(mPtr->name, "CH3COOH"))
+        simd_double3 plane_normal =
+            adsPtr->vtable->get_plane_normal(adsPtr); // malloced
+        printf("%f, %f, %f\n", plane_normal.x, plane_normal.y, plane_normal.z);
+        simd_double3 plane_proj_XY = simd_normalize(
+            simd_make_double3(plane_normal.x, plane_normal.y, 0));
+        double rot_angle = simd_vector_angle(plane_normal, plane_proj_XY);
+        simd_double3 rotAxis = simd_cross(plane_normal, plane_proj_XY);
+        double rotAxis_stem_angle = simd_vector_angle(rotAxis, stemVector);
+        simd_quatd rotation_upright_q;
+        if (rotAxis_stem_angle < PI / 2)
         {
-            double *z_base = create_matrix(4, 1);
-            copy_matrix(y_base, &z_base);
-            z_base->value[1][0] = 0;
-            z_base->value[2][0] = 1;
-            rot_angle = vector_angle(plane_normal, z_base);
-            destroy_matrix(z_base);
-            free(z_base);
+            rotation_upright_q =
+                simd_quaternion(rot_angle, simd_normalize(stemVector));
         }
         else
-            rot_angle = -deviate_angle;
-
-        destroy_matrix(y_base);
-        destroy_matrix(plane_normal);
-        free(y_base);
-        free(plane_normal);
-
-        double *rot_mat = rotate_angle_around_axis(stemVector, rot_angle);
-        mPtr->vtable->apply_transformation(mPtr, rot_mat,
-                                           (void(*))multiply_matrices);
-        // Release rot_mat
-        destroy_matrix(rot_mat);
-        free(rot_mat);
+        {
+            rotation_upright_q =
+                simd_quaternion(rot_angle, simd_normalize(-1 * stemVector));
+        }
+        mPtr->vtable->rotateMol(mPtr, rotation_upright_q);
     }
     if (!faceUp(adsPtr))
     {
-        double *invert = rotate_angle_around_axis(stemVector, PI);
-        mPtr->vtable->apply_transformation(mPtr, invert,
-                                           (void(*))multiply_matrices);
-        destroy_matrix(invert);
-        free(invert);
+        stemVector = adsPtr->vtable->get_stem_vector(adsPtr);
+        simd_quatd invert = simd_quaternion(PI, simd_normalize(stemVector));
+        mPtr->vtable->rotateMol(mPtr, invert);
     }
-    destroy_matrix(stemVector);
-    free(stemVector);
 }
 
 void Adsorbate_export_MSI(Adsorbate *self, char *dest)
@@ -321,11 +239,9 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
         destUndefined = 1;
     }
     createDirectory(dest);
-    int dirLen = strlen(dest);
-    int adsNameLen = strlen(self->_mol->name);
-    char *exportName = malloc(dirLen + adsNameLen + 5);
-    snprintf(exportName, dirLen + adsNameLen + 5, "%s%s.msi", dest,
-             self->_mol->name);
+    int exportLen = 1 + snprintf(NULL, 0, "%s%s.msi", dest, self->_mol->name);
+    char *exportName = malloc(exportLen);
+    snprintf(exportName, exportLen, "%s%s.msi", dest, self->_mol->name);
     FILE *writeFile = fopen(exportName, "w");
     for (int i = 0; i < lineSize; ++i)
     {
