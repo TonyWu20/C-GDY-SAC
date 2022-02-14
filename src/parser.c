@@ -1,9 +1,5 @@
 #include "parser.h"
-#include "atom.h"
-/* #include "lattice.h" */
-#include "matrix.h"
 #include "misc.h"
-#include "molecule.h"
 #include "pcre2.h"
 #include <stdio.h>
 #include <string.h>
@@ -61,14 +57,8 @@ static void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data,
 }
 
 /* Parse the lattice vectors */
-static void get_lattice_vectors(char *subject, Matrix **result)
+static void get_lattice_vectors(char *subject, simd_double3x3 *result)
 {
-    *result = create_matrix(4, 3);
-    if (*result == NULL)
-    {
-        printf("Can't create matrix.\n");
-        return;
-    }
     char *RegexStr = ".*A3 \\(([0-9e. -]+)\\)\\)\r\n"
                      ".*B3 \\(([0-9e. -]+)\\)\\)\r\n"
                      ".*C3 \\(([0-9e. -]+)\\)\\)\r\n";
@@ -78,22 +68,20 @@ static void get_lattice_vectors(char *subject, Matrix **result)
     re_match(re, &match_data, &rc, subject);
     PCRE2_UCHAR8 *buffer = NULL;
     PCRE2_SIZE size = 0;
-    for (int j = 0; j < 3; ++j)
-    {
-        pcre2_substring_get_bynumber(match_data, j + 1, &buffer, &size);
-        char *rest = NULL;
-        char *token;
-        int i = 0;
-        for (token = strtok_r((char *)buffer, " ", &rest); token && i < 3;
-             token = strtok_r(NULL, " ", &rest), ++i)
-        {
-            (*result)->value[i][j] = atof((const char *)token);
-        }
-        pcre2_substring_free(buffer);
-    }
+    simd_double3 xyz[3];
     for (int i = 0; i < 3; ++i)
     {
-        (*result)->value[3][i] = 1;
+        pcre2_substring_get_bynumber(match_data, i + 1, &buffer, &size);
+        char *rest = NULL;
+        char *token;
+        int j = 0;
+        for (token = strtok_r((char *)buffer, " ", &rest); token && j < 3;
+             token = strtok_r(NULL, " ", &rest), ++j)
+        {
+            xyz[i][j] = atof((const char *)token);
+        }
+        (*result).columns[i] = xyz[i];
+        pcre2_substring_free(buffer);
     }
     pcre2_code_free(re);
     pcre2_match_data_free(match_data);
@@ -221,15 +209,15 @@ Adsorbate *parse_adsorbate_from_file(char *fileName, char *name,
     return ads;
 }
 
-/* Lattice *parse_lattice_from_file(char *fileName, char *name) */
-/* { */
-/*     char *body = readWholeFile((const char *)fileName); */
-/*     int atom_nums = 0; */
-/*     Atom **atom_arr = get_all_atoms(body, &atom_nums); */
-/*     Molecule *lat_mol = createMolecule(name, atom_nums, atom_arr); */
-/*     Matrix *vectors; */
-/*     get_lattice_vectors(body, &vectors); */
-/*     Lattice *new = createLattice(lat_mol, vectors); */
-/*     free(body); */
-/*     return new; */
-/* } */
+Lattice *parse_lattice_from_file(char *fileName, char *name)
+{
+    char *body = readWholeFile((const char *)fileName);
+    int atom_nums = 0;
+    Atom **atom_arr = get_all_atoms(body, &atom_nums);
+    Molecule *lat_mol = createMolecule(name, atom_nums, atom_arr);
+    simd_double3x3 latVectors;
+    get_lattice_vectors(body, &latVectors);
+    Lattice *new = createLattice(lat_mol, latVectors);
+    free(body);
+    return new;
+}
