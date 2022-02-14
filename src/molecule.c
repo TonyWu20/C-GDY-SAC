@@ -3,7 +3,6 @@
 #include "atom.h"
 #include "misc.h"
 #include "my_maths.h"
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +34,7 @@ struct Adsorbate_vtable ads_vtable = {
 
 static bool faceUp(Adsorbate *self)
 {
-    Molecule *mol = self->_mol;
+    Molecule *mol = self->mol;
     Atom *cdAtom = mol->vtable->get_atom_by_Id(mol, self->coordAtomIds[0]);
     Atom *upAtom = mol->vtable->get_atom_by_Id(mol, self->upperAtomId);
     if (cdAtom->coord.z < upAtom->coord.z)
@@ -67,16 +66,18 @@ Molecule *Molecule_duplicate(Molecule *self)
 
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
-                           int *planeAtomIds, int bSym, int upperAtomId)
+                           int *planeAtomIds, bool bVer, bool bSym,
+                           int upperAtomId)
 {
     Adsorbate *ads = malloc(sizeof(Adsorbate));
-    ads->_mol = newMol;
+    ads->mol = newMol;
     ads->coordAtomNum = coordAtomNum;
     ads->coordAtomIds = malloc(coordAtomNum * sizeof(int));
     memcpy(ads->coordAtomIds, coordAtomIds, sizeof(int) * coordAtomNum);
     memcpy(ads->stemAtomIds, stemAtomIds, 2 * sizeof(int));
     memcpy(ads->planeAtomIds, planeAtomIds, 3 * sizeof(int));
     ads->vtable = &ads_vtable;
+    ads->bVertical = bVer;
     ads->bSym = bSym;
     ads->taskLists = createTasks(ads);
     ads->upperAtomId = upperAtomId;
@@ -85,10 +86,10 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
 
 Adsorbate *Adsorbate_duplicate(Adsorbate *self)
 {
-    Molecule *molCopy = self->_mol->vtable->duplicate(self->_mol);
+    Molecule *molCopy = self->mol->vtable->duplicate(self->mol);
     Adsorbate *dup = createAdsorbate(
         molCopy, self->coordAtomNum, self->coordAtomIds, self->stemAtomIds,
-        self->planeAtomIds, self->bSym, self->upperAtomId);
+        self->planeAtomIds, self->bVertical, self->bSym, self->upperAtomId);
     return dup;
 }
 
@@ -105,7 +106,7 @@ void destroyMolecule(Molecule *self)
 }
 void destroyAdsorbate(Adsorbate *ads)
 {
-    ads->_mol->vtable->destroy(ads->_mol);
+    ads->mol->vtable->destroy(ads->mol);
     free(ads->coordAtomIds);
     for (int i = 0; i < ads->taskLists->taskNum; ++i)
         free(ads->taskLists->tasks[i]);
@@ -158,14 +159,14 @@ char **Molecule_textblock(Molecule *self)
 
 simd_double3 Adsorbate_get_stem_vector(Adsorbate *adsPtr)
 {
-    Molecule *mPtr = adsPtr->_mol;
+    Molecule *mPtr = adsPtr->mol;
     return mPtr->vtable->get_vector_ab(mPtr, adsPtr->stemAtomIds[0],
                                        adsPtr->stemAtomIds[1]);
 }
 
 simd_double3 Adsorbate_get_plane_normal(Adsorbate *adsPtr)
 {
-    Molecule *mPtr = adsPtr->_mol;
+    Molecule *mPtr = adsPtr->mol;
     simd_double3 ba = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
                                                   adsPtr->planeAtomIds[1]);
     simd_double3 ca = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
@@ -176,9 +177,9 @@ simd_double3 Adsorbate_get_plane_normal(Adsorbate *adsPtr)
 
 void Adsorbate_make_upright(Adsorbate *adsPtr)
 {
-    Molecule *mPtr = adsPtr->_mol;
+    Molecule *mPtr = adsPtr->mol;
     simd_double3 stemVector = adsPtr->vtable->get_stem_vector(adsPtr);
-    if (!strcmp(mPtr->name, "CO"))
+    if (adsPtr->bVertical == false)
     {
         simd_double3 zAxis = {0, 0, 1};
         double angle = simd_vector_angle(stemVector, zAxis);
@@ -222,12 +223,12 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
     char header_line[] = "# MSI CERIUS2 DataModel File Version 4 0\n";
     char model_start[] = "(1 Model\n";
     char model_end[] = ")\n";
-    int lineSize = self->_mol->atomNum + 3;
+    int lineSize = self->mol->atomNum + 3;
     char **content_lines = malloc(sizeof(char *) * (lineSize));
     content_lines[0] = strdup(header_line);
     content_lines[1] = strdup(model_start);
-    char **atoms = self->_mol->vtable->export_text(self->_mol);
-    for (int i = 0; i < self->_mol->atomNum; ++i)
+    char **atoms = self->mol->vtable->export_text(self->mol);
+    for (int i = 0; i < self->mol->atomNum; ++i)
     {
         content_lines[i + 2] = atoms[i];
     }
@@ -239,9 +240,9 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
         destUndefined = 1;
     }
     createDirectory(dest);
-    int exportLen = 1 + snprintf(NULL, 0, "%s%s.msi", dest, self->_mol->name);
+    int exportLen = 1 + snprintf(NULL, 0, "%s%s.msi", dest, self->mol->name);
     char *exportName = malloc(exportLen);
-    snprintf(exportName, exportLen, "%s%s.msi", dest, self->_mol->name);
+    snprintf(exportName, exportLen, "%s%s.msi", dest, self->mol->name);
     FILE *writeFile = fopen(exportName, "w");
     for (int i = 0; i < lineSize; ++i)
     {
@@ -262,9 +263,7 @@ struct taskTable *createTasks(Adsorbate *self)
     switch (self->coordAtomNum)
     {
     case 2:
-        switch (self->bSym)
-        {
-        case 1:
+        if (self->bSym)
         {
             tab = malloc(sizeof(*tab));
             tab->taskNum = sizeof(task_cd2_sym) / sizeof(task_cd2_sym[0]);
@@ -277,9 +276,8 @@ struct taskTable *createTasks(Adsorbate *self)
                     tab->tasks[i][j] = task_cd2_sym[i][j];
                 }
             }
-            break;
         }
-        case 0:
+        else
         {
             tab = malloc(sizeof(*tab));
             tab->taskNum = sizeof(task_cd2_asym) / sizeof(task_cd2_asym[0]);
@@ -290,10 +288,6 @@ struct taskTable *createTasks(Adsorbate *self)
                 for (int j = 0; j < 2; ++j)
                     tab->tasks[i][j] = task_cd2_asym[i][j];
             }
-            break;
-        }
-        default:
-            break;
         }
         break;
     case 1:

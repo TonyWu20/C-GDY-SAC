@@ -1,6 +1,7 @@
 #pragma once
 #include "atom.h"
 #include "my_maths.h"
+#include <stdbool.h>
 
 struct _Molecule
 {
@@ -13,12 +14,13 @@ typedef struct _Molecule Molecule;
 
 typedef struct
 {
-    Molecule *_mol;
+    Molecule *mol;
     int coordAtomNum;
     int *coordAtomIds;
     int stemAtomIds[2];
     int planeAtomIds[3];
-    int bSym;
+    bool bVertical;
+    bool bSym;
     int upperAtomId;
     struct Adsorbate_vtable *vtable;
     struct taskTable *taskLists;
@@ -59,7 +61,8 @@ Molecule *Molecule_duplicate(Molecule *self);
 // Memory Management
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
-                           int *planeAtomIds, int bSym, int upperAtomId);
+                           int *planeAtomIds, bool bVer, bool bSym,
+                           int upperAtomId);
 /* Duplicate the adsorbate */
 Adsorbate *Adsorbate_duplicate(Adsorbate *self);
 
