@@ -2,7 +2,7 @@
 #include <simd/simd.h>
 struct _Atom
 {
-    char element[2];
+    char element[4];
     int elementId;
     simd_double3 coord;
     int atomId;

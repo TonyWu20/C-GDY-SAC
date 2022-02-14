@@ -12,10 +12,7 @@ static pcre2_code *init_re(char *RegexStr);
 static void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data,
                      int *rc, char *subject);
 static Atom *parse_atom(char *atom_block);
-/* static Atom **get_all_atoms(char *subject, int *returnSize); */
-// Table
-
-// UThash
+static Atom **get_all_atoms(char *subject, int *returnSize);
 
 // [>regex<]
 static pcre2_code *init_re(char *RegexStr)
@@ -106,7 +103,7 @@ static void get_lattice_vectors(char *subject, Matrix **result)
  * Returns: array of Atom *
  */
 /* static Atom **get_all_atoms(char *subject, int *returnSize) */
-Atom **get_all_atoms(char *subject, int *returnSize)
+static Atom **get_all_atoms(char *subject, int *returnSize)
 {
     char RegexStr[] = "\\(([0-9]+) Atom\\R.*ACL \"([0-9]+) "
                       "([a-zA-Z]+).*\\R.*\\R.*"

@@ -1,6 +1,6 @@
 #include "molecule.h"
-#include "ads_database.h"
 #include "atom.h"
+#include "database/ads_database.h"
 #include "misc.h"
 #include "my_maths.h"
 #include <stdio.h>
@@ -209,12 +209,12 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
                 simd_quaternion(rot_angle, simd_normalize(-1 * stemVector));
         }
         mPtr->vtable->rotateMol(mPtr, rotation_upright_q);
-    }
-    if (!faceUp(adsPtr))
-    {
-        stemVector = adsPtr->vtable->get_stem_vector(adsPtr);
-        simd_quatd invert = simd_quaternion(PI, simd_normalize(stemVector));
-        mPtr->vtable->rotateMol(mPtr, invert);
+        if (!faceUp(adsPtr))
+        {
+            stemVector = adsPtr->vtable->get_stem_vector(adsPtr);
+            simd_quatd invert = simd_quaternion(PI, simd_normalize(stemVector));
+            mPtr->vtable->rotateMol(mPtr, invert);
+        }
     }
 }
 

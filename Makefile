@@ -168,30 +168,6 @@ test.o/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/build
 .PHONY : test.o/fast
 
-src/ads_database.o: src/ads_database.c.o
-.PHONY : src/ads_database.o
-
-# target to build an object file
-src/ads_database.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/ads_database.c.o
-.PHONY : src/ads_database.c.o
-
-src/ads_database.i: src/ads_database.c.i
-.PHONY : src/ads_database.i
-
-# target to preprocess a source file
-src/ads_database.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/ads_database.c.i
-.PHONY : src/ads_database.c.i
-
-src/ads_database.s: src/ads_database.c.s
-.PHONY : src/ads_database.s
-
-# target to generate assembly for a file
-src/ads_database.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/ads_database.c.s
-.PHONY : src/ads_database.c.s
-
 src/atom.o: src/atom.c.o
 .PHONY : src/atom.o
 
@@ -216,29 +192,77 @@ src/atom.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/atom.c.s
 .PHONY : src/atom.c.s
 
-src/database.o: src/database.c.o
-.PHONY : src/database.o
+src/database/ads_database.o: src/database/ads_database.c.o
+.PHONY : src/database/ads_database.o
 
 # target to build an object file
-src/database.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database.c.o
-.PHONY : src/database.c.o
+src/database/ads_database.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/ads_database.c.o
+.PHONY : src/database/ads_database.c.o
 
-src/database.i: src/database.c.i
-.PHONY : src/database.i
+src/database/ads_database.i: src/database/ads_database.c.i
+.PHONY : src/database/ads_database.i
 
 # target to preprocess a source file
-src/database.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database.c.i
-.PHONY : src/database.c.i
+src/database/ads_database.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/ads_database.c.i
+.PHONY : src/database/ads_database.c.i
 
-src/database.s: src/database.c.s
-.PHONY : src/database.s
+src/database/ads_database.s: src/database/ads_database.c.s
+.PHONY : src/database/ads_database.s
 
 # target to generate assembly for a file
-src/database.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database.c.s
-.PHONY : src/database.c.s
+src/database/ads_database.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/ads_database.c.s
+.PHONY : src/database/ads_database.c.s
+
+src/database/database.o: src/database/database.c.o
+.PHONY : src/database/database.o
+
+# target to build an object file
+src/database/database.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/database.c.o
+.PHONY : src/database/database.c.o
+
+src/database/database.i: src/database/database.c.i
+.PHONY : src/database/database.i
+
+# target to preprocess a source file
+src/database/database.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/database.c.i
+.PHONY : src/database/database.c.i
+
+src/database/database.s: src/database/database.c.s
+.PHONY : src/database/database.s
+
+# target to generate assembly for a file
+src/database/database.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/database.c.s
+.PHONY : src/database/database.c.s
+
+src/database/lattice_database.o: src/database/lattice_database.c.o
+.PHONY : src/database/lattice_database.o
+
+# target to build an object file
+src/database/lattice_database.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/lattice_database.c.o
+.PHONY : src/database/lattice_database.c.o
+
+src/database/lattice_database.i: src/database/lattice_database.c.i
+.PHONY : src/database/lattice_database.i
+
+# target to preprocess a source file
+src/database/lattice_database.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/lattice_database.c.i
+.PHONY : src/database/lattice_database.c.i
+
+src/database/lattice_database.s: src/database/lattice_database.c.s
+.PHONY : src/database/lattice_database.s
+
+# target to generate assembly for a file
+src/database/lattice_database.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/lattice_database.c.s
+.PHONY : src/database/lattice_database.c.s
 
 src/main.o: src/main.c.o
 .PHONY : src/main.o
@@ -372,15 +396,18 @@ help:
 	@echo "... msi_modeling"
 	@echo "... my_maths"
 	@echo "... test.o"
-	@echo "... src/ads_database.o"
-	@echo "... src/ads_database.i"
-	@echo "... src/ads_database.s"
 	@echo "... src/atom.o"
 	@echo "... src/atom.i"
 	@echo "... src/atom.s"
-	@echo "... src/database.o"
-	@echo "... src/database.i"
-	@echo "... src/database.s"
+	@echo "... src/database/ads_database.o"
+	@echo "... src/database/ads_database.i"
+	@echo "... src/database/ads_database.s"
+	@echo "... src/database/database.o"
+	@echo "... src/database/database.i"
+	@echo "... src/database/database.s"
+	@echo "... src/database/lattice_database.o"
+	@echo "... src/database/lattice_database.i"
+	@echo "... src/database/lattice_database.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

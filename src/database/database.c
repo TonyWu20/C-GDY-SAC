@@ -1,7 +1,8 @@
 #include "database.h"
 #include <stdio.h>
 
-void add_str_keyptr_item(HashNode **hashTab, char *key, void *hashValItem)
+void add_str_keyptr_item(HashNode **hashTab, const char *key, void *hashValItem,
+                         size_t itemSize)
 {
     HashNode *np = malloc(sizeof(HashNode));
     if (!np)
@@ -10,7 +11,8 @@ void add_str_keyptr_item(HashNode **hashTab, char *key, void *hashValItem)
         return;
     }
     np->key = key;
-    np->val = hashValItem;
+    np->val = malloc(itemSize);
+    memcpy(np->val, hashValItem, itemSize);
     HASH_ADD_KEYPTR(hh, *hashTab, np->key, strlen((const char *)np->key), np);
 }
 
@@ -31,6 +33,7 @@ void delete_all(HashNode **hashTab)
     HASH_ITER(hh, *hashTab, curr, tmp)
     {
         HASH_DEL(*hashTab, curr);
+        free(curr->val);
         free(curr);
     }
 }
