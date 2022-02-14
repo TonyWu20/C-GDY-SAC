@@ -52,6 +52,7 @@ Mkfile.old
 dkms.conf
 CMakeFiles
 CMakeCache.txt
+compile_commands.json
 cmake_install.cmake
 .cache
 *.msi

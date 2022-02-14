@@ -264,6 +264,30 @@ src/database/lattice_database.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/lattice_database.c.s
 .PHONY : src/database/lattice_database.c.s
 
+src/lattice.o: src/lattice.c.o
+.PHONY : src/lattice.o
+
+# target to build an object file
+src/lattice.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/lattice.c.o
+.PHONY : src/lattice.c.o
+
+src/lattice.i: src/lattice.c.i
+.PHONY : src/lattice.i
+
+# target to preprocess a source file
+src/lattice.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/lattice.c.i
+.PHONY : src/lattice.c.i
+
+src/lattice.s: src/lattice.c.s
+.PHONY : src/lattice.s
+
+# target to generate assembly for a file
+src/lattice.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/lattice.c.s
+.PHONY : src/lattice.c.s
+
 src/main.o: src/main.c.o
 .PHONY : src/main.o
 
@@ -408,6 +432,9 @@ help:
 	@echo "... src/database/lattice_database.o"
 	@echo "... src/database/lattice_database.i"
 	@echo "... src/database/lattice_database.s"
+	@echo "... src/lattice.o"
+	@echo "... src/lattice.i"
+	@echo "... src/lattice.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
