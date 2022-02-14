@@ -1,6 +1,7 @@
 #pragma once
 #include <Accelerate/Accelerate.h>
 #include <math.h>
+#include <simd/simd.h>
 
 #define PI (atan(1) * 4)
 
@@ -14,6 +15,8 @@
  */
 double *get_nth_vector_from_matrix(double *matrix, int rowSize, int colSize,
                                    int nth);
+simd_double4 get_simd_double4_from_matrix(double *matrix, int rowSize,
+                                          int colSize, int i);
 
 /* Create a vector point from a to b
  *
@@ -34,9 +37,12 @@ double dot_product(double *u, double *v);
 /* Calculate angle of two vector */
 double vector_angle(double *u, double *v);
 
+double simd_vector_angle(simd_double3 u, simd_double3 v);
+
 /* Calculate centroid of the given set of vertices */
 double *centroid_of_points(double *coords, int rowSize, int colSize);
 
+simd_double3 simd_centroid_of_points(simd_double3 *vecArray, int vecArraySize);
 /* Return cross_product by matrix-vector multiplication
  *
  * returns:
