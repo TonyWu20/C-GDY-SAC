@@ -7,13 +7,9 @@ static const cyaml_schema_field_t element_info_field_schema[] = {
                            CYAML_UNLIMITED),
     CYAML_FIELD_UINT("atomic_num", CYAML_FLAG_DEFAULT, ElmInfo, atomicNum),
     CYAML_FIELD_UINT("LCAO", CYAML_FLAG_DEFAULT, ElmInfo, LCAO),
-
     CYAML_FIELD_FLOAT("mass", CYAML_FLAG_DEFAULT, ElmInfo, mass),
-
     CYAML_FIELD_STRING_PTR("pot", CYAML_FLAG_POINTER, ElmInfo, potPath, 0,
-
                            CYAML_UNLIMITED),
-
     CYAML_FIELD_UINT("spin", CYAML_FLAG_DEFAULT, ElmInfo, spin),
     CYAML_FIELD_END};
 
@@ -41,7 +37,7 @@ static const cyaml_config_t config = {
     .log_level = CYAML_LOG_WARNING, /* Logging errors and warnings only. */
 };
 
-HashNode *init_ElmInfoTable()
+struct element_table_yaml *load_elmTableYAML(void)
 {
     cyaml_err_t err;
     struct element_table_yaml *elmTableYAML;
@@ -52,13 +48,21 @@ HashNode *init_ElmInfoTable()
         printf("ERROR: %s\n", cyaml_strerror(err));
         return NULL;
     }
+    return elmTableYAML;
+}
+
+void destroy_element_table_yaml(struct element_table_yaml **elmTableYAML)
+{
+    cyaml_free(&config, &elm_table_schema, *elmTableYAML, 0);
+}
+
+HashNode *init_ElmInfoTable(struct element_table_yaml *elmTableYAML)
+{
     HashNode *hashTab = NULL;
     for (int i = 0; i < elmTableYAML->infoItems_count; ++i)
     {
-        add_str_keyptr_item(&hashTab, elmTableYAML->infoItems[i].name,
-                            (void *)&elmTableYAML->infoItems[i],
-                            sizeof(ElmInfo));
-    }
-    cyaml_free(&config, &elm_table_schema, elmTableYAML, 0);
+        ElmInfo *curItem = &elmTableYAML->infoItems[i];
+        add_str_keyptr_item(&hashTab, curItem->name, (void *)curItem,
+           a->val);
     return hashTab;
 }
