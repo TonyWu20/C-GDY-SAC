@@ -62,7 +62,7 @@ HashNode *init_ElmInfoTable(struct element_table_yaml *elmTableYAML)
     for (int i = 0; i < elmTableYAML->infoItems_count; ++i)
     {
         ElmInfo *curItem = &elmTableYAML->infoItems[i];
-        add_str_keyptr_item(&hashTab, curItem->name, (void *)curItem,
-           a->val);
+        add_str_keyptr_item(&hashTab, curItem->name, (void *)curItem);
+    }
     return hashTab;
 }

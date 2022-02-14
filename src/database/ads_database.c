@@ -55,23 +55,21 @@ HashNode *init_adsInfoTable()
     HashNode *hashTab = NULL;
     for (int i = 0; i < sizeof(ethylene) / sizeof(ethylene[0]); ++i)
     {
-        add_str_keyptr_item(&hashTab, ethylene[i].name, (void *)&ethylene[i],
-                            sizeof(AdsorbateInfo));
+        add_str_keyptr_item(&hashTab, ethylene[i].name, (void *)&ethylene[i]);
     }
     for (int i = 0; i < sizeof(ethanol) / sizeof(ethanol[0]); ++i)
     {
-        add_str_keyptr_item(&hashTab, ethanol[i].name, (void *)&ethanol[i],
-                            sizeof(AdsorbateInfo));
+        add_str_keyptr_item(&hashTab, ethanol[i].name, (void *)&ethanol[i]);
     }
     for (int i = 0; i < sizeof(ethanol_other) / sizeof(ethanol_other[0]); ++i)
     {
         add_str_keyptr_item(&hashTab, ethanol_other[i].name,
-                            (void *)&ethanol_other[i], sizeof(AdsorbateInfo));
+                            (void *)&ethanol_other[i]);
     }
     for (int i = 0; i < sizeof(acetic_acid) / sizeof(acetic_acid[0]); ++i)
     {
         add_str_keyptr_item(&hashTab, acetic_acid[i].name,
-                            (void *)&acetic_acid[i], sizeof(AdsorbateInfo));
+                            (void *)&acetic_acid[i]);
     }
     return hashTab;
 }
