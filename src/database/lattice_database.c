@@ -8,7 +8,7 @@ static const cyaml_schema_field_t element_info_field_schema[] = {
     CYAML_FIELD_UINT("atomic_num", CYAML_FLAG_DEFAULT, ElmInfo, atomicNum),
     CYAML_FIELD_UINT("LCAO", CYAML_FLAG_DEFAULT, ElmInfo, LCAO),
     CYAML_FIELD_FLOAT("mass", CYAML_FLAG_DEFAULT, ElmInfo, mass),
-    CYAML_FIELD_STRING_PTR("pot", CYAML_FLAG_POINTER, ElmInfo, potPath, 0,
+    CYAML_FIELD_STRING_PTR("pot", CYAML_FLAG_POINTER, ElmInfo, potFile, 0,
                            CYAML_UNLIMITED),
     CYAML_FIELD_UINT("spin", CYAML_FLAG_DEFAULT, ElmInfo, spin),
     CYAML_FIELD_END};

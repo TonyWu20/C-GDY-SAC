@@ -1,4 +1,5 @@
 #include "atom.h"
+#include "cell.h"
 #include "database/ads_database.h"
 #include "database/database.h"
 #include "database/lattice_database.h"
@@ -41,6 +42,9 @@ void test_lat()
                lat->lattice_vectors.columns[i].y,
                lat->lattice_vectors.columns[i].z);
     }
+    double alpha = simd_vector_angle(lat->lattice_vectors.columns[1],
+                                     lat->lattice_vectors.columns[2]);
+    printf("%f, %f\n", alpha, cos(alpha));
     struct element_table_yaml *elmTableYAML = load_elmTableYAML();
     HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
     HashNode *metal = find_item_by_str(elmTable, "Co");
@@ -49,14 +53,12 @@ void test_lat()
     printf("After find %p\n", metal->val);
     printf("%s,%d\n", ((ElmInfo *)metal->val)->name, metal_info->atomicNum);
     lat->vtable->modify_metal(lat, metal_info->name, metal_info->atomicNum);
-    for (int i = 0; i < lat->mol->atomNum; ++i)
-    {
-        Atom *cur = lat->mol->atom_arr[i];
-        char *text = cur->vtable->export_text(cur);
-        printf("%s", text);
-        free(text);
-    }
-    lat->vtable->destroy(lat);
+    Cell *cell = createCell(lat, elmTable);
+    char *cell_pot = cell->textTable->blockWriter(cell, "SPECIES_POT",
+                                                  cell_speciesPot_writer);
+    printf("%s\n", cell_pot);
+    free(cell_pot);
+    cell->destroy(cell);
     delete_all(&elmTable);
     destroy_element_table_yaml(&elmTableYAML);
 }

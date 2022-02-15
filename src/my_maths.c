@@ -75,6 +75,29 @@ simd_double3 simd_centroid_of_points(simd_double3 *vecArray, int vecArraySize)
     return res;
 }
 
+simd_double3x3 fracCoordMat(simd_double3x3 latVectors)
+{
+    simd_double3 a = latVectors.columns[0];
+    simd_double3 b = latVectors.columns[1];
+    simd_double3 c = latVectors.columns[2];
+    double aLen = simd_length(a);
+    double bLen = simd_length(b);
+    double cLen = simd_length(c);
+    double alpha = simd_vector_angle(b, c);
+    double beta = simd_vector_angle(a, c);
+    double gamma = simd_vector_angle(a, b);
+    double vol = simd_dot(a, simd_cross(b, c));
+    simd_double3 x_cart = {aLen, 0, 0};
+    simd_double3 y_cart = {bLen * cos(gamma), bLen * sin(gamma), 0};
+    simd_double3 z_cart = {cLen * cos(beta),
+                           cLen * (cos(alpha) - cos(beta) * cos(gamma)) /
+                               sin(gamma),
+                           vol / (aLen * bLen * sin(gamma))};
+    simd_double3x3 toCart = simd_matrix(x_cart, y_cart, z_cart);
+    simd_double3x3 toFrac = simd_inverse(toCart);
+    return toFrac;
+}
+
 double *cross_product(double *a, double *b) // Return normalized vector
 {
     double a_skew_mat[16] = {0,     a[2],  -a[1], 0, //

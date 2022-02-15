@@ -1,3 +1,4 @@
+#pragma once
 #include "database.h"
 
 typedef struct
@@ -6,7 +7,7 @@ typedef struct
     int atomicNum;
     int LCAO;
     double mass;
-    char *potPath;
+    char *potFile;
     int spin;
 } ElmInfo;
 

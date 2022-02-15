@@ -55,6 +55,8 @@ double *cross_product(double *a, double *b);
 /*  */
 /* Matrix *fractionalCoordMatrix(Matrix *lat_vectors); */
 
+simd_double3x3 fracCoordMat(simd_double3x3 latVectors);
+
 /* Round up number to the bigger nearest tenth.
  * E.g.: 374 -> 380; 376 -> 380;
  * Args: number, double type

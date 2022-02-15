@@ -156,6 +156,19 @@ msi_modeling/fast:
 .PHONY : msi_modeling/fast
 
 #=============================================================================
+# Target rules for targets named castepSeedGen
+
+# Build rule for target.
+castepSeedGen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 castepSeedGen
+.PHONY : castepSeedGen
+
+# fast build rule for target.
+castepSeedGen/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/build
+.PHONY : castepSeedGen/fast
+
+#=============================================================================
 # Target rules for targets named test.o
 
 # Build rule for target.
@@ -191,6 +204,30 @@ src/atom.s: src/atom.c.s
 src/atom.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/atom.c.s
 .PHONY : src/atom.c.s
+
+src/cell.o: src/cell.c.o
+.PHONY : src/cell.o
+
+# target to build an object file
+src/cell.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/cell.c.o
+.PHONY : src/cell.c.o
+
+src/cell.i: src/cell.c.i
+.PHONY : src/cell.i
+
+# target to preprocess a source file
+src/cell.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/cell.c.i
+.PHONY : src/cell.c.i
+
+src/cell.s: src/cell.c.s
+.PHONY : src/cell.s
+
+# target to generate assembly for a file
+src/cell.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/cell.c.s
+.PHONY : src/cell.c.s
 
 src/database/ads_database.o: src/database/ads_database.c.o
 .PHONY : src/database/ads_database.o
@@ -318,6 +355,7 @@ src/misc.o: src/misc.c.o
 # target to build an object file
 src/misc.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/misc.c.o
 .PHONY : src/misc.c.o
 
 src/misc.i: src/misc.c.i
@@ -326,6 +364,7 @@ src/misc.i: src/misc.c.i
 # target to preprocess a source file
 src/misc.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/misc.c.i
 .PHONY : src/misc.c.i
 
 src/misc.s: src/misc.c.s
@@ -334,6 +373,7 @@ src/misc.s: src/misc.c.s
 # target to generate assembly for a file
 src/misc.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/misc.c.s
 .PHONY : src/misc.c.s
 
 src/molecule.o: src/molecule.c.o
@@ -416,6 +456,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... castepSeedGen"
 	@echo "... database"
 	@echo "... msi_modeling"
 	@echo "... my_maths"
@@ -423,6 +464,9 @@ help:
 	@echo "... src/atom.o"
 	@echo "... src/atom.i"
 	@echo "... src/atom.s"
+	@echo "... src/cell.o"
+	@echo "... src/cell.i"
+	@echo "... src/cell.s"
 	@echo "... src/database/ads_database.o"
 	@echo "... src/database/ads_database.i"
 	@echo "... src/database/ads_database.s"
