@@ -1,3 +1,4 @@
+#include "assemble.h"
 #include "atom.h"
 #include "cell.h"
 #include "database/ads_database.h"
@@ -63,9 +64,33 @@ void test_lat()
     destroy_element_table_yaml(&elmTableYAML);
 }
 
+void test_assemble()
+{
+    Lattice *lat =
+        parse_lattice_from_file("./msi_models/3d/SAC_GDY_V.msi", "SAC_GDY_V");
+    HashNode *adsTable = init_adsInfoTable();
+    AdsorbateInfo *c2h4 =
+        (AdsorbateInfo *)find_item_by_str(adsTable, "C2H4")->val;
+    Adsorbate *ads = parse_adsorbate_from_file(
+        "./C2_pathways_ads/ethylene_path/C2H4.msi", "C2H4", c2h4);
+    Lattice *assembled =
+        Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[0][0],
+                           ads->taskLists->tasks[0][1], "ethylene", 1.4);
+    for (int i = 0; i < assembled->mol->atomNum; ++i)
+    {
+        char *text = assembled->mol->atom_arr[i]->vtable->export_text(
+            assembled->mol->atom_arr[i]);
+        printf("%s", text);
+        free(text);
+    }
+    assembled->vtable->destroy(assembled);
+    lat->vtable->destroy(lat);
+    ads->vtable->destroy(ads);
+    delete_all(&adsTable);
+}
+
 int main(int argc, char *argv[])
 {
-    test_hash();
-    test_lat();
+    test_assemble();
     return 0;
 }

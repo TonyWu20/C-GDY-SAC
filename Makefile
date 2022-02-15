@@ -181,6 +181,30 @@ test.o/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/build
 .PHONY : test.o/fast
 
+src/assemble.o: src/assemble.c.o
+.PHONY : src/assemble.o
+
+# target to build an object file
+src/assemble.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/assemble.c.o
+.PHONY : src/assemble.c.o
+
+src/assemble.i: src/assemble.c.i
+.PHONY : src/assemble.i
+
+# target to preprocess a source file
+src/assemble.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/assemble.c.i
+.PHONY : src/assemble.c.i
+
+src/assemble.s: src/assemble.c.s
+.PHONY : src/assemble.s
+
+# target to generate assembly for a file
+src/assemble.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/assemble.c.s
+.PHONY : src/assemble.c.s
+
 src/atom.o: src/atom.c.o
 .PHONY : src/atom.o
 
@@ -461,6 +485,9 @@ help:
 	@echo "... msi_modeling"
 	@echo "... my_maths"
 	@echo "... test.o"
+	@echo "... src/assemble.o"
+	@echo "... src/assemble.i"
+	@echo "... src/assemble.s"
 	@echo "... src/atom.o"
 	@echo "... src/atom.i"
 	@echo "... src/atom.s"

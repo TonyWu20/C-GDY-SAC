@@ -24,9 +24,10 @@ enum
 // Implementation of Molecule struct
 
 struct Molecule_vtable vtable = {
-    Molecule_get_Atom_by_Id, Molecule_get_vector_ab, Molecule_get_centroid_ab,
-    Molecule_apply_rotation, Molecule_textblock,     Molecule_duplicate,
-    destroyMolecule};
+    Molecule_get_Atom_by_Id,    Molecule_get_vector_ab,
+    Molecule_get_centroid_ab,   Molecule_apply_rotation,
+    Molecule_apply_translation, Molecule_textblock,
+    Molecule_duplicate,         destroyMolecule};
 struct Adsorbate_vtable ads_vtable = {
     Adsorbate_get_stem_vector, Adsorbate_get_plane_normal,
     Adsorbate_make_upright,    Adsorbate_export_MSI,
@@ -143,6 +144,17 @@ void Molecule_apply_rotation(Molecule *self, simd_quatd rotation)
     {
         Atom *curAtom = self->atom_arr[i];
         curAtom->coord = simd_act(rotation, curAtom->coord);
+    }
+}
+
+void Molecule_apply_translation(Molecule *self, simd_double4x4 *transMat)
+{
+    for (int i = 0; i < self->atomNum; ++i)
+    {
+        Atom *curAtom = self->atom_arr[i];
+        simd_double4 tmp_4dCoord = simd_make_double4(curAtom->coord, 1);
+        simd_double4 translated = simd_mul(*transMat, tmp_4dCoord);
+        curAtom->coord = simd_make_double3(translated);
     }
 }
 

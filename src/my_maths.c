@@ -98,6 +98,17 @@ simd_double3x3 fracCoordMat(simd_double3x3 latVectors)
     return toFrac;
 }
 
+simd_double4x4 translateMatrix(simd_double3 fromVec, simd_double3 toVec)
+{
+    simd_double3 translation = toVec - fromVec;
+    simd_double4 diagonal = {1, 1, 1, 1};
+    simd_double4x4 transMat = simd_diagonal_matrix(diagonal);
+    transMat.columns[3].x = translation.x;
+    transMat.columns[3].y = translation.y;
+    transMat.columns[3].z = translation.z;
+    return transMat;
+}
+
 double *cross_product(double *a, double *b) // Return normalized vector
 {
     double a_skew_mat[16] = {0,     a[2],  -a[1], 0, //

@@ -23,7 +23,7 @@ struct Atom_vtable
 // Memory management
 
 /* Create an Atom struct with element name, coord in simd_double3 and atomId */
-Atom *createAtom(char *element, simd_double3 coord, int atomId);
+Atom *createAtom(char *element, simd_double3 coord, int atomId, int elementId);
 
 Atom *dupAtom(Atom *self);
 void destroyAtom(Atom *);

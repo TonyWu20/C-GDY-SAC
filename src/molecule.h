@@ -39,6 +39,7 @@ struct Molecule_vtable
     simd_double3 (*get_vector_ab)(Molecule *self, int aId, int bId);
     simd_double3 (*get_centroid_ab)(Molecule *self, int aId, int bId);
     void (*rotateMol)(Molecule *self, simd_quatd rotation);
+    void (*translateMol)(Molecule *self, simd_double4x4 *transMat);
     char **(*export_text)(Molecule *);
     Molecule *(*duplicate)(Molecule *);
     void (*destroy)(Molecule *self);
@@ -79,6 +80,7 @@ Atom *Molecule_get_Atom_by_Id(Molecule *, int);
 simd_double3 Molecule_get_vector_ab(Molecule *, int a, int b);
 simd_double3 Molecule_get_centroid_ab(Molecule *, int a, int b);
 void Molecule_apply_rotation(Molecule *, simd_quatd rotation);
+void Molecule_apply_translation(Molecule *, simd_double4x4 *transMat);
 simd_double3 Adsorbate_get_stem_vector(Adsorbate *);
 simd_double3 Adsorbate_get_plane_normal(Adsorbate *);
 void Adsorbate_make_upright(Adsorbate *mol);

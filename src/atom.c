@@ -8,19 +8,21 @@
 struct Atom_vtable atom_vtable = {
     Atom_get_coord, Atom_update_coord, Atom_get_atomId, Atom_set_atomId,
     dupAtom,        Atom_textblock,    destroyAtom};
-Atom *createAtom(char *element, simd_double3 coord, int atomId)
+Atom *createAtom(char *element, simd_double3 coord, int atomId, int elementId)
 {
     Atom *newAtom = malloc(sizeof(Atom));
     strncpy(newAtom->element, element, strlen(element));
     newAtom->coord = coord.xyz;
     newAtom->atomId = atomId;
+    newAtom->elementId = elementId;
     newAtom->vtable = &atom_vtable;
     return newAtom;
 }
 
 Atom *dupAtom(Atom *self)
 {
-    Atom *dup = createAtom(self->element, self->coord, self->atomId);
+    Atom *dup =
+        createAtom(self->element, self->coord, self->atomId, self->elementId);
     return dup;
 }
 void destroyAtom(Atom *atomPtr)

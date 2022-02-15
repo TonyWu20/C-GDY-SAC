@@ -184,8 +184,7 @@ static Atom *parse_atom(char *atom_block)
     int atomId = atoi((const char *)buffer);
     pcre2_substring_free(buffer);
     // Create new Atom object
-    Atom *new = createAtom(element, coord, atomId);
-    new->elementId = elementId;
+    Atom *new = createAtom(element, coord, atomId, elementId);
     // Parse the element atomic number from ACL Label
     // Free memory
     free(element);
