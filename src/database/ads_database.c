@@ -13,15 +13,6 @@ enum
     M = 73
 } site_codes;
 
-int task_cd2_sym[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
-                         {NR, C1}, {C1, M},  {C2, M}};
-int task_cd2_asym[][2] = {{C1, C2}, {C2, C1}, {C2, C3}, {C3, C2}, {C3, C4},
-                          {C4, C3}, {C4, FR}, {FR, C4}, {NR, C1}, {C1, NR},
-                          {C1, M},  {M, C1},  {C2, M},  {M, C2}};
-int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
-                     {C4, NULLSITE}, {FR, NULLSITE}, {NR, NULLSITE},
-                     {M, NULLSITE}};
-
 static const cyaml_schema_value_t id_entry = {
     CYAML_VALUE_INT(CYAML_FLAG_DEFAULT, int),
 };

@@ -20,7 +20,12 @@ Cell *createCell(Lattice *lat, HashNode *table)
     int elmNums = 0;
     new->elmLists = new->vtable->sortElmList(new, &elmNums);
     new->elmNums = elmNums;
-    new->lookupTable = table;
+    new->lookupTable = NULL;
+    for (int i = 0; i < elmNums; ++i)
+    {
+        HashNode *item = find_item_by_str(table, new->elmLists[i]);
+        add_str_keyptr_item(&new->lookupTable, new->elmLists[i], item->val);
+    }
     return new;
 }
 
@@ -30,6 +35,7 @@ void destroyCell(Cell *self)
     for (int i = 0; i < self->elmNums; ++i)
         free(self->elmLists[i]);
     free(self->elmLists);
+    delete_all(&self->lookupTable);
     free(self);
 }
 
@@ -94,8 +100,10 @@ char *cell_fracCoord_writer(Cell *self)
         }
         else
         {
-            HashNode *metalNode = find_item_by_str(self->lookupTable,
-                                                   self->lattice->metal_symbol);
+            Atom *metalAtom = self->lattice->mol->vtable->get_atom_by_Id(
+                self->lattice->mol, self->lattice->metal_site_id);
+            HashNode *metalNode =
+                find_item_by_str(self->lookupTable, metalAtom->element);
             ElmInfo *metal = (ElmInfo *)metalNode->val;
             if (metal->spin)
             {
@@ -351,6 +359,7 @@ void sortAtomsByElement(Cell *self)
     qsort(atomArray, mol->atomNum, sizeof(Atom *), atomCmp);
     mol->atom_arr = atomArray;
     self->atomSorted = true;
+    self->lattice->metal_site_id = mol->atomNum;
 }
 
 char **sortedElementList(Cell *self, int *returnSize)

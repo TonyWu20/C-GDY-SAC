@@ -26,7 +26,6 @@ Lattice *createLattice(Molecule *mol, simd_double3x3 lattice_vectors)
     new->vtable = &lat_vtable;
     new->attached_adsName = NULL;
     new->pathName = NULL;
-    lattice_metal_info(new);
     return new;
 }
 
@@ -37,13 +36,14 @@ void lattice_modify_metal_element(Lattice *self, const char *metal_symbol,
         self->mol->vtable->get_atom_by_Id(self->mol, self->metal_site_id);
     strncpy(metalAtom->element, metal_symbol, strlen(metal_symbol) + 1);
     metalAtom->elementId = elementId;
+    free(self->mol->name);
+    asprintf(&self->mol->name, "SAC_GDY_%s", metal_symbol);
 }
 
 void destroyLattice(Lattice *self)
 {
     Molecule *mPtr = self->mol;
     mPtr->vtable->destroy(mPtr);
-    free(self->metal_family);
     free(self->attached_adsName);
     free(self->pathName);
     free(self);
@@ -175,30 +175,34 @@ void lattice_export_MSI(Lattice *self)
     free(dest);
 }
 
-void lattice_metal_info(Lattice *self)
+char *metal_family(int elementId)
 {
-    Atom *metal =
-        self->mol->vtable->get_atom_by_Id(self->mol, self->metal_site_id);
-    self->metal_symbol = metal->element;
-    int metal_atomic_num = metal->elementId;
-    if (metal_atomic_num <= 30)
-        self->metal_family = strdup("3d");
+    int metal_atomic_num = elementId;
+    char *family = NULL;
+    if (metal_atomic_num <= 30 && metal_atomic_num > 20)
+        family = strdup("3d");
     else if (metal_atomic_num > 30 && metal_atomic_num <= 48)
-        self->metal_family = strdup("4d");
+        family = strdup("4d");
     else if (metal_atomic_num > 71 && metal_atomic_num <= 80)
-        self->metal_family = strdup("5d");
+        family = strdup("5d");
     else if (metal_atomic_num > 56 && metal_atomic_num <= 71)
-        self->metal_family = strdup("lm");
-    self->metal_order = metal_atomic_num;
+        family = strdup("lm");
+    else
+    {
+        printf("Not metal!\n");
+    };
+    return family;
 }
 
 char *lattice_export_dest(Lattice *self)
 {
-    char *metal_family = self->metal_family;
-    char *metal_symbol = self->metal_symbol;
+    Molecule *mPtr = self->mol;
+    Atom *metal = mPtr->vtable->get_atom_by_Id(mPtr, self->metal_site_id);
+    char *family = metal_family(metal->elementId);
+    char *metal_symbol = metal->element;
 
     int destLen = 1 + snprintf(NULL, 0, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/",
-                               self->pathName, metal_family, metal_symbol,
+                               self->pathName, family, metal_symbol,
                                self->attached_adsName, self->mol->name);
 
     if (self->attached_adsName == NULL)
@@ -208,7 +212,8 @@ char *lattice_export_dest(Lattice *self)
     }
     char *buffer = malloc(destLen);
     snprintf(buffer, destLen, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/",
-             self->pathName, metal_family, metal_symbol, self->attached_adsName,
+             self->pathName, family, metal_symbol, self->attached_adsName,
              self->mol->name);
+    free(family);
     return buffer;
 }

@@ -21,6 +21,14 @@ enum
     M = 73
 } site_codes;
 
+int task_cd2_sym[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
+                         {NR, C1}, {C1, M},  {C2, M}};
+int task_cd2_asym[][2] = {{C1, C2}, {C2, C1}, {C2, C3}, {C3, C2}, {C3, C4},
+                          {C4, C3}, {C4, FR}, {FR, C4}, {NR, C1}, {C1, NR},
+                          {C1, M},  {M, C1},  {C2, M},  {M, C2}};
+int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
+                     {C4, NULLSITE}, {FR, NULLSITE}, {NR, NULLSITE},
+                     {M, NULLSITE}};
 // Implementation of Molecule struct
 
 struct Molecule_vtable vtable = {
@@ -206,7 +214,6 @@ void Adsorbate_make_upright(Adsorbate *adsPtr)
     {
         simd_double3 plane_normal =
             adsPtr->vtable->get_plane_normal(adsPtr); // malloced
-        printf("%f, %f, %f\n", plane_normal.x, plane_normal.y, plane_normal.z);
         simd_double3 plane_proj_XY = simd_normalize(
             simd_make_double3(plane_normal.x, plane_normal.y, 0));
         double rot_angle = simd_vector_angle(plane_normal, plane_proj_XY);
@@ -286,6 +293,10 @@ struct taskTable *createTasks(Adsorbate *self)
             for (int i = 0; i < tab->taskNum; ++i)
             {
                 tab->tasks[i] = malloc(sizeof(int) * 2);
+                if (!tab->tasks[i])
+                {
+                    printf("Malloc failed!\n");
+                }
                 for (int j = 0; j < 2; ++j)
                 {
                     tab->tasks[i][j] = task_cd2_sym[i][j];
@@ -300,6 +311,10 @@ struct taskTable *createTasks(Adsorbate *self)
             for (int i = 0; i < tab->taskNum; ++i)
             {
                 tab->tasks[i] = malloc(sizeof(int) * 2);
+                if (!tab->tasks[i])
+                {
+                    printf("Malloc failed!\n");
+                }
                 for (int j = 0; j < 2; ++j)
                     tab->tasks[i][j] = task_cd2_asym[i][j];
             }
@@ -309,9 +324,13 @@ struct taskTable *createTasks(Adsorbate *self)
         tab = malloc(sizeof(*tab));
         tab->taskNum = sizeof(task_cd1) / sizeof(task_cd1[0]);
         tab->tasks = malloc(sizeof(int *) * 7);
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < tab->taskNum; ++i)
         {
             tab->tasks[i] = malloc(sizeof(int) * 2);
+            if (!tab->tasks[i])
+            {
+                printf("Malloc failed!\n");
+            }
             for (int j = 0; j < 2; ++j)
                 tab->tasks[i][j] = task_cd1[i][j];
         }

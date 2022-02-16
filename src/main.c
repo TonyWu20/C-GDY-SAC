@@ -7,6 +7,7 @@
 #include "misc.h"
 #include "my_maths.h"
 #include "parser.h"
+#include "tasks.h"
 #include <time.h>
 
 void test_hash()
@@ -91,9 +92,22 @@ void test_assemble()
     elmTableYAML->destroy(&elmTableYAML);
 }
 
+void test_tasks()
+{
+    AdsTableYAML *adsTableYAML = load_adsTableYAML();
+    ElmTableYAML *elmTableYAML = load_elmTableYAML();
+    HashNode *adsTable = init_adsInfoTable(adsTableYAML);
+    HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
+    int prog = 0;
+    allocateTasks(ETHANOL, &prog, elmTable, adsTable);
+    elmTableYAML->destroy(&elmTableYAML);
+    adsTableYAML->destroy(&adsTableYAML);
+    delete_all(&elmTable);
+    delete_all(&adsTable);
+}
+
 int main(int argc, char *argv[])
 {
-    test_hash();
-    test_assemble();
+    test_tasks();
     return 0;
 }

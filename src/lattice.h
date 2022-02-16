@@ -13,9 +13,6 @@ struct _Lattice
     Molecule *mol;
     simd_double3x3 lattice_vectors;
     int metal_site_id;
-    int metal_order;
-    char *metal_family;
-    char *metal_symbol;
     char *attached_adsName;
     char *pathName;
     struct Lattice_vtable *vtable;
