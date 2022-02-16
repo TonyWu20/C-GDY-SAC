@@ -20,8 +20,7 @@ static const cyaml_schema_field_t elm_table_fields_schema[] = {
 
     CYAML_FIELD_SEQUENCE("Element_info", CYAML_FLAG_POINTER,
 
-                         struct element_table_yaml, infoItems,
-                         &element_info_schema,
+                         ElmTableYAML, infoItems, &element_info_schema,
 
                          0, CYAML_UNLIMITED),
 
@@ -29,7 +28,7 @@ static const cyaml_schema_field_t elm_table_fields_schema[] = {
 
 static const cyaml_schema_value_t elm_table_schema = {CYAML_VALUE_MAPPING(
 
-    CYAML_FLAG_POINTER, struct element_table_yaml, elm_table_fields_schema)};
+    CYAML_FLAG_POINTER, ElmTableYAML, elm_table_fields_schema)};
 
 static const cyaml_config_t config = {
     .log_fn = cyaml_log,            /* Use the default logging function. */
@@ -37,10 +36,10 @@ static const cyaml_config_t config = {
     .log_level = CYAML_LOG_WARNING, /* Logging errors and warnings only. */
 };
 
-struct element_table_yaml *load_elmTableYAML(void)
+ElmTableYAML *load_elmTableYAML(void)
 {
     cyaml_err_t err;
-    struct element_table_yaml *elmTableYAML;
+    ElmTableYAML *elmTableYAML;
     err = cyaml_load_file("./src/database/element_table.yaml", &config,
                           &elm_table_schema, (void **)&elmTableYAML, NULL);
     if (err != CYAML_OK)
@@ -48,10 +47,11 @@ struct element_table_yaml *load_elmTableYAML(void)
         printf("ERROR: %s\n", cyaml_strerror(err));
         return NULL;
     }
+    elmTableYAML->destroy = destroy_ElmTableYAML;
     return elmTableYAML;
 }
 
-void destroy_element_table_yaml(struct element_table_yaml **elmTableYAML)
+void destroy_ElmTableYAML(ElmTableYAML **elmTableYAML)
 {
     cyaml_free(&config, &elm_table_schema, *elmTableYAML, 0);
 }

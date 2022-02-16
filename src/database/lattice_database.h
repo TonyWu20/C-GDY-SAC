@@ -11,12 +11,14 @@ typedef struct
     int spin;
 } ElmInfo;
 
+typedef struct element_table_yaml ElmTableYAML;
 struct element_table_yaml
 {
     ElmInfo *infoItems;
     int infoItems_count;
+    void (*destroy)(ElmTableYAML **self);
 };
 void test_elm_table(void);
-struct element_table_yaml *load_elmTableYAML(void);
-void destroy_element_table_yaml(struct element_table_yaml **elmTableYAML);
-HashNode *init_ElmInfoTable(struct element_table_yaml *elmTableYAML);
+ElmTableYAML *load_elmTableYAML(void);
+void destroy_ElmTableYAML(ElmTableYAML **elmTableYAML);
+HashNode *init_ElmInfoTable(ElmTableYAML *elmTableYAML);
