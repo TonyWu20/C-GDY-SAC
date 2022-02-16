@@ -27,14 +27,13 @@ struct Lattice_vtable
 {
     simd_double3 (*get_carbon_chain_vector)(Lattice *self);
     simd_double3 (*get_carbon_metal_vector)(Lattice *self, int);
-    Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads, char *newName,
-                                char *pathName);
+    Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads, char *newName);
     /* Rotate lattice to standard orientation "C along Z, A in XZ plane"
      */
     void (*rotate_to_standard_orientation)(Lattice *self);
     void (*modify_metal)(Lattice *, const char *, int);
-    char *(*exportDir)(Lattice *self, char *pathName);
-    void (*export_msi)(Lattice *self, char *pathName);
+    char *(*exportDir)(Lattice *self);
+    void (*export_msi)(Lattice *self);
     void (*destroy)(Lattice *self);
 };
 
@@ -75,8 +74,7 @@ simd_double3 lattice_get_carbon_metal_vector(Lattice *self, int);
  * of the atoms in mol will be updated to follow the order in current Lattice.
  * Returns a new Lattice struct pointer for future exports
  */
-Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName,
-                                 char *pathName);
+Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName);
 
 /* Rotate lattice to standard orientation "C along Z, A in XZ plane"
  */
@@ -88,7 +86,7 @@ char *get_carbon_site_name(int siteId);
 /* Format and export lattice contents to .msi
  * if dest == NULL, use default
  */
-void lattice_export_MSI(Lattice *self, char *pathName);
+void lattice_export_MSI(Lattice *self);
 
 /* Generate export destination */
-char *lattice_export_dest(Lattice *self, char *pathName);
+char *lattice_export_dest(Lattice *self);

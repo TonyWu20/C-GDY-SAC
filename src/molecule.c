@@ -68,7 +68,7 @@ Molecule *Molecule_duplicate(Molecule *self)
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
                            int *planeAtomIds, bool bVer, bool bSym,
-                           int upperAtomId)
+                           int upperAtomId, char *pathName)
 {
     Adsorbate *ads = malloc(sizeof(Adsorbate));
     ads->mol = newMol;
@@ -82,15 +82,17 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
     ads->bSym = bSym;
     ads->taskLists = createTasks(ads);
     ads->upperAtomId = upperAtomId;
+    ads->pathName = strdup(pathName);
     return ads;
 }
 
 Adsorbate *Adsorbate_duplicate(Adsorbate *self)
 {
     Molecule *molCopy = self->mol->vtable->duplicate(self->mol);
-    Adsorbate *dup = createAdsorbate(
-        molCopy, self->coordAtomNum, self->coordAtomIds, self->stemAtomIds,
-        self->planeAtomIds, self->bVertical, self->bSym, self->upperAtomId);
+    Adsorbate *dup =
+        createAdsorbate(molCopy, self->coordAtomNum, self->coordAtomIds,
+                        self->stemAtomIds, self->planeAtomIds, self->bVertical,
+                        self->bSym, self->upperAtomId, self->pathName);
     return dup;
 }
 
@@ -113,6 +115,7 @@ void destroyAdsorbate(Adsorbate *ads)
         free(ads->taskLists->tasks[i]);
     free(ads->taskLists->tasks);
     free(ads->taskLists);
+    free(ads->pathName);
     free(ads);
 }
 

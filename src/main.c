@@ -11,18 +11,17 @@
 
 void test_hash()
 {
-    HashNode *adsTable = init_adsInfoTable();
+    AdsTableYAML *adsTableYAML = load_adsTableYAML();
+    HashNode *adsTable = init_adsInfoTable(adsTableYAML);
     HashNode *item = find_item_by_str(adsTable, "C2H4");
-    AdsorbateInfo *adsInfo = (AdsorbateInfo *)(item->val);
-    printf("%p, %p\n", adsInfo->name,
-           &((AdsorbateInfo *)item->val)->coordAtomNum);
-    printf("%s, %d\n", adsInfo->name,
-           ((AdsorbateInfo *)item->val)->coordAtomNum);
+    AdsInfo *adsInfo = (AdsInfo *)(item->val);
+    printf("%s, %d\n", adsInfo->name, ((AdsInfo *)item->val)->coordAtoms_count);
     Adsorbate *ads = parse_adsorbate_from_file(
         "./C2_pathways_ads/ethylene_path/C2H4.msi", "C2H4", item->val);
     ads->vtable->make_upright(ads);
     ads->vtable->destroy(ads);
     delete_all(&adsTable);
+    adsTableYAML->destroy(&adsTableYAML);
 }
 
 void test_lat()
@@ -46,7 +45,7 @@ void test_lat()
     double alpha = simd_vector_angle(lat->lattice_vectors.columns[1],
                                      lat->lattice_vectors.columns[2]);
     printf("%f, %f\n", alpha, cos(alpha));
-    struct element_table_yaml *elmTableYAML = load_elmTableYAML();
+    ElmTableYAML *elmTableYAML = load_elmTableYAML();
     HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
     HashNode *metal = find_item_by_str(elmTable, "Co");
     printf("%s\n", (char *)metal->key);
@@ -61,36 +60,40 @@ void test_lat()
     free(cell_pot);
     cell->destroy(cell);
     delete_all(&elmTable);
-    destroy_element_table_yaml(&elmTableYAML);
+    elmTableYAML->destroy(&elmTableYAML);
 }
 
 void test_assemble()
 {
     Lattice *lat =
         parse_lattice_from_file("./msi_models/3d/SAC_GDY_V.msi", "SAC_GDY_V");
-    HashNode *adsTable = init_adsInfoTable();
-    AdsorbateInfo *c2h4 =
-        (AdsorbateInfo *)find_item_by_str(adsTable, "C2H4")->val;
+    AdsTableYAML *adsTableYAML = load_adsTableYAML();
+    HashNode *adsTable = init_adsInfoTable(adsTableYAML);
+    AdsInfo *c2h4 = (AdsInfo *)find_item_by_str(adsTable, "C2H4")->val;
     Adsorbate *ads = parse_adsorbate_from_file(
         "./C2_pathways_ads/ethylene_path/C2H4.msi", "C2H4", c2h4);
+    ElmTableYAML *elmTableYAML = load_elmTableYAML();
+    HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
+    ElmInfo *Tm = find_item_by_str(elmTable, "Tm")->val;
+    lat->vtable->modify_metal(lat, "Tm", Tm->atomicNum);
     Lattice *assembled =
         Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[0][0],
-                           ads->taskLists->tasks[0][1], "ethylene", 1.4);
-    for (int i = 0; i < assembled->mol->atomNum; ++i)
-    {
-        char *text = assembled->mol->atom_arr[i]->vtable->export_text(
-            assembled->mol->atom_arr[i]);
-        printf("%s", text);
-        free(text);
-    }
-    assembled->vtable->destroy(assembled);
+                           ads->taskLists->tasks[0][1], 1.4);
+    assembled->vtable->export_msi(assembled);
+    Cell *assembled_cell = createCell(assembled, elmTable);
+    assembled_cell->vtable->exportCell(assembled_cell);
     lat->vtable->destroy(lat);
     ads->vtable->destroy(ads);
+    assembled_cell->destroy(assembled_cell);
     delete_all(&adsTable);
+    delete_all(&elmTable);
+    destroy_adsTableYAML(&adsTableYAML);
+    elmTableYAML->destroy(&elmTableYAML);
 }
 
 int main(int argc, char *argv[])
 {
+    test_hash();
     test_assemble();
     return 0;
 }

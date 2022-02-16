@@ -255,8 +255,7 @@ void cellExport(Cell *self)
 {
     /* Filepath processing */
     char *stemName = self->lattice->mol->name;
-    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
-                                                       self->lattice->pathName);
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice);
     createDirectory(exportDir);
     char *fileName;
     char *DOSfileName;

@@ -194,17 +194,17 @@ static Atom *parse_atom(char *atom_block)
 }
 
 Adsorbate *parse_adsorbate_from_file(char *fileName, char *name,
-                                     AdsorbateInfo *adsInfo)
+                                     AdsInfo *adsInfo)
 {
     char *body = readWholeFile(fileName);
     int atomNums = 0;
     Atom **atom_arr = get_all_atoms(body, &atomNums);
     free(body);
     Molecule *mol = createMolecule(name, atomNums, atom_arr);
-    Adsorbate *ads =
-        createAdsorbate(mol, adsInfo->coordAtomNum, adsInfo->coordAtomIds,
-                        adsInfo->stemAtomIds, adsInfo->planeAtomIds,
-                        adsInfo->vertical, adsInfo->bSym, adsInfo->upperAtomId);
+    Adsorbate *ads = createAdsorbate(
+        mol, adsInfo->coordAtoms_count, adsInfo->coordAtoms, adsInfo->stemAtoms,
+        adsInfo->planeAtoms, adsInfo->vertical, adsInfo->bSym,
+        adsInfo->upperAtomId, adsInfo->pathName);
     return ads;
 }
 

@@ -22,6 +22,7 @@ typedef struct
     bool bVertical;
     bool bSym;
     int upperAtomId;
+    char *pathName;
     struct Adsorbate_vtable *vtable;
     struct taskTable *taskLists;
 } Adsorbate;
@@ -63,7 +64,7 @@ Molecule *Molecule_duplicate(Molecule *self);
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
                            int *planeAtomIds, bool bVer, bool bSym,
-                           int upperAtomId);
+                           int upperAtomId, char *pathName);
 /* Duplicate the adsorbate */
 Adsorbate *Adsorbate_duplicate(Adsorbate *self);
 

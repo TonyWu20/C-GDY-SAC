@@ -62,8 +62,7 @@ simd_double3 lattice_get_carbon_metal_vector(Lattice *self, int cId)
 
 /* Attach adsorbate to the lattice and update their atomId folloing the lattice
  * atoms */
-Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName,
-                                 char *pathName)
+Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName)
 {
     Molecule *latmol = self->mol, *adsmol = ads->mol;
     Atom **cur_lat_atoms = latmol->atom_arr;
@@ -86,7 +85,7 @@ Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName,
     Molecule *resMol = createMolecule(newName, new_atomNum, new_arr);
     Lattice *new = createLattice(resMol, self->lattice_vectors);
     new->attached_adsName = strdup(ads->mol->name);
-    new->pathName = strdup(pathName);
+    new->pathName = strdup(ads->pathName);
     return new;
 }
 
@@ -136,7 +135,7 @@ char *get_carbon_site_name(int siteId)
     }
 }
 
-void lattice_export_MSI(Lattice *self, char *pathName)
+void lattice_export_MSI(Lattice *self)
 {
     char header_line[] = "# MSI CERIUS2 DataModel File Version 4 0\n";
     char model_start[] = "(1 Model\n";
@@ -158,7 +157,7 @@ void lattice_export_MSI(Lattice *self, char *pathName)
         contentLines[i + 3] = atoms[i];
     }
     contentLines[lineSize - 1] = strdup(model_end);
-    char *dest = lattice_export_dest(self, pathName);
+    char *dest = lattice_export_dest(self);
     createDirectory(dest);
     int exportNameLen = snprintf(NULL, 0, "%s%s.msi", dest, mol->name) + 1;
     char *exportName = malloc(exportNameLen);
@@ -193,13 +192,13 @@ void lattice_metal_info(Lattice *self)
     self->metal_order = metal_atomic_num;
 }
 
-char *lattice_export_dest(Lattice *self, char *pathName)
+char *lattice_export_dest(Lattice *self)
 {
     char *metal_family = self->metal_family;
     char *metal_symbol = self->metal_symbol;
 
     int destLen = 1 + snprintf(NULL, 0, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/",
-                               pathName, metal_family, metal_symbol,
+                               self->pathName, metal_family, metal_symbol,
                                self->attached_adsName, self->mol->name);
 
     if (self->attached_adsName == NULL)
@@ -208,8 +207,8 @@ char *lattice_export_dest(Lattice *self, char *pathName)
         return 0;
     }
     char *buffer = malloc(destLen);
-    snprintf(buffer, destLen, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/", pathName,
-             metal_family, metal_symbol, self->attached_adsName,
+    snprintf(buffer, destLen, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/",
+             self->pathName, metal_family, metal_symbol, self->attached_adsName,
              self->mol->name);
     return buffer;
 }

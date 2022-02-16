@@ -11,6 +11,6 @@
 
 /* Parse and construct the Adsorbate object */
 Adsorbate *parse_adsorbate_from_file(char *fileName, char *name,
-                                     AdsorbateInfo *adsInfo);
+                                     AdsInfo *adsInfo);
 /* Parse and construct the Lattice object */
 Lattice *parse_lattice_from_file(char *fileName, char *name);
