@@ -9,12 +9,25 @@ extern int task_cd1[7][2];
 typedef struct
 {
     char *name;
-    int coordAtomNum;
-    int coordAtomIds[2];
-    int stemAtomIds[2];
-    int planeAtomIds[3];
+    int *coordAtoms;
+    unsigned coordAtoms_count;
+    int *stemAtoms;
+    unsigned stemAtoms_count;
+    int *planeAtoms;
+    unsigned planeAtoms_count;
     bool vertical;
     bool bSym;
     int upperAtomId;
-} AdsorbateInfo;
-HashNode *init_adsInfoTable();
+    char *pathName;
+} AdsInfo;
+
+typedef struct AdsTableYAML AdsTableYAML;
+struct AdsTableYAML
+{
+    AdsInfo *adsInfoItem;
+    unsigned adsInfoItem_count;
+    void (*destroy)(AdsTableYAML **self);
+};
+AdsTableYAML *load_adsTableYAML(void);
+void destroy_adsTableYAML(AdsTableYAML **adsTableYAML);
+HashNode *init_adsInfoTable(AdsTableYAML *adsTableYAML);

@@ -1,4 +1,6 @@
 #include "ads_database.h"
+#include "cyaml/cyaml.h"
+#include <stdio.h>
 #define NULLSITE 255
 enum
 {
@@ -19,57 +21,75 @@ int task_cd2_asym[][2] = {{C1, C2}, {C2, C1}, {C2, C3}, {C3, C2}, {C3, C4},
 int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
                      {C4, NULLSITE}, {FR, NULLSITE}, {NR, NULLSITE},
                      {M, NULLSITE}};
-AdsorbateInfo ethylene[] = {
-    {"CO", 1, {1, -1}, {1, 2}, {1, 2, 2}, true, false, 2},
-    {"CHO", 1, {1, -1}, {2, 3}, {1, 2, 3}, true, false, 2},
-    {"COCHO", 1, {3, -1}, {1, 3}, {1, 2, 3}, true, false, 5},
-    {"COCHOH", 1, {3, -1}, {1, 3}, {1, 2, 3}, true, false, 6},
-    {"OCH2CO", 2, {1, 3}, {1, 3}, {1, 2, 3}, true, false, 6},
-    {"OCH2COH", 2, {1, 3}, {1, 3}, {1, 2, 3}, true, false, 6},
-    {"OCH2CHOH", 2, {1, 3}, {1, 3}, {1, 2, 3}, true, false, 4},
-    {"OCH2CH", 2, {1, 3}, {1, 3}, {1, 2, 3}, true, false, 4},
-    {"OCH2CH2", 2, {1, 3}, {1, 3}, {1, 2, 3}, true, false, 4},
-    {"C2H4", 2, {1, 2}, {1, 2}, {1, 2, 3}, false, true, 0}};
 
-AdsorbateInfo acetic_acid[] = {
-    {"OCH2C_cyc_OH", 1, {1, -1}, {2, 4}, {1, 2, 3}, true, false, 6},
-    {"CH3COOH", 1, {2, -1}, {2, 3}, {2, 3, 4}, true, false, 7}};
+static const cyaml_schema_value_t id_entry = {
+    CYAML_VALUE_INT(CYAML_FLAG_DEFAULT, int),
+};
 
-AdsorbateInfo ethanol[] = {
-    {"Glyoxal", 2, {1, 6}, {1, 6}, {1, 2, 3}, true, false, 5},
-    {"HOCCHO", 2, {1, 6}, {1, 6}, {1, 2, 3}, true, true, 4},
-    {"HOHCCHO", 2, {1, 6}, {1, 6}, {1, 2, 3}, true, false, 4},
-    {"Glycolaldehyde", 2, {1, 6}, {1, 6}, {1, 2, 3}, true, false, 4},
-    {"CH2CHO", 1, {5, -1}, {1, 2}, {1, 2, 5}, true, false, 3},
-    {"CH2CHOH", 2, {1, 2}, {1, 2}, {1, 2, 3}, true, false, 4},
-    {"CH2CH2OH", 1, {1, -1}, {1, 2}, {1, 2, 3}, true, false, 4},
-    {"CH3CH2OH", 1, {1, -1}, {1, 2}, {1, 2, 3}, true, false, 9},
-    {"acetaldehyde", 1, {1, -1}, {1, 2}, {1, 2, 6}, true, false, 6}};
+static const cyaml_schema_field_t ads_info_field_schema[] = {
+    CYAML_FIELD_STRING_PTR("name", CYAML_FLAG_POINTER, AdsInfo, name, 0,
+                           CYAML_UNLIMITED),
+    CYAML_FIELD_SEQUENCE("coordAtomIds", CYAML_FLAG_POINTER, AdsInfo,
+                         coordAtoms, &id_entry, 0, CYAML_UNLIMITED),
+    CYAML_FIELD_SEQUENCE("stemAtomIds", CYAML_FLAG_POINTER, AdsInfo, stemAtoms,
+                         &id_entry, 0, CYAML_UNLIMITED),
+    CYAML_FIELD_SEQUENCE("planeAtomIds", CYAML_FLAG_POINTER, AdsInfo,
+                         planeAtoms, &id_entry, 0, CYAML_UNLIMITED),
+    CYAML_FIELD_BOOL("vertical", CYAML_FLAG_DEFAULT, AdsInfo, vertical),
+    CYAML_FIELD_BOOL("bSym", CYAML_FLAG_DEFAULT, AdsInfo, bSym),
+    CYAML_FIELD_UINT("upperAtomId", CYAML_FLAG_DEFAULT, AdsInfo, upperAtomId),
+    CYAML_FIELD_STRING_PTR("pathName", CYAML_FLAG_POINTER, AdsInfo, pathName, 0,
+                           CYAML_UNLIMITED),
+    CYAML_FIELD_END,
+};
 
-AdsorbateInfo ethanol_other[] = {
-    {"CH2OHCH2O", 2, {1, 6}, {1, 6}, {1, 2, 3}, true, false, 4},
-    {"ethylene_glycol", 2, {1, 6}, {1, 6}, {1, 2, 3}, true, true, 4}};
+static const cyaml_schema_value_t ads_info_schema = {
 
-HashNode *init_adsInfoTable()
+    CYAML_VALUE_MAPPING(CYAML_FLAG_DEFAULT, AdsInfo, ads_info_field_schema)};
+
+static const cyaml_schema_field_t ads_table_fields_schema[] = {
+    CYAML_FIELD_SEQUENCE("Adsorbates", CYAML_FLAG_POINTER, AdsTableYAML,
+                         adsInfoItem, &ads_info_schema, 0, CYAML_UNLIMITED),
+    CYAML_FIELD_END,
+};
+
+static const cyaml_schema_value_t ads_table_schema = {
+    CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER, AdsTableYAML,
+                        ads_table_fields_schema),
+};
+
+static const cyaml_config_t config = {
+    .log_fn = cyaml_log,            /* Use the default logging function. */
+    .mem_fn = cyaml_mem,            /* Use the default memory allocator. */
+    .log_level = CYAML_LOG_WARNING, /* Logging errors and warnings only. */
+};
+
+AdsTableYAML *load_adsTableYAML(void)
+{
+    cyaml_err_t err;
+    AdsTableYAML *adsTableYAML;
+    err = cyaml_load_file("./src/database/ads_table.yaml", &config,
+                          &ads_table_schema, (void **)&adsTableYAML, NULL);
+    if (err != CYAML_OK)
+    {
+        printf("ERROR: %s\n", cyaml_strerror(err));
+        return NULL;
+    }
+    adsTableYAML->destroy = destroy_adsTableYAML;
+    return adsTableYAML;
+}
+void destroy_adsTableYAML(AdsTableYAML **adsTableYAML)
+{
+    cyaml_free(&config, &ads_table_schema, *adsTableYAML, 0);
+}
+
+HashNode *init_adsInfoTable(AdsTableYAML *adsTableYAML)
 {
     HashNode *hashTab = NULL;
-    for (int i = 0; i < sizeof(ethylene) / sizeof(ethylene[0]); ++i)
+    for (int i = 0; i < adsTableYAML->adsInfoItem_count; ++i)
     {
-        add_str_keyptr_item(&hashTab, ethylene[i].name, (void *)&ethylene[i]);
-    }
-    for (int i = 0; i < sizeof(ethanol) / sizeof(ethanol[0]); ++i)
-    {
-        add_str_keyptr_item(&hashTab, ethanol[i].name, (void *)&ethanol[i]);
-    }
-    for (int i = 0; i < sizeof(ethanol_other) / sizeof(ethanol_other[0]); ++i)
-    {
-        add_str_keyptr_item(&hashTab, ethanol_other[i].name,
-                            (void *)&ethanol_other[i]);
-    }
-    for (int i = 0; i < sizeof(acetic_acid) / sizeof(acetic_acid[0]); ++i)
-    {
-        add_str_keyptr_item(&hashTab, acetic_acid[i].name,
-                            (void *)&acetic_acid[i]);
+        AdsInfo *curPtr = &adsTableYAML->adsInfoItem[i];
+        add_str_keyptr_item(&hashTab, curPtr->name, (void *)curPtr);
     }
     return hashTab;
 }
