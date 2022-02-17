@@ -17,8 +17,8 @@ enum
 };
 
 /* Perform all tasks in one go */
-void allocateTasks(int pathNameCode, int *progress, HashNode *elmTable,
-                   HashNode *adsTable);
+void generator(ElmTableYAML *elmTableYAML, char **elements,
+               AdsTableYAML *adsTableYAML, int *progress);
 /* return list of ads file paths based on pathway name*/
 char **pathway_adsLists(int pathNameCode, int *adsListLen);
 /* Helper of pathway_adsLists */

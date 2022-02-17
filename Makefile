@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/P
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/opt/homebrew/Cellar/cmake/3.22.1/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/opt/homebrew/Cellar/cmake/3.22.2/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -466,6 +466,7 @@ src/param.o: src/param.c.o
 
 # target to build an object file
 src/param.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/param.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.o
 .PHONY : src/param.c.o
 
@@ -474,6 +475,7 @@ src/param.i: src/param.c.i
 
 # target to preprocess a source file
 src/param.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/param.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.i
 .PHONY : src/param.c.i
 
@@ -482,6 +484,7 @@ src/param.s: src/param.c.s
 
 # target to generate assembly for a file
 src/param.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/param.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.s
 .PHONY : src/param.c.s
 

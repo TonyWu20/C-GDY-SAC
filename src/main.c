@@ -6,6 +6,7 @@
 #include "database/lattice_database.h"
 #include "misc.h"
 #include "my_maths.h"
+#include "param.h"
 #include "parser.h"
 #include "tasks.h"
 #include <time.h>
@@ -64,46 +65,54 @@ void test_lat()
     elmTableYAML->destroy(&elmTableYAML);
 }
 
-void test_assemble()
-{
-    Lattice *lat =
-        parse_lattice_from_file("./msi_models/3d/SAC_GDY_V.msi", "SAC_GDY_V");
-    AdsTableYAML *adsTableYAML = load_adsTableYAML();
-    HashNode *adsTable = init_adsInfoTable(adsTableYAML);
-    AdsInfo *c2h4 = (AdsInfo *)find_item_by_str(adsTable, "C2H4")->val;
-    Adsorbate *ads = parse_adsorbate_from_file(
-        "./C2_pathways_ads/ethylene_path/C2H4.msi", "C2H4", c2h4);
-    ElmTableYAML *elmTableYAML = load_elmTableYAML();
-    HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
-    ElmInfo *Tm = find_item_by_str(elmTable, "Tm")->val;
-    lat->vtable->modify_metal(lat, "Tm", Tm->atomicNum);
-    Lattice *assembled =
-        Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[0][0],
-                           ads->taskLists->tasks[0][1], 1.4);
-    assembled->vtable->export_msi(assembled);
-    Cell *assembled_cell = createCell(assembled, elmTable);
-    assembled_cell->vtable->exportCell(assembled_cell);
-    lat->vtable->destroy(lat);
-    ads->vtable->destroy(ads);
-    assembled_cell->destroy(assembled_cell);
-    delete_all(&adsTable);
-    delete_all(&elmTable);
-    destroy_adsTableYAML(&adsTableYAML);
-    elmTableYAML->destroy(&elmTableYAML);
-}
+/* void test_assemble() */
+/* { */
+/*     Lattice *lat = */
+/*         parse_lattice_from_file("./msi_models/3d/SAC_GDY_V.msi",
+ * "SAC_GDY_V"); */
+/*     AdsTableYAML *adsTableYAML = load_adsTableYAML(); */
+/*     HashNode *adsTable = init_adsInfoTable(adsTableYAML); */
+/*     AdsInfo *glyoxal = (AdsInfo *)find_item_by_str(adsTable, "Glyoxal")->val;
+ */
+/*     Adsorbate *ads = parse_adsorbate_from_file( */
+/*         "./C2_pathways_ads/ethanol_path/Glyoxal.msi", "Glyoxal", glyoxal); */
+/*     ElmTableYAML *elmTableYAML = load_elmTableYAML(); */
+/*     HashNode *elmTable = init_ElmInfoTable_internal(); */
+/*     ElmInfo *Tm = find_item_by_str(elmTable, "Tm")->val; */
+/*     lat->vtable->modify_metal(lat, "Tm", Tm->atomicNum); */
+/*     Lattice *assembled = */
+/*         Add_mol_to_lattice(lat, ads, ads->taskLists->tasks[0][0], */
+/*                            ads->taskLists->tasks[0][1], 1.4); */
+/*     assembled->vtable->export_msi(assembled); */
+/*     Cell *assembled_cell = createCell(assembled, elmTable); */
+/*     assembled_cell->vtable->exportCell(assembled_cell); */
+/*     write_kptaux(assembled_cell); */
+/*     write_trjaux(assembled_cell); */
+/*     write_param(assembled_cell); */
+/*     write_pbsScript(assembled_cell); */
+/*     write_SMCastepExtension(assembled_cell); */
+/*     lat->vtable->destroy(lat); */
+/*     ads->vtable->destroy(ads); */
+/*     assembled_cell->destroy(assembled_cell); */
+/*     delete_all(&adsTable); */
+/*     delete_all(&elmTable); */
+/*     destroy_adsTableYAML(&adsTableYAML); */
+/*     elmTableYAML->destroy(&elmTableYAML); */
+/* } */
 
 void test_tasks()
 {
+    char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
+                        "Zn", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
+                        "Ag", "Cd", "Hf", "Ta", "W",  "Re", "Os", "Ir", "Pt",
+                        "Au", "Hg", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
+                        "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"};
     AdsTableYAML *adsTableYAML = load_adsTableYAML();
     ElmTableYAML *elmTableYAML = load_elmTableYAML();
-    HashNode *adsTable = init_adsInfoTable(adsTableYAML);
-    HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
     int prog = 0;
-    allocateTasks(ETHANOL, &prog, elmTable, adsTable);
+    generator(elmTableYAML, elements, adsTableYAML, &prog);
     elmTableYAML->destroy(&elmTableYAML);
     adsTableYAML->destroy(&adsTableYAML);
-    delete_all(&elmTable);
-    delete_all(&adsTable);
 }
 
 int main(int argc, char *argv[])

@@ -5,13 +5,13 @@
 
 // Implementation of Atom methods
 
-struct Atom_vtable atom_vtable = {
-    Atom_get_coord, Atom_update_coord, Atom_get_atomId, Atom_set_atomId,
-    dupAtom,        Atom_textblock,    destroyAtom};
+struct Atom_vtable atom_vtable = {Atom_get_coord,  Atom_get_atomId,
+                                  Atom_set_atomId, dupAtom,
+                                  Atom_textblock,  destroyAtom};
 Atom *createAtom(char *element, simd_double3 coord, int atomId, int elementId)
 {
     Atom *newAtom = malloc(sizeof(Atom));
-    strncpy(newAtom->element, element, strlen(element));
+    newAtom->element = strdup(element);
     newAtom->coord = coord.xyz;
     newAtom->atomId = atomId;
     newAtom->elementId = elementId;
@@ -27,6 +27,7 @@ Atom *dupAtom(Atom *self)
 }
 void destroyAtom(Atom *atomPtr)
 {
+    free(atomPtr->element);
     free(atomPtr);
 }
 
@@ -35,24 +36,12 @@ simd_double3 Atom_get_coord(Atom *self)
     return self->coord;
 }
 
-void Atom_update_coord(Atom *self, double x, double y, double z)
-{
-    self->coord[0] = x;
-    self->coord[1] = y;
-    self->coord[2] = z;
-}
-
 int Atom_get_atomId(Atom *self)
 {
     return self->atomId;
 }
 
 void Atom_set_atomId(Atom *self, int newId)
-{
-    self->atomId = newId;
-}
-
-void Atom_set_treeId(Atom *self, int newId)
 {
     self->atomId = newId;
 }

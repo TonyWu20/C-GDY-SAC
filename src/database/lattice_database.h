@@ -22,3 +22,4 @@ void test_elm_table(void);
 ElmTableYAML *load_elmTableYAML(void);
 void destroy_ElmTableYAML(ElmTableYAML **elmTableYAML);
 HashNode *init_ElmInfoTable(ElmTableYAML *elmTableYAML);
+HashNode *init_ElmInfoTable_internal();

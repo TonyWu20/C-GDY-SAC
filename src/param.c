@@ -19,8 +19,12 @@ int getFinalCutoffEnergy(Cell *cell)
     int energy = 0;
     for (int i = 0; i < cell->elmNums; ++i)
     {
-        ElmInfo *item =
-            find_item_by_str(elmTable, (const char *)cell->elmLists[i])->val;
+        char *key = cell->elmLists[i];
+        if (strlen(key) > 2)
+        {
+            printf("Key error in getFinalCutoffEnergy: %s\n", key);
+        }
+        ElmInfo *item = find_item_by_str(elmTable, key)->val;
         char *potPath = NULL;
         asprintf(&potPath, "./Potentials/%s", item->potFile);
         int fineEnergy = parse_fineCutoffEnergy(potPath);
@@ -34,13 +38,17 @@ int getFinalCutoffEnergy(Cell *cell)
 int parse_fineCutoffEnergy(const char *fileName)
 {
     FILE *f = fopen(fileName, "r");
+    if (!f)
+    {
+        printf("Open Potential File %s failed\n", fileName);
+    }
     int n = 4;
     char str[16];
     for (int i = 0; i < n; ++i)
     {
         fgets(str, 16, f);
     }
-    char quality[4];
+    char quality[5];
     int energy;
     sscanf(str, "%d %s", &energy, quality);
     fclose(f);
@@ -61,8 +69,7 @@ void write_param(Cell *self)
     Atom *metalAtom = self->lattice->mol->vtable->get_atom_by_Id(
         self->lattice->mol, self->lattice->metal_site_id);
     ElmInfo *metal =
-        find_item_by_str(self->lookupTable, (const char *)metalAtom->element)
-            ->val;
+        find_item_by_str(self->lookupTable, metalAtom->element)->val;
     int spin = metal->spin;
     char template_geom[] =
         "task : GeometryOptimization\n"
@@ -222,8 +229,7 @@ void copy_potentials(Cell *self)
     for (int i = 0; i < self->elmNums; ++i)
     {
         ElmInfo *elmInfo =
-            find_item_by_str(self->lookupTable, (const char *)self->elmLists[i])
-                ->val;
+            find_item_by_str(self->lookupTable, self->elmLists[i])->val;
         char *potPath = exportFileName(self, "%s%s", elmInfo->potFile);
         struct stat s;
         if (stat(potPath, &s) == 0)

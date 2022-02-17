@@ -10,25 +10,6 @@
 #define NULLSITE 255
 
 static bool faceUp(Adsorbate *self);
-enum
-{
-    C1 = 41,
-    C2 = 42,
-    C3 = 54,
-    C4 = 53,
-    FR = 52,
-    NR = 40,
-    M = 73
-} site_codes;
-
-int task_cd2_sym[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
-                         {NR, C1}, {C1, M},  {C2, M}};
-int task_cd2_asym[][2] = {{C1, C2}, {C2, C1}, {C2, C3}, {C3, C2}, {C3, C4},
-                          {C4, C3}, {C4, FR}, {FR, C4}, {NR, C1}, {C1, NR},
-                          {C1, M},  {M, C1},  {C2, M},  {M, C2}};
-int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
-                     {C4, NULLSITE}, {FR, NULLSITE}, {NR, NULLSITE},
-                     {M, NULLSITE}};
 // Implementation of Molecule struct
 
 struct Molecule_vtable vtable = {
@@ -88,7 +69,6 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
     ads->vtable = &ads_vtable;
     ads->bVertical = bVer;
     ads->bSym = bSym;
-    ads->taskLists = createTasks(ads);
     ads->upperAtomId = upperAtomId;
     ads->pathName = strdup(pathName);
     return ads;
@@ -119,10 +99,6 @@ void destroyAdsorbate(Adsorbate *ads)
 {
     ads->mol->vtable->destroy(ads->mol);
     free(ads->coordAtomIds);
-    for (int i = 0; i < ads->taskLists->taskNum; ++i)
-        free(ads->taskLists->tasks[i]);
-    free(ads->taskLists->tasks);
-    free(ads->taskLists);
     free(ads->pathName);
     free(ads);
 }
@@ -277,66 +253,4 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
     free(atoms);
     if (destUndefined)
         free(dest);
-}
-
-struct taskTable *createTasks(Adsorbate *self)
-{
-    struct taskTable *tab = NULL;
-    switch (self->coordAtomNum)
-    {
-    case 2:
-        if (self->bSym)
-        {
-            tab = malloc(sizeof(*tab));
-            tab->taskNum = sizeof(task_cd2_sym) / sizeof(task_cd2_sym[0]);
-            tab->tasks = malloc(sizeof(int *) * tab->taskNum);
-            for (int i = 0; i < tab->taskNum; ++i)
-            {
-                tab->tasks[i] = malloc(sizeof(int) * 2);
-                if (!tab->tasks[i])
-                {
-                    printf("Malloc failed!\n");
-                }
-                for (int j = 0; j < 2; ++j)
-                {
-                    tab->tasks[i][j] = task_cd2_sym[i][j];
-                }
-            }
-        }
-        else
-        {
-            tab = malloc(sizeof(*tab));
-            tab->taskNum = sizeof(task_cd2_asym) / sizeof(task_cd2_asym[0]);
-            tab->tasks = malloc(sizeof(int *) * tab->taskNum);
-            for (int i = 0; i < tab->taskNum; ++i)
-            {
-                tab->tasks[i] = malloc(sizeof(int) * 2);
-                if (!tab->tasks[i])
-                {
-                    printf("Malloc failed!\n");
-                }
-                for (int j = 0; j < 2; ++j)
-                    tab->tasks[i][j] = task_cd2_asym[i][j];
-            }
-        }
-        break;
-    case 1:
-        tab = malloc(sizeof(*tab));
-        tab->taskNum = sizeof(task_cd1) / sizeof(task_cd1[0]);
-        tab->tasks = malloc(sizeof(int *) * 7);
-        for (int i = 0; i < tab->taskNum; ++i)
-        {
-            tab->tasks[i] = malloc(sizeof(int) * 2);
-            if (!tab->tasks[i])
-            {
-                printf("Malloc failed!\n");
-            }
-            for (int j = 0; j < 2; ++j)
-                tab->tasks[i][j] = task_cd1[i][j];
-        }
-        break;
-    default:
-        break;
-    }
-    return tab;
 }

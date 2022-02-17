@@ -24,15 +24,7 @@ typedef struct
     int upperAtomId;
     char *pathName;
     struct Adsorbate_vtable *vtable;
-    struct taskTable *taskLists;
 } Adsorbate;
-
-struct taskTable
-{
-    int taskNum;
-    int **tasks;
-};
-struct taskTable *createTasks(Adsorbate *self);
 
 struct Molecule_vtable
 {

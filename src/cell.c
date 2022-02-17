@@ -1,10 +1,11 @@
 #include "cell.h"
 #include "misc.h"
 #include "my_maths.h"
+#include "param.h"
 #include <string.h>
 
 struct Cell_vtable cellVTable = {sortAtomsByElement, sortedElementList,
-                                 cellExport};
+                                 cellExport, seedExport};
 struct Cell_textFunc cellTextTable = {cellWriteBlock};
 
 /* Cell starts */
@@ -20,12 +21,7 @@ Cell *createCell(Lattice *lat, HashNode *table)
     int elmNums = 0;
     new->elmLists = new->vtable->sortElmList(new, &elmNums);
     new->elmNums = elmNums;
-    new->lookupTable = NULL;
-    for (int i = 0; i < elmNums; ++i)
-    {
-        HashNode *item = find_item_by_str(table, new->elmLists[i]);
-        add_str_keyptr_item(&new->lookupTable, new->elmLists[i], item->val);
-    }
+    new->lookupTable = table;
     return new;
 }
 
@@ -35,7 +31,6 @@ void destroyCell(Cell *self)
     for (int i = 0; i < self->elmNums; ++i)
         free(self->elmLists[i]);
     free(self->elmLists);
-    delete_all(&self->lookupTable);
     free(self);
 }
 
@@ -183,10 +178,14 @@ char *cell_speciesMass_writer(Cell *self)
     int totalLen = 0;
     for (int i = 0; i < self->elmNums; ++i)
     {
+        char *key = self->elmLists[i];
+        if (strlen(key) > 2)
+        {
+            printf("Key error when SPECIES_MASS: %s\n", key);
+        }
         const char format[] = "%8s%18.10f\n";
-        HashNode *elmNode =
-            find_item_by_str(self->lookupTable, self->elmLists[i]);
-        ElmInfo *elmItem = (ElmInfo *)elmNode->val;
+        HashNode *elmNode = find_item_by_str(self->lookupTable, key);
+        ElmInfo *elmItem = (ElmInfo *)(elmNode->val);
         lineLens[i] =
             1 + snprintf(NULL, 0, format, self->elmLists[i], elmItem->mass);
         tmpLines[i] = malloc(lineLens[i]);
@@ -212,14 +211,19 @@ char *cell_speciesPot_writer(Cell *self)
     const char format[] = "%8s  %s\n";
     for (int i = 0; i < self->elmNums; ++i)
     {
-        HashNode *elmNode =
-            find_item_by_str(self->lookupTable, self->elmLists[i]);
-        ElmInfo *elmInfo = (ElmInfo *)elmNode->val;
+        char *key = self->elmLists[i];
+        if (strlen(key) > 2)
+        {
+            printf("Key error in SPECIES_POT: %s\n", key);
+        }
+        HashNode *elmNode = find_item_by_str(self->lookupTable, key);
+        ElmInfo *elmInfo = (ElmInfo *)(elmNode->val);
         lineLens[i] =
             1 + snprintf(NULL, 0, format, self->elmLists[i], elmInfo->potFile);
         tmpLines[i] = malloc(lineLens[i]);
         snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
                  elmInfo->potFile);
+        totalLen += lineLens[i];
     }
     char *ret = calloc(totalLen + 1, sizeof(char));
     for (int i = 0; i < self->elmNums; ++i)
@@ -239,13 +243,17 @@ char *cell_speciesLCAOstates_writer(Cell *self)
     const char format[] = "%8s%10d\n";
     for (int i = 0; i < self->elmNums; ++i)
     {
-        HashNode *elmNode =
-            find_item_by_str(self->lookupTable, self->elmLists[i]);
-        ElmInfo *elmInfo = (ElmInfo *)elmNode->val;
+        const char *key = self->elmLists[i];
+        if (strlen(key) > 2)
+        {
+            printf("Key error in SPECIES_POT: %s\n", key);
+        }
+        HashNode *elmNode = find_item_by_str(self->lookupTable, key);
+        ElmInfo *elmInfo = (ElmInfo *)(elmNode->val);
         lineLens[i] =
-            1 + snprintf(NULL, 0, format, self->elmLists[i], elmInfo->LCAO);
+            1 + snprintf(NULL, 0, format, elmInfo->name, elmInfo->LCAO);
         tmpLines[i] = malloc(lineLens[i]);
-        snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
+        snprintf(tmpLines[i], lineLens[i], format, elmInfo->name,
                  elmInfo->LCAO);
         totalLen += lineLens[i];
     }
@@ -339,6 +347,16 @@ void cellExport(Cell *self)
     /* Close file release pointer */
     fclose(writeTo);
     fclose(writeDOS);
+}
+
+void seedExport(Cell *self)
+{
+    write_kptaux(self);
+    write_param(self);
+    write_trjaux(self);
+    write_pbsScript(self);
+    write_SMCastepExtension(self);
+    /* copy_potentials(self); */
 }
 
 static int atomCmp(const void *a, const void *b)

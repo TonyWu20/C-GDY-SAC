@@ -10,7 +10,7 @@
 #include <unistd.h>
 /* static char *findBaseByElementId(int i); */
 
-#define TOTAL_ELEMENT_NUM 3
+#define TOTAL_ELEMENT_NUM 44
 #define TOTAL_MODELS (231 * TOTAL_ELEMENT_NUM)
 enum
 {
@@ -19,6 +19,23 @@ enum
     T5D,
     LM
 };
+
+enum
+{
+    C1 = 41,
+    C2 = 42,
+    C3 = 54,
+    C4 = 53,
+    FR = 52,
+    NR = 40,
+    M = 73
+} site_codes;
+
+int task_cd[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
+                    {NR, C1}, {C1, M},  {C2, M}};
+int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
+                     {C4, NULLSITE}, {NR, NULLSITE}, {FR, NULLSITE},
+                     {M, NULLSITE}};
 char *pathways[] = {"ethylene", "acetic_acid", "ethanol", "ethanol_other_ads"};
 char *ethylene_ads[] = {
     "CO.msi",      "CHO.msi",      "COCHO.msi",  "COCHOH.msi",  "OCH2CO.msi",
@@ -29,12 +46,6 @@ char *ethanol_ads[] = {
     "Glycolaldehyde.msi", "CH2CHO.msi",   "CH2CHOH.msi",
     "CH2CH2OH.msi",       "CH3CH2OH.msi", "acetaldehyde.msi"};
 char *ethanol_other_ads[] = {"CH2OHCH2O.msi", "ethylene_glycol.msi"};
-
-char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
-                    "Zn", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
-                    "Ag", "Cd", "Hf", "Ta", "W",  "Re", "Os", "Ir", "Pt",
-                    "Au", "Hg", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
-                    "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"};
 
 double heightChoice[] = {1.4, 1.6, 1.4, 1.4};
 
@@ -48,72 +59,6 @@ Adsorbate *getAds_from_i(int i, char **adsList, int adsListLen,
         parse_adsorbate_from_file(adsList[currAds], ads_name, info);
     free(ads_name);
     return ads;
-}
-
-void generateModels(int total_tasks, int pathNameCode, int adsListLen,
-                    char **adsList, char **elements, char **pathways,
-                    HashNode *elmTable, HashNode *adsTable, int *progress)
-{
-    /* int i, k; */
-    // clang-format off
-    Lattice *lat = parse_lattice_from_file("./msi_models/3d/SAC_GDY_Sc.msi", "SAC_GDY_Sc");
-    /* #pragma omp parallel private(lat) shared (adsList, elements, elmTable, adsTable, progress) */
-    // clang-format on
-    {
-        // clang-format off
-        /* #pragma omp for */
-        // clang-format on
-        for (int i = 0; i < total_tasks; ++i)
-        {
-            char *curElement = elements[i / adsListLen];
-            ElmInfo *curElmInfo = find_item_by_str(elmTable, curElement)->val;
-            lat->vtable->modify_metal(lat, curElement, curElmInfo->atomicNum);
-            Adsorbate *ads = getAds_from_i(i, adsList, adsListLen, adsTable);
-            for (int k = 0; k < ads->taskLists->taskNum; ++k)
-            {
-                Adsorbate *ads_copy = ads->vtable->duplicate(ads);
-                Lattice *result = Add_mol_to_lattice(
-                    lat, ads_copy, ads_copy->taskLists->tasks[k][0],
-                    ads_copy->taskLists->tasks[k][1],
-                    heightChoice[pathNameCode]);
-                result->vtable->export_msi(result);
-                Cell *cell = createCell(result, elmTable);
-                cell->vtable->exportCell(cell);
-                write_param(cell);
-                write_kptaux(cell);
-                write_trjaux(cell);
-                write_pbsScript(cell);
-                write_SMCastepExtension(cell);
-                /* copy_potentials(cell, potTable); */
-                (*progress)++;
-                double percentage =
-                    (double)(*progress) / (double)(TOTAL_MODELS);
-                printProgress(*progress, TOTAL_MODELS, percentage,
-                              result->mol->name);
-                cell->destroy(cell);
-                ads_copy->vtable->destroy(ads_copy);
-            }
-            // clang-format off
-            ads->vtable->destroy(ads);
-            // clang-format on
-        }
-    }
-    lat->vtable->destroy(lat);
-}
-
-void allocateTasks(int pathNameCode, int *progress, HashNode *elmTable,
-                   HashNode *adsTable)
-{
-    int adsListLen = 0;
-    char **adsList = pathway_adsLists(pathNameCode, &adsListLen);
-    int total_tasks = TOTAL_ELEMENT_NUM * adsListLen;
-    generateModels(total_tasks, pathNameCode, adsListLen, adsList, elements,
-                   pathways, elmTable, adsTable, progress);
-    for (int i = 0; i < adsListLen; ++i)
-    {
-        free(adsList[i]);
-    }
-    free(adsList);
 }
 
 char **pathway_adsLists(int pathNameCode, int *adsListLen)
@@ -156,4 +101,91 @@ char **adsListBuild(char *pathName, char *adsList[], int listLen)
                  adsList[i]);
     }
     return list;
+}
+
+Adsorbate *getCurrendAds(AdsTableYAML *adsTableYAML, int adsId)
+{
+    AdsInfo curAdsInfo = adsTableYAML->adsInfoItem[adsId];
+    char *path;
+    asprintf(&path, "./C2_pathways_ads/%s_path/%s.msi", curAdsInfo.pathName,
+             curAdsInfo.name);
+    Adsorbate *ads =
+        parse_adsorbate_from_file(path, curAdsInfo.name, &curAdsInfo);
+    free(path);
+    return ads;
+}
+
+void exportAll(Lattice *base, Adsorbate *ads, int c1, int c2,
+               HashNode *elmTable, int *progress)
+{
+    Lattice *result = Add_mol_to_lattice(base, ads, c1, c2, 1.4);
+    result->vtable->export_msi(result);
+    Cell *cell = createCell(result, elmTable);
+    cell->vtable->exportCell(cell);
+    cell->vtable->exportSeeds(cell);
+    (*progress)++;
+    double percentage = ((double)*progress) / (double)(TOTAL_MODELS);
+    printProgress(*progress, TOTAL_MODELS, percentage,
+                  cell->lattice->mol->name);
+    cell->destroy(cell);
+}
+
+void generator(ElmTableYAML *elmTableYAML, char **elements,
+               AdsTableYAML *adsTableYAML, int *progress)
+{
+    HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
+    Lattice *base =
+        parse_lattice_from_file("./msi_models/3d/SAC_GDY_Sc.msi", "SAC_GDY_Sc");
+    int adsNums = adsTableYAML->adsInfoItem_count;
+    int curElmId = 0;
+// clang-format off
+    #pragma omp parallel shared(adsNums, curElmId, TOTAL_ELEMENT_NUM, elmTable, adsTableYAML)
+    // clang-format on
+    {
+        // clang-format off
+        #pragma omp for collapse(3)
+        // clang-format on 
+        for (int i = 0; i < TOTAL_ELEMENT_NUM; ++i)
+        {
+            for (int j = 0; j < adsNums; ++j)
+            {
+                for (int k = 0; k < 7; ++k)
+                {
+                    if (i != curElmId)
+                    {
+                        HashNode *nextElm =
+                            find_item_by_str(elmTable, elements[i]);
+                        int nextElmId = ((ElmInfo *)(nextElm->val))->atomicNum;
+                        base->vtable->modify_metal(base, nextElm->key,
+                                                   nextElmId);
+                        curElmId = i;
+                    }
+                    Adsorbate *ads = getCurrendAds(adsTableYAML, j);
+                    switch (ads->coordAtomNum)
+                    {
+                    case 2:
+                    {
+                        exportAll(base, ads, task_cd[k][0], task_cd[k][1],
+                                  elmTable, progress);
+                        if (ads->bSym==false)
+                        {
+                            exportAll(base, ads, task_cd[k][1], task_cd[k][0],
+                                      elmTable, progress);
+                        }
+                        break;
+                    }
+                    case 1:
+                        exportAll(base, ads, task_cd1[k][0], task_cd1[k][1], elmTable,
+                                  progress);
+                        break;
+                    default:
+                        break;
+                    }
+                    ads->vtable->destroy(ads);
+                }
+            }
+        }
+    }
+    base->vtable->destroy(base);
+    delete_all(&elmTable);
 }

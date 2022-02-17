@@ -13,13 +13,13 @@ typedef struct Cell Cell;
 struct Cell
 {
     Lattice *lattice;
-    HashNode *lookupTable;
     bool atomSorted;
     int elmNums;
     char **elmLists;
     struct Cell_vtable *vtable;
     struct Cell_textFunc *textTable;
     void (*destroy)(Cell *self);
+    HashNode *lookupTable;
 };
 
 /* Virtual functions table for Cell */
@@ -28,6 +28,7 @@ struct Cell_vtable
     void (*sortAtoms)(Cell *self);
     char **(*sortElmList)(Cell *self, int *returnSize);
     void (*exportCell)(Cell *self);
+    void (*exportSeeds)(Cell *self);
 };
 
 /* Virtual functions table for dealing with text output for Cell */
@@ -45,7 +46,7 @@ struct Cell_textFunc
 Cell *createCell(Lattice *lat, HashNode *table);
 /* Create a hashtable for the exisiting elements in cell
  */
-/* void cellLoadInfoTab(Cell *self, CastepInfo *table); */
+void cellLoadInfoTab(Cell *self, HashNode *table);
 /* Destroy and free memory of Cell object */
 void destroyCell(Cell *self);
 /* General method to produce BLOCK_XX in .cell
@@ -54,6 +55,8 @@ char *cellWriteBlock(Cell *self, char *blockName,
                      char *(*blockTextWriter)(Cell *self));
 
 void cellExport(Cell *self);
+
+void seedExport(Cell *self);
 /* Methods to fill BLOCK_XX
  */
 
