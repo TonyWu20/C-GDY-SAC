@@ -28,4 +28,7 @@ target_compile_options(task_control PRIVATE -I/opt/homebrew/include -lMatrix -lm
 add_executable(test.o src/main.c)
 target_link_libraries(test.o msi_modeling castepSeedGen task_control -lMatrix -lm)
 target_compile_options(test.o PRIVATE -I/opt/homebrew/include -Xpreprocessor -fopenmp -lomp)
-set (CMAKE_C_FLAGS "-Wall -O3")
+
+add_executable(test_math.o src/test.c)
+target_compile_options(test_math.o PRIVATE -I${PROJECT_BINARY_DIR}/include)
+set (CMAKE_C_FLAGS "-Wall -Wno-unused-function -O3 '-I${PROJECT_BINARY_DIR}/include'")

@@ -1,62 +1,67 @@
 [
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/atom.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c\"",
+  "command": "/usr/bin/clang -Dmsi_modeling_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/atom.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/atom.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/molecule.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c\"",
+  "command": "/usr/bin/clang -Dmsi_modeling_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/molecule.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/molecule.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/lattice.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/lattice.c\"",
+  "command": "/usr/bin/clang -Dmsi_modeling_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/lattice.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/lattice.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/lattice.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/misc.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/misc.c\"",
+  "command": "/usr/bin/clang -Dmsi_modeling_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/misc.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/misc.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/misc.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/my_maths.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c\"",
+  "command": "/usr/bin/clang -Dmsi_modeling_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/my_maths.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/my_maths.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/assemble.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/assemble.c\"",
+  "command": "/usr/bin/clang -Dmsi_modeling_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/assemble.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/assemble.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/assemble.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dmsi_modeling_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/parser.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c\"",
+  "command": "/usr/bin/clang -Dmsi_modeling_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -o CMakeFiles/msi_modeling.dir/src/parser.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/parser.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -DcastepSeedGen_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -lMatrix -lm -o CMakeFiles/castepSeedGen.dir/src/cell.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/cell.c\"",
+  "command": "/usr/bin/clang -DcastepSeedGen_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -lMatrix -lm -o CMakeFiles/castepSeedGen.dir/src/cell.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/cell.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/cell.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -DcastepSeedGen_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -lMatrix -lm -o CMakeFiles/castepSeedGen.dir/src/castep_database.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/castep_database.c\"",
+  "command": "/usr/bin/clang -DcastepSeedGen_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -lMatrix -lm -o CMakeFiles/castepSeedGen.dir/src/castep_database.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/castep_database.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/castep_database.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dtask_control_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -lMatrix -lm -fopenmp -o CMakeFiles/task_control.dir/src/tasks.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/tasks.c\"",
+  "command": "/usr/bin/clang -Dtask_control_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -lMatrix -lm -Xpreprocessor -fopenmp -lomp -o CMakeFiles/task_control.dir/src/tasks.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/tasks.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/tasks.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11 -Dtask_control_EXPORTS  -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -lMatrix -lm -fopenmp -o CMakeFiles/task_control.dir/src/param.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/param.c\"",
+  "command": "/usr/bin/clang -Dtask_control_EXPORTS  -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -fPIC -I/opt/homebrew/include -lMatrix -lm -Xpreprocessor -fopenmp -lomp -o CMakeFiles/task_control.dir/src/param.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/param.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/param.c"
 },
 {
   "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
-  "command": "/opt/homebrew/bin/gcc-11   -Wall -O3 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -I/opt/homebrew/include -fopenmp -lomp -o CMakeFiles/test.o.dir/src/main.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
+  "command": "/usr/bin/clang   -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 -I/opt/homebrew/include -Xpreprocessor -fopenmp -lomp -o CMakeFiles/test.o.dir/src/main.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c\"",
   "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/main.c"
+},
+{
+  "directory": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC",
+  "command": "/usr/bin/clang   -Wall -Wno-unused-function -O3 '-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include' -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12.1 \"-I/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/include\" -o CMakeFiles/test_math.o.dir/src/test.c.o -c \"/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/test.c\"",
+  "file": "/Users/tonywu/Library/Mobile Documents/com~apple~CloudDocs/Programming/C-GDY-SAC/src/test.c"
 }
 ]

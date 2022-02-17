@@ -168,6 +168,19 @@ test.o/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/build
 .PHONY : test.o/fast
 
+#=============================================================================
+# Target rules for targets named test_math.o
+
+# Build rule for target.
+test_math.o: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_math.o
+.PHONY : test_math.o
+
+# fast build rule for target.
+test_math.o/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_math.o.dir/build.make CMakeFiles/test_math.o.dir/build
+.PHONY : test_math.o/fast
+
 src/assemble.o: src/assemble.c.o
 .PHONY : src/assemble.o
 
@@ -456,6 +469,30 @@ src/tasks.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/tasks.c.s
 .PHONY : src/tasks.c.s
 
+src/test.o: src/test.c.o
+.PHONY : src/test.o
+
+# target to build an object file
+src/test.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_math.o.dir/build.make CMakeFiles/test_math.o.dir/src/test.c.o
+.PHONY : src/test.c.o
+
+src/test.i: src/test.c.i
+.PHONY : src/test.i
+
+# target to preprocess a source file
+src/test.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_math.o.dir/build.make CMakeFiles/test_math.o.dir/src/test.c.i
+.PHONY : src/test.c.i
+
+src/test.s: src/test.c.s
+.PHONY : src/test.s
+
+# target to generate assembly for a file
+src/test.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_math.o.dir/build.make CMakeFiles/test_math.o.dir/src/test.c.s
+.PHONY : src/test.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -468,6 +505,7 @@ help:
 	@echo "... msi_modeling"
 	@echo "... task_control"
 	@echo "... test.o"
+	@echo "... test_math.o"
 	@echo "... src/assemble.o"
 	@echo "... src/assemble.i"
 	@echo "... src/assemble.s"
@@ -504,6 +542,9 @@ help:
 	@echo "... src/tasks.o"
 	@echo "... src/tasks.i"
 	@echo "... src/tasks.s"
+	@echo "... src/test.o"
+	@echo "... src/test.i"
+	@echo "... src/test.s"
 .PHONY : help
 
 
