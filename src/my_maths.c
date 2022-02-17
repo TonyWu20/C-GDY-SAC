@@ -1,6 +1,7 @@
 #include "my_maths.h"
 #include "matrix.h"
 #include <math.h>
+#include <simd/vector_make.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

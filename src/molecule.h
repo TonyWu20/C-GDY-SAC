@@ -1,5 +1,7 @@
 #pragma once
+#include "ads_database.h"
 #include "atom.h"
+#include <stdbool.h>
 
 struct _Molecule
 {
@@ -17,24 +19,16 @@ typedef struct
     int *coordAtomIds;
     int stemAtomIds[2];
     int planeAtomIds[3];
-    int bSym;
+    bool bSym;
+    bool bVer;
     int upperAtomId;
+    char *pathName;
     struct Adsorbate_vtable *ads_vtable;
-    struct taskTable *taskLists;
 } Adsorbate;
-
-struct taskTable
-{
-    int taskNum;
-    int **tasks;
-};
-struct taskTable *createTasks(Adsorbate *self);
 
 struct Molecule_vtable
 {
     Atom *(*get_atom_by_Id)(Molecule *self, int atomId);
-    Matrix *(*get_mol_coords)(Molecule *self);
-    void (*update_atom_coords)(Molecule *self, Matrix *MolCoords);
     Matrix *(*get_vector_ab)(Molecule *self, int aId, int bId);
     double *(*get_centroid_ab)(Molecule *self, int aId, int bId);
     void (*apply_transformation)(Molecule *self, Matrix *trans_m,
@@ -63,7 +57,8 @@ Molecule *Molecule_duplicate(Molecule *self);
 // Memory Management
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
-                           int *planeAtomIds, int bSym, int upperAtomId);
+                           int *planeAtomIds, bool bSym, bool bVer,
+                           int upperAtomId, char *pathName);
 /* Duplicate the adsorbate */
 Adsorbate *Adsorbate_duplicate(Adsorbate *self);
 
@@ -76,10 +71,6 @@ void destroyAdsorbate(Adsorbate *self);
 
 // Returns an atom by AtomId
 Atom *Molecule_get_Atom_by_Id(Molecule *, int);
-// Returns the molecule coords in 4xN matrix
-Matrix *Molecule_get_coords(Molecule *);
-// Updates the coords to atoms from the input matrix
-void Molecule_update_Atom_coords(Molecule *, Matrix *);
 // Returns a vector from a to b by Id
 Matrix *Molecule_get_vector_ab(Molecule *, int a, int b);
 double *Molecule_get_centroid_ab(Molecule *, int a, int b);

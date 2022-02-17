@@ -22,26 +22,19 @@ enum
     M = 73
 } site_codes;
 
-int task_cd2_sym[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
-                         {NR, C1}, {C1, M},  {C2, M}};
-int task_cd2_asym[][2] = {{C1, C2}, {C2, C1}, {C2, C3}, {C3, C2}, {C3, C4},
-                          {C4, C3}, {C4, FR}, {FR, C4}, {NR, C1}, {C1, NR},
-                          {C1, M},  {M, C1},  {C2, M},  {M, C2}};
+int task_cd2[][2] = {{C1, C2}, {C2, C3}, {C3, C4}, {C4, FR},
+                     {NR, C1}, {C1, M},  {C2, M}};
 int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
                      {C4, NULLSITE}, {FR, NULLSITE}, {NR, NULLSITE},
                      {M, NULLSITE}};
 
 // Implementation of Molecule struct
 
-struct Molecule_vtable vtable = {Molecule_get_Atom_by_Id,
-                                 Molecule_get_coords,
-                                 Molecule_update_Atom_coords,
-                                 Molecule_get_vector_ab,
-                                 Molecule_get_centroid_ab,
-                                 Molecule_apply_transformation,
-                                 Molecule_textblock,
-                                 Molecule_duplicate,
-                                 destroyMolecule};
+struct Molecule_vtable vtable = {
+    Molecule_get_Atom_by_Id,  Molecule_get_vector_ab,
+    Molecule_get_centroid_ab, Molecule_apply_transformation,
+    Molecule_textblock,       Molecule_duplicate,
+    destroyMolecule};
 struct Adsorbate_vtable ads_vtable = {
     Adsorbate_get_stem_vector, Adsorbate_get_plane_normal,
     Adsorbate_make_upright,    Adsorbate_export_MSI,
@@ -81,7 +74,8 @@ Molecule *Molecule_duplicate(Molecule *self)
 
 Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int *coordAtomIds, int *stemAtomIds,
-                           int *planeAtomIds, int bSym, int upperAtomId)
+                           int *planeAtomIds, bool bSym, bool bVer,
+                           int upperAtomId, char *pathName)
 {
     Adsorbate *ads = malloc(sizeof(Adsorbate));
     ads->_mol = newMol;
@@ -92,17 +86,19 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
     memcpy(ads->planeAtomIds, planeAtomIds, 3 * sizeof(int));
     ads->ads_vtable = &ads_vtable;
     ads->bSym = bSym;
-    ads->taskLists = createTasks(ads);
+    ads->bVer = bVer;
     ads->upperAtomId = upperAtomId;
+    ads->pathName = strdup(pathName);
     return ads;
 }
 
 Adsorbate *Adsorbate_duplicate(Adsorbate *self)
 {
     Molecule *molCopy = self->_mol->vtable->duplicate(self->_mol);
-    Adsorbate *dup = createAdsorbate(
-        molCopy, self->coordAtomNum, self->coordAtomIds, self->stemAtomIds,
-        self->planeAtomIds, self->bSym, self->upperAtomId);
+    Adsorbate *dup =
+        createAdsorbate(molCopy, self->coordAtomNum, self->coordAtomIds,
+                        self->stemAtomIds, self->planeAtomIds, self->bSym,
+                        self->bVer, self->upperAtomId, self->pathName);
     return dup;
 }
 
@@ -121,10 +117,6 @@ void destroyAdsorbate(Adsorbate *ads)
 {
     ads->_mol->vtable->destroy(ads->_mol);
     free(ads->coordAtomIds);
-    for (int i = 0; i < ads->taskLists->taskNum; ++i)
-        free(ads->taskLists->tasks[i]);
-    free(ads->taskLists->tasks);
-    free(ads->taskLists);
     free(ads);
 }
 
@@ -197,14 +189,6 @@ void Molecule_apply_transformation(Molecule *mPtr, Matrix *trans_mat,
                                                           Matrix *coords,
                                                           Matrix **result))
 {
-    Matrix *mol_coords = mPtr->vtable->get_mol_coords(mPtr);
-    Matrix *result;
-    transform_func(trans_mat, mol_coords, &result);
-    mPtr->vtable->update_atom_coords(mPtr, result);
-    destroy_matrix(mol_coords);
-    destroy_matrix(result);
-    free(result);
-    free(mol_coords);
 }
 
 char **Molecule_textblock(Molecule *self)
@@ -350,61 +334,4 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
     free(atoms);
     if (destUndefined)
         free(dest);
-}
-
-struct taskTable *createTasks(Adsorbate *self)
-{
-    struct taskTable *tab = NULL;
-    switch (self->coordAtomNum)
-    {
-    case 2:
-        switch (self->bSym)
-        {
-        case 1:
-        {
-            tab = malloc(sizeof(*tab));
-            tab->taskNum = sizeof(task_cd2_sym) / sizeof(task_cd2_sym[0]);
-            tab->tasks = malloc(sizeof(int *) * tab->taskNum);
-            for (int i = 0; i < tab->taskNum; ++i)
-            {
-                tab->tasks[i] = malloc(sizeof(int) * 2);
-                for (int j = 0; j < 2; ++j)
-                {
-                    tab->tasks[i][j] = task_cd2_sym[i][j];
-                }
-            }
-            break;
-        }
-        case 0:
-        {
-            tab = malloc(sizeof(*tab));
-            tab->taskNum = sizeof(task_cd2_asym) / sizeof(task_cd2_asym[0]);
-            tab->tasks = malloc(sizeof(int *) * tab->taskNum);
-            for (int i = 0; i < tab->taskNum; ++i)
-            {
-                tab->tasks[i] = malloc(sizeof(int) * 2);
-                for (int j = 0; j < 2; ++j)
-                    tab->tasks[i][j] = task_cd2_asym[i][j];
-            }
-            break;
-        }
-        default:
-            break;
-        }
-        break;
-    case 1:
-        tab = malloc(sizeof(*tab));
-        tab->taskNum = sizeof(task_cd1) / sizeof(task_cd1[0]);
-        tab->tasks = malloc(sizeof(int *) * 7);
-        for (int i = 0; i < 7; ++i)
-        {
-            tab->tasks[i] = malloc(sizeof(int) * 2);
-            for (int j = 0; j < 2; ++j)
-                tab->tasks[i][j] = task_cd1[i][j];
-        }
-        break;
-    default:
-        break;
-    }
-    return tab;
 }
