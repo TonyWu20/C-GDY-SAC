@@ -134,32 +134,28 @@ void generator(ElmTableYAML *elmTableYAML, char **elements,
                AdsTableYAML *adsTableYAML, int *progress)
 {
     HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
-    Lattice *base =
-        parse_lattice_from_file("./msi_models/3d/SAC_GDY_Sc.msi", "SAC_GDY_Sc");
     int adsNums = adsTableYAML->adsInfoItem_count;
     int curElmId = 0;
 // clang-format off
-    #pragma omp parallel shared(adsNums, curElmId, TOTAL_ELEMENT_NUM, elmTable, adsTableYAML)
+    #pragma omp parallel shared(adsNums, curElmId, elmTable, adsTableYAML)
     // clang-format on
     {
+        Lattice *base = parse_lattice_from_file(
+            "./msi_models/3d/SAC_GDY_Sc.msi", "SAC_GDY_Sc");
         // clang-format off
         #pragma omp for collapse(3)
         // clang-format on 
-        for (int i = 0; i < TOTAL_ELEMENT_NUM; ++i)
+        for (int j = 0; j < adsNums; ++j)
         {
-            for (int j = 0; j < adsNums; ++j)
+            for (int i = 0; i < TOTAL_ELEMENT_NUM; ++i)
             {
                 for (int k = 0; k < 7; ++k)
                 {
-                    if (i != curElmId)
-                    {
-                        HashNode *nextElm =
-                            find_item_by_str(elmTable, elements[i]);
-                        int nextElmId = ((ElmInfo *)(nextElm->val))->atomicNum;
-                        base->vtable->modify_metal(base, nextElm->key,
-                                                   nextElmId);
-                        curElmId = i;
-                    }
+                    HashNode *nextElm =
+                        find_item_by_str(elmTable, elements[i]);
+                    int nextElmId = ((ElmInfo *)(nextElm->val))->atomicNum;
+                    base->vtable->modify_metal(base, nextElm->key,
+                                                nextElmId);
                     Adsorbate *ads = getCurrendAds(adsTableYAML, j);
                     switch (ads->coordAtomNum)
                     {
@@ -185,7 +181,7 @@ void generator(ElmTableYAML *elmTableYAML, char **elements,
                 }
             }
         }
+        base->vtable->destroy(base);
     }
-    base->vtable->destroy(base);
     delete_all(&elmTable);
 }

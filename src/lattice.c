@@ -34,11 +34,12 @@ void lattice_modify_metal_element(Lattice *self, const char *metal_symbol,
 {
     Atom *metalAtom =
         self->mol->vtable->get_atom_by_Id(self->mol, self->metal_site_id);
-    free(metalAtom->element);
-    metalAtom->element = strdup(metal_symbol);
+    strncpy(metalAtom->element, metal_symbol, strlen(metal_symbol));
+    metalAtom->element[strlen(metal_symbol)] = '\0';
     metalAtom->elementId = elementId;
-    free(self->mol->name);
-    asprintf(&self->mol->name, "SAC_GDY_%s", metal_symbol);
+    int len = 1 + snprintf(NULL, 0, "SAC_GDY_%s", metal_symbol);
+    snprintf(self->mol->name, len, "SAC_GDY_%s", metal_symbol);
+    self->mol->name[len] = '\0';
 }
 
 void destroyLattice(Lattice *self)
