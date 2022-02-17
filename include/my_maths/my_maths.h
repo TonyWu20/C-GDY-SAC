@@ -1,4 +1,6 @@
 #pragma once
+#include "my_maths/matrix.h"
+#include "my_maths/vector.h"
 #include <math.h>
 #define PI (atan(1) * 4)
 #define VEC_OVERLOAD __attribute__((__overloadable__))
