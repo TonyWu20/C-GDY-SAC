@@ -1,15 +1,26 @@
-#include "my_maths/my_maths.h"
+#pragma once
+#include "my_maths/base.h"
 #include "my_maths/vector.h"
 
 static vec_double3x3 VEC_CFUNC vec_diagonal_matrix(vec_double3 __x);
 static vec_double4x4 VEC_CFUNC vec_diagonal_matrix(vec_double4 __x);
 #define matrix_from_diagonal vec_diagonal_matrix
 
+// clang-format off
+static vec_double3x3 VEC_CFUNC vec_diagonal_matrix(vec_double3 __x) { vec_double3x3 __r = { .columns[0] = {__x.x,0,0}, .columns[1] = {0,__x.y,0}, .columns[2] = {0,0,__x.z} }; return __r; }
+static vec_double4x4 VEC_CFUNC vec_diagonal_matrix(vec_double4 __x) { vec_double4x4 __r = { .columns[0] = {__x.x,0,0,0}, .columns[1] = {0,__x.y,0,0}, .columns[2] = {0,0,__x.z,0}, .columns[3] = {0,0,0,__x.w} }; return __r; }
+// clang-format on
+
 static vec_double3x3 VEC_CFUNC vec_matrix(vec_double3 col0, vec_double3 col1,
                                           vec_double3 col2);
 static vec_double4x4 VEC_CFUNC vec_matrix(vec_double4 col0, vec_double4 col1,
                                           vec_double4 col2, vec_double4 col3);
 #define matrix_from_columns vec_matrix
+
+// clang-format off
+static vec_double3x3 VEC_CFUNC vec_matrix(vec_double3 col0, vec_double3 col1, vec_double3 col2) { vec_double3x3 __r = { .columns[0] = col0, .columns[1] = col1, .columns[2] = col2 }; return __r; }
+static vec_double4x4 VEC_CFUNC vec_matrix(vec_double4 col0, vec_double4 col1, vec_double4 col2, vec_double4 col3) { vec_double4x4 __r = { .columns[0] = col0, .columns[1] = col1, .columns[2] = col2, .columns[3] = col3 }; return __r; }
+// clang-format on
 
 static vec_double3x3 VEC_NOINLINE vec_matrix3x3(vec_quatd q);
 static vec_double4x4 VEC_NOINLINE vec_matrix4x4(vec_quatd q);

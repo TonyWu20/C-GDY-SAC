@@ -1,4 +1,5 @@
-#include "my_maths/my_maths.h"
+#pragma once
+#include "my_maths/base.h"
 
 // clang-format off
 typedef double vec_double1;
@@ -26,6 +27,14 @@ static inline VEC_CFUNC vec_double3 vec_make_double3(vec_double4 other)
     result.xyz = other.xyz;
     return result;
 }
+static inline VEC_CFUNC vec_double4 vec_make_double4(vec_double2 xy,
+                                                     vec_double2 zw)
+{
+    vec_double4 result;
+    result.xy = xy;
+    result.zw = zw;
+    return result;
+}
 static inline VEC_CFUNC vec_double4 vec_make_double4(double x, double y,
                                                      double z, double w)
 {
@@ -45,6 +54,12 @@ static inline VEC_CFUNC vec_double4 vec_make_double4(vec_double3 other,
     return result;
 }
 static inline VEC_CFUNC vec_double4 vec_make_double4(vec_double3 other)
+{
+    vec_double4 result;
+    result.xyz = other;
+    return result;
+}
+static inline VEC_CFUNC vec_double4 vec_make_double4_undef(vec_double3 other)
 {
     vec_double4 result;
     result.xyz = other;
