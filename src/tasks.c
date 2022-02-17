@@ -65,12 +65,12 @@ void generateModels(int total_tasks, int pathNameCode, int adsListLen,
                     char **adsList, char **elements, char **pathways,
                     CastepInfo *table, PotentialFile *potTable, int *progress)
 {
-/* int i, k; */
-// clang-format off
+    /* int i, k; */
+    // clang-format off
     #pragma omp parallel  shared (adsList, table, potTable, progress)
     // clang-format on
     {
-// clang-format off
+        // clang-format off
         #pragma omp for
         // clang-format on
         for (int i = 0; i < total_tasks; ++i)
@@ -92,7 +92,7 @@ void generateModels(int total_tasks, int pathNameCode, int adsListLen,
                 write_trjaux(cell);
                 write_pbsScript(cell);
                 write_SMCastepExtension(cell);
-                copy_potentials(cell, potTable);
+                /* copy_potentials(cell, potTable); */
                 (*progress)++;
                 double percentage =
                     (double)(*progress) / (double)(TOTAL_MODELS);

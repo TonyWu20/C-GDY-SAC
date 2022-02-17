@@ -36,7 +36,7 @@ int parse_fineCutoffEnergy(const char *fileName)
     {
         fgets(str, 16, f);
     }
-    char quality[4];
+    char quality[5];
     int energy;
     sscanf(str, "%d %s", &energy, quality);
     fclose(f);
