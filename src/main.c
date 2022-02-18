@@ -1,7 +1,6 @@
 #include "assemble.h"
 #include "atom.h"
 #include "cell.h"
-#include "matrix.h"
 #include "misc.h"
 #include "molecule.h"
 #include "my_maths.h"

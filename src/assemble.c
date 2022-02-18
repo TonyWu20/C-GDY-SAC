@@ -1,6 +1,5 @@
 #include "assemble.h"
 #include "lattice.h"
-#include "matrix.h"
 #include "my_maths.h"
 #include <stdio.h>
 #include <stdlib.h>
