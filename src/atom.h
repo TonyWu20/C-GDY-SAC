@@ -1,41 +1,40 @@
 #pragma once
-#include <matrix.h>
+#include "my_maths.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 struct _Atom
 {
     char *element;
-    char *ACL_Label;
     int elementId;
-    Matrix *coord;
+    vec_double3 coord;
     int atomId;
-    int treeId;
     struct Atom_vtable *vtable;
 };
+/* Only the member: element needs free()
+ */
 typedef struct _Atom Atom;
 struct Atom_vtable
 {
-    Matrix *(*get_coord)(Atom *);
-    void (*update_coord)(Atom *, double, double, double);
-    int (*get_atomId)(Atom *);
-    void (*set_atomId)(Atom *, int);
-    int (*get_treeId)(Atom *);
-    void (*set_treeId)(Atom *, int);
+    vec_double3 (*get_coord)(Atom *);
     Atom *(*dupAtom)(Atom *self);
     char *(*export_text)(Atom *self);
     void (*destroy)(Atom *);
 };
 
-// Memory management
-Atom *createAtom(char *element, char *label, Matrix *coord, int atomId,
-                 int treeId);
+/* @abstract: Create an atom by giving its element symbol,
+ * elementId, coord, and atomId
+ *
+ * The passed element will be duplicated by strdup(),
+ * needs free() when destroy.
+ */
+Atom *createAtom(char *element, int elementId, vec_double3 coord, int atomId);
 
+/* @abstract: Duplicate an atom */
 Atom *dupAtom(Atom *self);
 void destroyAtom(Atom *);
 
 // Methods
-Matrix *Atom_get_coord(Atom *);
-void Atom_update_coord(Atom *, double x, double y, double z);
-int Atom_get_atomId(Atom *);
-void Atom_set_atomId(Atom *, int);
-int Atom_get_treeId(Atom *);
-void Atom_set_treeId(Atom *, int);
+vec_double3 Atom_get_coord(Atom *);
 char *Atom_textblock(Atom *self);
