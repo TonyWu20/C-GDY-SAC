@@ -17,10 +17,10 @@ struct Lattice_vtable lat_vtable = {lattice_get_carbon_chain_vector,
                                     lattice_export_dest,
                                     lattice_export_MSI,
                                     destroyLattice};
-Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
+Lattice *createLattice(Molecule *mol, matrix_double3x3 lattice_vectors)
 {
     Lattice *new = malloc(sizeof(Lattice));
-    new->_mol = mol;
+    new->mol = mol;
     new->lattice_vectors = lattice_vectors;
     memcpy(new->carbon_sites, siteDict, sizeof(struct carbon_site) * 7);
     new->metal_site_id = 73;
@@ -33,25 +33,23 @@ Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors)
 
 void destroyLattice(Lattice *self)
 {
-    Molecule *mPtr = self->_mol;
+    Molecule *mPtr = self->mol;
     mPtr->vtable->destroy(mPtr);
-    destroy_matrix(self->lattice_vectors);
-    free(self->lattice_vectors);
     free(self->metal_family);
     free(self->attached_adsName);
     free(self->pathName);
     free(self);
 }
 
-Matrix *lattice_get_carbon_chain_vector(Lattice *self)
+vec_double3 lattice_get_carbon_chain_vector(Lattice *self)
 {
-    return self->_mol->vtable->get_vector_ab(self->_mol, 41, 42);
+    return self->mol->vtable->get_vector_ab(self->mol, 41, 42);
 }
 
 /* Return a vector pointing to metal from given carbon atom */
-Matrix *lattice_get_carbon_metal_vector(Lattice *self, int cId)
+vec_double3 lattice_get_carbon_metal_vector(Lattice *self, int cId)
 {
-    return self->_mol->vtable->get_vector_ab(self->_mol, cId, 73);
+    return self->mol->vtable->get_vector_ab(self->mol, cId, 73);
 }
 
 /* Attach adsorbate to the lattice and update their atomId folloing the lattice
@@ -59,11 +57,11 @@ Matrix *lattice_get_carbon_metal_vector(Lattice *self, int cId)
 Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName,
                                  char *pathName)
 {
-    Molecule *lat_mol = self->_mol, *ads_mol = ads->_mol;
+    Molecule *lat_mol = self->mol, *ads_mol = ads->mol;
     Atom **cur_arr = lat_mol->atom_arr;
     int new_atomNum = lat_mol->atomNum + ads_mol->atomNum;
     Atom *lastAtom = lat_mol->vtable->get_atom_by_Id(lat_mol, lat_mol->atomNum);
-    int lastId = lastAtom->vtable->get_atomId(lastAtom);
+    int lastId = lastAtom->atomId;
     int i;
     Atom **new_arr = malloc(sizeof(Atom *) * new_atomNum);
     for (i = 0; i < lat_mol->atomNum; ++i)
@@ -76,57 +74,27 @@ Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName,
         Atom *cur = ads_mol->atom_arr[i];
         new_arr[i + lat_mol->atomNum] = cur->vtable->dupAtom(cur);
         new_arr[i + lat_mol->atomNum]->atomId += lastId;
-        new_arr[i + lat_mol->atomNum]->treeId += lastId;
     }
     Molecule *resMol = createMolecule(newName, new_atomNum, new_arr);
-    Matrix *lattice_vectors = create_matrix(4, 3);
-    copy_matrix(self->lattice_vectors, &lattice_vectors);
-    Lattice *new = createLattice(resMol, lattice_vectors);
-    new->attached_adsName = strdup(ads->_mol->name);
+    Lattice *new = createLattice(resMol, self->lattice_vectors);
+    new->attached_adsName = strdup(ads->mol->name);
     new->pathName = strdup(pathName);
     return new;
 }
 
 void lattice_rotate_to_standard_orientation(Lattice *self)
 {
-    Molecule *mol = self->_mol;
-    Matrix *lat_vectors = self->lattice_vectors;
-    Matrix *a = create_matrix(4, 1);
-    Matrix *b = create_matrix(4, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        a->value[i][0] = lat_vectors->value[i][0];
-        b->value[i + 1][0] = 0;
-    }
-    a->value[3][0] = 1;
-    b->value[0][0] = 1;
-    b->value[3][0] = 1;
-    double a_to_x = vector_angle(a, b);
-    destroy_matrix(a);
-    destroy_matrix(b);
-    free(a);
-    free(b);
+    matrix_double3x3 lat_vectors = self->lattice_vectors;
+    vec_double3 xAxis = vec_make_double3(1, 0, 0);
+    double a_to_x = vec_angle_uv(lat_vectors.i, xAxis);
     if (a_to_x == 0)
     {
-        destroy_matrix(a);
-        destroy_matrix(b);
-        free(a);
-        free(b);
         return;
     }
-    double ZAxis_db[] = {0, 0, 1, 1};
-    Matrix *zAxis = col_vector_view_array(ZAxis_db, 4);
-    Matrix *rot_mat = rotate_angle_around_axis(zAxis, a_to_x);
-    destroy_matrix(zAxis);
-    free(zAxis);
-    Matrix *new_lat_vec;
-    multiply_matrices(rot_mat, lat_vectors, &new_lat_vec);
-    self->lattice_vectors = new_lat_vec;
-    mol->vtable->apply_transformation(mol, rot_mat, (void(*))multiply_matrices);
-    destroy_matrix(lat_vectors);
-    destroy_matrix(rot_mat);
-    free(lat_vectors);
-    free(rot_mat);
+    vec_double3 zAxis = vec_make_double3(0, 0, 1);
+    vec_quatd rotateQ = vec_make_quaternion(a_to_x, zAxis);
+    self->lattice_vectors = vec_act(rotateQ, lat_vectors);
+    self->mol->vtable->rotateMol(self->mol, rotateQ);
 }
 
 char *get_carbon_site_name(int siteId)
@@ -163,14 +131,14 @@ void lattice_export_MSI(Lattice *self, char *pathName)
                         "18.93153002049 0))\n  (A D C3 (0 0 9.999213039981))\n "
                         " (A D CRY/TOLERANCE 0.05)\n";
     char model_end[] = ")\n";
-    Molecule *mol = self->_mol;
+    Molecule *mol = self->mol;
     int lineSize = mol->atomNum + 4;
     char **atoms = mol->vtable->export_text(mol);
     char **contentLines = malloc(sizeof(char *) * lineSize);
     contentLines[0] = strdup(header_line);
     contentLines[1] = strdup(model_start);
     contentLines[2] = strdup(model_misc);
-    for (int i = 0; i < self->_mol->atomNum; ++i)
+    for (int i = 0; i < self->mol->atomNum; ++i)
     {
         contentLines[i + 3] = atoms[i];
     }
@@ -196,13 +164,9 @@ void lattice_export_MSI(Lattice *self, char *pathName)
 void lattice_metal_info(Lattice *self)
 {
     Atom *metal =
-        self->_mol->vtable->get_atom_by_Id(self->_mol, self->metal_site_id);
+        self->mol->vtable->get_atom_by_Id(self->mol, self->metal_site_id);
     self->metal_symbol = metal->element;
-    char *token = NULL;
-    char *buffer = strdup(metal->ACL_Label);
-    char *rest;
-    token = strtok_r(buffer, " ", &rest);
-    int metal_atomic_num = atoi(token);
+    int metal_atomic_num = metal->elementId;
     if (metal_atomic_num <= 30)
         self->metal_family = strdup("3d");
     else if (metal_atomic_num > 30 && metal_atomic_num <= 48)
@@ -212,7 +176,6 @@ void lattice_metal_info(Lattice *self)
     else if (metal_atomic_num > 56 && metal_atomic_num <= 71)
         self->metal_family = strdup("lm");
     self->metal_order = metal_atomic_num;
-    free(buffer);
 }
 
 char *lattice_export_dest(Lattice *self, char *pathName)
@@ -222,7 +185,7 @@ char *lattice_export_dest(Lattice *self, char *pathName)
 
     int destLen = 1 + snprintf(NULL, 0, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/",
                                pathName, metal_family, metal_symbol,
-                               self->attached_adsName, self->_mol->name);
+                               self->attached_adsName, self->mol->name);
 
     if (self->attached_adsName == NULL)
     {
@@ -232,6 +195,6 @@ char *lattice_export_dest(Lattice *self, char *pathName)
     char *buffer = malloc(destLen);
     snprintf(buffer, destLen, "./C2_CO2RR_models/%s/%s/%s/%s/%s_opt/", pathName,
              metal_family, metal_symbol, self->attached_adsName,
-             self->_mol->name);
+             self->mol->name);
     return buffer;
 }

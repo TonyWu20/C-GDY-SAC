@@ -75,6 +75,8 @@ static inline VEC_CFUNC vec_double3 vec_normalize(vec_double3 u);
 static inline VEC_CFUNC double vec_angle_uv(vec_double3 u, vec_double3 v);
 static inline VEC_CFUNC vec_double3 vec_cross(vec_double3 u, vec_double3 v);
 static inline VEC_CFUNC vec_double3 vec_act(vec_quatd q, vec_double3 v);
+static inline VEC_CFUNC matrix_double3x3 vec_act(vec_quatd q,
+                                                 matrix_double3x3 m);
 static inline VEC_CFUNC vec_double3 vec_imag(vec_quatd q);
 static inline VEC_CFUNC double vec_real(vec_quatd q);
 static inline VEC_CFUNC matrix_double4x4 vec_translate(vec_double3 from,
@@ -355,6 +357,16 @@ static inline VEC_CFUNC vec_double3 vec_act(vec_quatd q, vec_double3 v)
     {
         result.xyz[i] =
             v.xyz[i] + vec_real(q) * 2 * cross.xyz[i] + cross.xyz[i];
+    }
+    return result;
+}
+static inline VEC_CFUNC matrix_double3x3 vec_act(vec_quatd q,
+                                                 matrix_double3x3 m)
+{
+    matrix_double3x3 result;
+    for (int i = 0; i < 3; ++i)
+    {
+        result.columns[i] = vec_act(q, m.columns[i]);
     }
     return result;
 }

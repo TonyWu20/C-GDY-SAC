@@ -10,8 +10,8 @@ struct carbon_site
 
 struct _Lattice
 {
-    Molecule *_mol;
-    Matrix *lattice_vectors;
+    Molecule *mol;
+    matrix_double3x3 lattice_vectors;
     struct carbon_site carbon_sites[7];
     int metal_site_id;
     int metal_order;
@@ -26,8 +26,8 @@ typedef struct _Lattice Lattice;
 
 struct Lattice_vtable
 {
-    Matrix *(*get_carbon_chain_vector)(Lattice *self);
-    Matrix *(*get_carbon_metal_vector)(Lattice *self, int);
+    vec_double3 (*get_carbon_chain_vector)(Lattice *self);
+    vec_double3 (*get_carbon_metal_vector)(Lattice *self, int);
     Lattice *(*attach_molecule)(Lattice *self, Adsorbate *ads, char *newName,
                                 char *pathName);
     /* Rotate lattice to standard orientation "C along Z, A in XZ plane"
@@ -41,7 +41,7 @@ struct Lattice_vtable
 /* Create a pointer to Lattice struct and malloc memory for it. Inherit from
  * Molecule object, with adding lattice_vectors (3x3 column-major matrix)
  */
-Lattice *createLattice(Molecule *mol, Matrix *lattice_vectors);
+Lattice *createLattice(Molecule *mol, matrix_double3x3 lattice_vectors);
 
 /* Fill metal info after initialization */
 void lattice_metal_info(Lattice *self);
@@ -60,17 +60,15 @@ Atom *lattice_get_atom_by_Id(Lattice *self, int);
 
 /* Returns a 4xN matrix containing all atoms' coordinates
  */
-Matrix *lattice_get_coords(Lattice *self);
 
 /* Update all atoms' coordinates from the given 4xN matrix
  */
-void lattice_update_Atom_coords(Lattice *self, Matrix *);
 /* Returns a vector from two given atoms' coordinates */
-Matrix *lattice_get_vector_ab(Lattice *self, int a, int b);
+vec_double3 lattice_get_vector_ab(Lattice *self, int a, int b);
 /* Returns a vector of the carbon chain */
-Matrix *lattice_get_carbon_chain_vector(Lattice *self);
+vec_double3 lattice_get_carbon_chain_vector(Lattice *self);
 /* Returns a vector point from carbon to metal atom */
-Matrix *lattice_get_carbon_metal_vector(Lattice *self, int);
+vec_double3 lattice_get_carbon_metal_vector(Lattice *self, int);
 /* Add a Molecule into the Lattice. The atomId and treeId
  * of the atoms in mol will be updated to follow the order in current Lattice.
  * Returns a new Lattice struct pointer for future exports

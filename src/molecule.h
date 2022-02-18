@@ -20,7 +20,7 @@ typedef struct _Molecule Molecule;
 
 typedef struct
 {
-    Molecule *_mol;
+    Molecule *mol;
     int coordAtomNum;
     int *coordAtomIds;
     int stemAtomIds[2];

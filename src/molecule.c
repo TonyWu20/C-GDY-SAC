@@ -34,7 +34,7 @@ struct Adsorbate_vtable ads_vtable = {
 
 static bool faceUp(Adsorbate *self)
 {
-    Molecule *mol = self->_mol;
+    Molecule *mol = self->mol;
     Atom *cdAtom = mol->vtable->get_atom_by_Id(mol, self->coordAtomIds[0]);
     Atom *upAtom = mol->vtable->get_atom_by_Id(mol, self->upperAtomId);
     if (cdAtom->coord.z < upAtom->coord.z)
@@ -70,7 +70,7 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
                            int upperAtomId, char *pathName)
 {
     Adsorbate *ads = malloc(sizeof(Adsorbate));
-    ads->_mol = newMol;
+    ads->mol = newMol;
     ads->coordAtomNum = coordAtomNum;
     ads->coordAtomIds = malloc(coordAtomNum * sizeof(int));
     memcpy(ads->coordAtomIds, coordAtomIds, sizeof(int) * coordAtomNum);
@@ -86,7 +86,7 @@ Adsorbate *createAdsorbate(Molecule *newMol, int coordAtomNum,
 
 Adsorbate *Adsorbate_duplicate(Adsorbate *self)
 {
-    Molecule *molCopy = self->_mol->vtable->duplicate(self->_mol);
+    Molecule *molCopy = self->mol->vtable->duplicate(self->mol);
     Adsorbate *dup =
         createAdsorbate(molCopy, self->coordAtomNum, self->coordAtomIds,
                         self->stemAtomIds, self->planeAtomIds, self->bSym,
@@ -107,7 +107,7 @@ void destroyMolecule(Molecule *self)
 }
 void destroyAdsorbate(Adsorbate *ads)
 {
-    ads->_mol->vtable->destroy(ads->_mol);
+    ads->mol->vtable->destroy(ads->mol);
     free(ads->coordAtomIds);
     free(ads);
 }
@@ -169,14 +169,14 @@ char **Molecule_textblock(Molecule *self)
 
 vec_double3 Adsorbate_get_stem_vector(Adsorbate *adsPtr)
 {
-    Molecule *mPtr = adsPtr->_mol;
+    Molecule *mPtr = adsPtr->mol;
     return mPtr->vtable->get_vector_ab(mPtr, adsPtr->stemAtomIds[0],
                                        adsPtr->stemAtomIds[1]);
 }
 
 vec_double3 Adsorbate_get_plane_normal(Adsorbate *adsPtr)
 {
-    Molecule *mPtr = adsPtr->_mol;
+    Molecule *mPtr = adsPtr->mol;
     vec_double3 ba = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
                                                  adsPtr->planeAtomIds[1]);
     vec_double3 ca = mPtr->vtable->get_vector_ab(mPtr, adsPtr->planeAtomIds[0],
@@ -187,7 +187,7 @@ vec_double3 Adsorbate_get_plane_normal(Adsorbate *adsPtr)
 
 void Adsorbate_make_upright(Adsorbate *adsPtr)
 {
-    Molecule *mPtr = adsPtr->_mol;
+    Molecule *mPtr = adsPtr->mol;
     vec_double3 stemVector = adsPtr->vtable->get_stem_vector(adsPtr);
     vec_double3 planeNormal = adsPtr->vtable->get_plane_normal(adsPtr);
     vec_double3 planeNormalProj_XY =
@@ -220,12 +220,12 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
     char header_line[] = "# MSI CERIUS2 DataModel File Version 4 0\n";
     char model_start[] = "(1 Model\n";
     char model_end[] = ")\n";
-    int lineSize = self->_mol->atomNum + 3;
+    int lineSize = self->mol->atomNum + 3;
     char **content_lines = malloc(sizeof(char *) * (lineSize));
     content_lines[0] = strdup(header_line);
     content_lines[1] = strdup(model_start);
-    char **atoms = self->_mol->vtable->export_text(self->_mol);
-    for (int i = 0; i < self->_mol->atomNum; ++i)
+    char **atoms = self->mol->vtable->export_text(self->mol);
+    for (int i = 0; i < self->mol->atomNum; ++i)
     {
         content_lines[i + 2] = atoms[i];
     }
@@ -238,10 +238,10 @@ void Adsorbate_export_MSI(Adsorbate *self, char *dest)
     }
     createDirectory(dest);
     int dirLen = strlen(dest);
-    int adsNameLen = strlen(self->_mol->name);
+    int adsNameLen = strlen(self->mol->name);
     char *exportName = malloc(dirLen + adsNameLen + 5);
     snprintf(exportName, dirLen + adsNameLen + 5, "%s%s.msi", dest,
-             self->_mol->name);
+             self->mol->name);
     FILE *writeFile = fopen(exportName, "w");
     for (int i = 0; i < lineSize; ++i)
     {
