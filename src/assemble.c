@@ -13,21 +13,21 @@ char *append_mol_name(Lattice *lat, Adsorbate *ads, int c1, int c2)
     int suffix_len = (c2 != NULLSITE)
                          ? 1 + strlen(suffix_1) + 1 + strlen(suffix_2)
                          : 1 + strlen(suffix_1); // _ + suffix1 + _ + suffix2
-    int ads_name_len = strlen(ads->_mol->name);
-    int lat_name_len = strlen(lat->_mol->name);
+    int ads_name_len = strlen(ads->mol->name);
+    int lat_name_len = strlen(lat->mol->name);
     int total_new_name_len = lat_name_len + 1 + ads_name_len + suffix_len;
     char *buffer = malloc(total_new_name_len + 1);
     if (c2 != NULLSITE)
     {
         char namePattern[] = "%s_%s_%s_%s";
-        snprintf(buffer, total_new_name_len + 1, namePattern, lat->_mol->name,
-                 ads->_mol->name, suffix_1, suffix_2);
+        snprintf(buffer, total_new_name_len + 1, namePattern, lat->mol->name,
+                 ads->mol->name, suffix_1, suffix_2);
     }
     else
     {
         char namePattern[] = "%s_%s_%s";
-        snprintf(buffer, total_new_name_len + 1, namePattern, lat->_mol->name,
-                 ads->_mol->name, suffix_1);
+        snprintf(buffer, total_new_name_len + 1, namePattern, lat->mol->name,
+                 ads->mol->name, suffix_1);
     }
     return buffer;
 }
@@ -45,27 +45,21 @@ int init_ads_direction(Lattice *lat, Adsorbate *ads, int id_from, int id_to)
         return -1;
     }
     /* Get the stem vector to determine the direction of the adsorbate*/
-    Matrix *ads_stem_vec = ads->ads_vtable->get_stem_vector(ads);
+    vec_double3 ads_stem_vec = ads->vtable->get_stem_vector(ads);
     /* Get the target direction vector */
-    Matrix *direction_vec =
-        lat->_mol->vtable->get_vector_ab(lat->_mol, id_from, id_to);
-    Matrix *rot_mat = rotate_u_to_v(ads_stem_vec, direction_vec);
-    ads->_mol->vtable->apply_transformation(ads->_mol, rot_mat,
-                                            (void(*))multiply_matrices);
-    if (strcmp(ads->_mol->name, "C2H4") && strcmp(ads->_mol->name, "CH2CHOH"))
-        ads->ads_vtable->make_upright(ads);
-    /* Clean memory */
-    destroy_matrix(ads_stem_vec);
-    destroy_matrix(direction_vec);
-    destroy_matrix(rot_mat);
-    free(ads_stem_vec);
-    free(direction_vec);
-    free(rot_mat);
+    vec_double3 direction_vec =
+        lat->mol->vtable->get_vector_ab(lat->mol, id_from, id_to);
+    double stem_chain_angle = vec_angle_uv(ads_stem_vec, direction_vec);
+    vec_double3 rotAxis = vec_normalize(vec_cross(ads_stem_vec, direction_vec));
+    vec_quatd rotate_q = vec_make_quaternion(stem_chain_angle, rotAxis);
+    ads->mol->vtable->rotateMol(ads->mol, rotate_q);
+    if (strcmp(ads->mol->name, "C2H4") && strcmp(ads->mol->name, "CH2CHOH"))
+        ads->vtable->make_upright(ads);
     return 0;
 }
 
 Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2,
-                            char *pathName, double height)
+                            double height)
 {
     // Init the adsorbate to be aligned with the carbon chain
     if (c2 != NULLSITE || ads->coordAtomNum == 2)
@@ -78,25 +72,19 @@ Lattice *Add_mol_to_lattice(Lattice *lat, Adsorbate *ads, int c1, int c2,
     int carbon_1 = c1;
     int carbon_2 = (c2 != NULLSITE || ads->coordAtomNum == 2) ? c2 : c1;
     // Get the center coordinates of the two carbon sites
-    double *center_coords_of_carbon_sites = /* malloced */
-        lat->_mol->vtable->get_centroid_ab(lat->_mol, carbon_1, carbon_2);
-    double *center_coords_of_cd_sites =
-        ads->_mol->vtable->get_centroid_ab(ads->_mol, cd_1, cd_2);
-    Matrix *trans_m = translate_mat_a_to_b(center_coords_of_cd_sites,
-                                           center_coords_of_carbon_sites);
+    vec_double3 center_coords_of_carbon_sites =
+        lat->mol->vtable->get_centroid_ab(lat->mol, carbon_1, carbon_2);
+    vec_double3 center_coords_of_cd_sites =
+        ads->mol->vtable->get_centroid_ab(ads->mol, cd_1, cd_2);
+    matrix_double4x4 transMat =
+        vec_translate(center_coords_of_cd_sites, center_coords_of_carbon_sites);
     /* Set the hanging height on the GDY plane */
-    trans_m->value[2][3] += height;
+    transMat.columns[3].z += height;
     /* Apply transformation */
-    ads->_mol->vtable->apply_transformation(ads->_mol, trans_m,
-                                            translate_a_to_b);
+    ads->mol->vtable->translateMol(ads->mol, transMat);
     /* Clean memory */
-    destroy_matrix(trans_m);
-    free(trans_m);
-    free(center_coords_of_carbon_sites);
-    free(center_coords_of_cd_sites);
     char *newName = append_mol_name(lat, ads, c1, c2);
-    Lattice *newModel =
-        lat->vtable->attach_molecule(lat, ads, newName, pathName);
+    Lattice *newModel = lat->vtable->attach_molecule(lat, ads, newName);
     free(newName);
     return newModel;
 }

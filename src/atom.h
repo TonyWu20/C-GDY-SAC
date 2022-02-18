@@ -29,7 +29,7 @@ struct Atom_vtable
  * The passed element will be duplicated by strdup(),
  * needs free() when destroy.
  */
-Atom *createAtom(char *element, int elementId, vec_double3 coord, int atomId);
+Atom *createAtom(char *element, vec_double3 coord, int atomId, int elementId);
 
 /* @abstract: Duplicate an atom */
 Atom *dupAtom(Atom *self);

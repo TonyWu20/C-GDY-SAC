@@ -109,6 +109,7 @@ void destroyAdsorbate(Adsorbate *ads)
 {
     ads->mol->vtable->destroy(ads->mol);
     free(ads->coordAtomIds);
+    free(ads->pathName);
     free(ads);
 }
 

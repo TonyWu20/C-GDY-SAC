@@ -1,15 +1,15 @@
 #include "cell.h"
-#include "castep_database.h"
 #include "misc.h"
 #include "my_maths.h"
+#include "param.h"
 #include <string.h>
 
 struct Cell_vtable cellVTable = {sortAtomsByElement, sortedElementList,
-                                 cellExport};
+                                 cellExport, seedExport};
 struct Cell_textFunc cellTextTable = {cellWriteBlock};
 
 /* Cell starts */
-Cell *createCell(Lattice *lat, CastepInfo *table)
+Cell *createCell(Lattice *lat, HashNode *table)
 {
     Cell *new = malloc(sizeof(Cell));
     new->lattice = lat;
@@ -21,28 +21,13 @@ Cell *createCell(Lattice *lat, CastepInfo *table)
     int elmNums = 0;
     new->elmLists = new->vtable->sortElmList(new, &elmNums);
     new->elmNums = elmNums;
-    new->infoTab = NULL;
-    cellLoadInfoTab(new, table);
-    if (!new->infoTab)
-    {
-        printf("infoTab loading failed\n");
-    }
+    new->lookupTable = table;
     return new;
-}
-
-void cellLoadInfoTab(Cell *self, CastepInfo *table)
-{
-    for (int i = 0; i < self->elmNums; ++i)
-    {
-        CastepInfo *get = find_item(table, self->elmLists[i]);
-        add_item(&self->infoTab, get->info);
-    }
 }
 
 void destroyCell(Cell *self)
 {
     self->lattice->vtable->destroy(self->lattice); // Destroy lattice here
-    delete_all(&self->infoTab);
     for (int i = 0; i < self->elmNums; ++i)
         free(self->elmLists[i]);
     free(self->elmLists);
@@ -66,26 +51,17 @@ char *cellWriteBlock(Cell *self, char *blockName,
 
 char *cell_latticeVector_writer(Cell *self)
 {
-    double a[3], b[3], c[3];
     Lattice *lat = self->lattice;
-    Matrix *latVectors = lat->lattice_vectors;
-    for (int i = 0; i < 3; ++i)
-    {
-        a[i] = latVectors->value[i][0];
-        b[i] = latVectors->value[i][1];
-        c[i] = latVectors->value[i][2];
-    }
-    int bufSize =
-        snprintf(NULL, 0,
-                 "%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n%24."
-                 "18f%24.18f%24.18f\n",
-                 a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]) +
-        1;
-    char *resString = malloc(bufSize);
-    snprintf(
-        resString, bufSize,
+    matrix_double3x3 latVectors = lat->lattice_vectors;
+    vec_double3 a, b, c;
+    a = latVectors.i;
+    b = latVectors.j;
+    c = latVectors.k;
+    char *resString;
+    asprintf(
+        &resString,
         "%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n%24.18f%24.18f%24.18f\n",
-        a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
+        a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
     return resString;
 }
 
@@ -93,65 +69,57 @@ char *cell_fracCoord_writer(Cell *self)
 {
     if (self->atomSorted == false)
         self->vtable->sortAtoms(self);
-    Molecule *mol = self->lattice->_mol;
-    Matrix *molCoord = mol->vtable->get_mol_coords(mol);
-    Matrix *xyzToFrac = fractionalCoordMatrix(self->lattice->lattice_vectors);
-    Matrix *fracCoord;
-    multiply_matrices(xyzToFrac, molCoord, &fracCoord);
-    destroy_matrix(xyzToFrac);
-    destroy_matrix(molCoord);
-    free(xyzToFrac);
-    free(molCoord);
-    int lineLens[mol->atomNum];
+    Molecule *mol = self->lattice->mol;
+    /* Convert */
+    matrix_double3x3 toFrac = vec_fracCoordMat(self->lattice->lattice_vectors);
     char **lines = malloc(sizeof(char *) * mol->atomNum);
+    int lineLens[mol->atomNum];
     int totalLen = 0;
     for (int i = 0; i < mol->atomNum; ++i)
     {
         Atom *cur = mol->atom_arr[i];
-        Matrix *cd = fracCoord;
+        vec_double3 fracCd = vec_mul(toFrac, cur->coord);
         if (i < mol->atomNum - 1)
         {
-            lineLens[i] = 1 + snprintf(NULL, 0, "%3s%20.16f%20.16f%20.16f\n",
-                                       cur->element, cd->value[0][i],
-                                       cd->value[1][i], cd->value[2][i]);
+            lineLens[i] =
+                1 + snprintf(NULL, 0, "%3s%20.16f%20.16f%20.16f\n",
+                             cur->element, fracCd.x, fracCd.y, fracCd.z);
             lines[i] = malloc(sizeof(char) * lineLens[i]);
             snprintf(lines[i], lineLens[i], "%3s%20.16f%20.16f%20.16f\n",
-                     cur->element, cd->value[0][i], cd->value[1][i],
-                     cd->value[2][i]);
+                     cur->element, fracCd.x, fracCd.y, fracCd.z);
         }
         else
         {
-            CastepInfo *metal =
-                find_item(self->infoTab, self->lattice->metal_symbol);
-            if (metal->info->spin)
+            Atom *metalAtom = self->lattice->mol->vtable->get_atom_by_Id(
+                self->lattice->mol, self->lattice->metal_site_id);
+            HashNode *metalNode =
+                find_item_by_str(self->lookupTable, metalAtom->element);
+            ElmInfo *metal = (ElmInfo *)metalNode->val;
+            if (metal->spin)
             {
                 lineLens[i] =
                     1 + snprintf(NULL, 0,
                                  "%3s%20.16f%20.16f%20.16f SPIN=%14.10f\n",
-                                 cur->element, cd->value[0][i], cd->value[1][i],
-                                 cd->value[2][i], (double)metal->info->spin);
+                                 cur->element, fracCd.x, fracCd.y, fracCd.z,
+                                 (double)metal->spin);
                 lines[i] = malloc(sizeof(char) * lineLens[i]);
                 snprintf(lines[i], lineLens[i],
                          "%3s%20.16f%20.16f%20.16f SPIN=%14.10f\n",
-                         cur->element, cd->value[0][i], cd->value[1][i],
-                         cd->value[2][i], (double)metal->info->spin);
+                         cur->element, fracCd.x, fracCd.y, fracCd.z,
+                         (double)metal->spin);
             }
             else
             {
                 lineLens[i] =
                     1 + snprintf(NULL, 0, "%3s%20.16f%20.16f%20.16f\n",
-                                 cur->element, cd->value[0][i], cd->value[1][i],
-                                 cd->value[2][i]);
+                                 cur->element, fracCd.x, fracCd.y, fracCd.z);
                 lines[i] = malloc(sizeof(char) * lineLens[i]);
                 snprintf(lines[i], lineLens[i], "%3s%20.16f%20.16f%20.16f\n",
-                         cur->element, cd->value[0][i], cd->value[1][i],
-                         cd->value[2][i]);
+                         cur->element, fracCd.x, fracCd.y, fracCd.z);
             }
         }
         totalLen += lineLens[i];
     }
-    destroy_matrix(fracCoord);
-    free(fracCoord);
     char *blockText = calloc(totalLen + 1, sizeof(char));
     for (int i = 0; i < mol->atomNum; ++i)
     {
@@ -205,13 +173,19 @@ char *cell_speciesMass_writer(Cell *self)
     int totalLen = 0;
     for (int i = 0; i < self->elmNums; ++i)
     {
+        char *key = self->elmLists[i];
+        if (strlen(key) > 2)
+        {
+            printf("Key error when SPECIES_MASS: %s\n", key);
+        }
         const char format[] = "%8s%18.10f\n";
-        CastepInfo *item = find_item(self->infoTab, self->elmLists[i]);
+        HashNode *elmNode = find_item_by_str(self->lookupTable, key);
+        ElmInfo *elmItem = (ElmInfo *)(elmNode->val);
         lineLens[i] =
-            1 + snprintf(NULL, 0, format, self->elmLists[i], item->info->mass);
+            1 + snprintf(NULL, 0, format, self->elmLists[i], elmItem->mass);
         tmpLines[i] = malloc(lineLens[i]);
         snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
-                 item->info->mass);
+                 elmItem->mass);
         totalLen += lineLens[i];
     }
     char *ret = calloc(totalLen + 1, sizeof(char));
@@ -230,46 +204,22 @@ char *cell_speciesPot_writer(Cell *self)
     char **tmpLines = malloc(sizeof(char *) * self->elmNums);
     int totalLen = 0;
     const char format[] = "%8s  %s\n";
-    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
-                                                       self->lattice->pathName);
-    CastepInfo *item, *tmp;
-    int i = 0;
-    HASH_ITER(hh, self->infoTab, item, tmp)
+    for (int i = 0; i < self->elmNums; ++i)
     {
-        char *potential_stem = strrchr(item->info->potential_file, '/') + 1;
-        lineLens[i] = 1 + snprintf(NULL, 0, format, item->name, potential_stem);
+        char *key = self->elmLists[i];
+        if (strlen(key) > 2)
+        {
+            printf("Key error in SPECIES_POT: %s\n", key);
+        }
+        HashNode *elmNode = find_item_by_str(self->lookupTable, key);
+        ElmInfo *elmInfo = (ElmInfo *)(elmNode->val);
+        lineLens[i] =
+            1 + snprintf(NULL, 0, format, self->elmLists[i], elmInfo->potFile);
         tmpLines[i] = malloc(lineLens[i]);
-        snprintf(tmpLines[i], lineLens[i], format, item->name, potential_stem);
+        snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
+                 elmInfo->potFile);
         totalLen += lineLens[i];
-        i++;
     }
-    /* for (int i = 0; i < self->elmNums; ++i) */
-    /* { */
-    /*     CastepInfo *item = find_item(self->infoTab, self->elmLists[i]); */
-    /*     char *potential_stem = strrchr(item->info->potential_file, '/') + 1;
-     */
-    /*     lineLens[i] = */
-    /*         1 + snprintf(NULL, 0, format, self->elmLists[i], potential_stem);
-     */
-    /*     tmpLines[i] = malloc(lineLens[i]); */
-    /*     snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i], */
-    /*              potential_stem); */
-    /*     totalLen += lineLens[i]; */
-    /*     int pathLen = 1 + snprintf(NULL, 0, "%s%s", exportDir,
-     * potential_stem); */
-    /*     char *potPath = malloc(pathLen); */
-    /*     snprintf(potPath, pathLen, "%s%s", exportDir, potential_stem); */
-    /*     FILE *srcPotFile = fopen(item->info->potential_file, "r"); */
-    /*     FILE *copiedPotFile = fopen(potPath, "w"); */
-    /*     for (char c = fgetc(srcPotFile); c != EOF; c = fgetc(srcPotFile)) */
-    /*     { */
-    /*         fputc(c, copiedPotFile); */
-    /*     } */
-    /*     free(potPath); */
-    /*     fclose(srcPotFile); */
-    /*     fclose(copiedPotFile); */
-    /* } */
-    free(exportDir);
     char *ret = calloc(totalLen + 1, sizeof(char));
     for (int i = 0; i < self->elmNums; ++i)
     {
@@ -288,12 +238,18 @@ char *cell_speciesLCAOstates_writer(Cell *self)
     const char format[] = "%8s%10d\n";
     for (int i = 0; i < self->elmNums; ++i)
     {
-        CastepInfo *item = find_item(self->infoTab, self->elmLists[i]);
+        const char *key = self->elmLists[i];
+        if (strlen(key) > 2)
+        {
+            printf("Key error in SPECIES_POT: %s\n", key);
+        }
+        HashNode *elmNode = find_item_by_str(self->lookupTable, key);
+        ElmInfo *elmInfo = (ElmInfo *)(elmNode->val);
         lineLens[i] =
-            1 + snprintf(NULL, 0, format, self->elmLists[i], item->info->LCAO);
+            1 + snprintf(NULL, 0, format, elmInfo->name, elmInfo->LCAO);
         tmpLines[i] = malloc(lineLens[i]);
-        snprintf(tmpLines[i], lineLens[i], format, self->elmLists[i],
-                 item->info->LCAO);
+        snprintf(tmpLines[i], lineLens[i], format, elmInfo->name,
+                 elmInfo->LCAO);
         totalLen += lineLens[i];
     }
     char *ret = calloc(totalLen + 1, sizeof(char));
@@ -309,9 +265,8 @@ char *cell_speciesLCAOstates_writer(Cell *self)
 void cellExport(Cell *self)
 {
     /* Filepath processing */
-    char *stemName = self->lattice->_mol->name;
-    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
-                                                       self->lattice->pathName);
+    char *stemName = self->lattice->mol->name;
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice);
     createDirectory(exportDir);
     char *fileName;
     char *DOSfileName;
@@ -389,12 +344,28 @@ void cellExport(Cell *self)
     fclose(writeDOS);
 }
 
+inline void seedExport(Cell *self)
+{
+    write_kptaux(self);
+    write_param(self);
+    write_trjaux(self);
+    write_pbsScript(self);
+    write_SMCastepExtension(self);
+    /* copy_potentials(self); */
+}
+
 static int atomCmp(const void *a, const void *b)
 {
     Atom *atomA = *(Atom **)a;
     Atom *atomB = *(Atom **)b;
+    /* Compare by atomic number in periodic table
+     * (elementId)
+     */
     int aNum = atomA->elementId;
     int bNum = atomB->elementId;
+    /* If the elements are the same, sort by
+     * their original order
+     */
     if (aNum == bNum)
         return atomA->atomId - atomB->atomId;
     return aNum - bNum;
@@ -402,18 +373,23 @@ static int atomCmp(const void *a, const void *b)
 
 void sortAtomsByElement(Cell *self)
 {
-    Molecule *mol = self->lattice->_mol;
+    Molecule *mol = self->lattice->mol;
     Atom **atomArray = mol->atom_arr;
     qsort(atomArray, mol->atomNum, sizeof(Atom *), atomCmp);
     mol->atom_arr = atomArray;
     self->atomSorted = true;
+    /* Since the atoms are sorted, the metal_site_id
+     * has to be updated too
+     * Must be the last atoms
+     */
+    self->lattice->metal_site_id = mol->atomNum;
 }
 
 char **sortedElementList(Cell *self, int *returnSize)
 {
     if (self->atomSorted == false)
         self->vtable->sortAtoms(self);
-    Molecule *mol = self->lattice->_mol;
+    Molecule *mol = self->lattice->mol;
     int size = 1;
     char **elementsSet = malloc(sizeof(char *));
     elementsSet[0] = strdup(mol->atom_arr[0]->element);

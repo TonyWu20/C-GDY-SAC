@@ -1,8 +1,5 @@
 #include "parser.h"
 #include "atom.h"
-#include "lattice.h"
-#include "matrix.h"
-#include "misc.h"
 #include "molecule.h"
 #include "pcre2.h"
 #include <stdio.h>
@@ -11,12 +8,6 @@
 static pcre2_code *init_re(char *RegexStr);
 static void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data,
                      int *rc, char *subject);
-static void get_cd_num(char *subject, int *cd_num);
-static void get_cd_info(char *subject, int *cd_num, int **cd_ids);
-static void get_symmetric_info(char *subject, int *bSym);
-static void get_stem_arr(char *subject, int *stem_arr);
-static void get_plane_arr(char *subject, int *plane_arr);
-static void get_upperAtomId(char *subject, int *upperAtomId);
 static Atom *parse_atom(char *atom_block);
 static Atom **get_all_atoms(char *subject, int *returnSize);
 // Table
@@ -69,124 +60,9 @@ static void re_match(pcre2_code *re_pattern, pcre2_match_data **match_data,
     }
 }
 
-/* Parse number of coordinate atoms */
-static void get_cd_num(char *subject, int *cd_num)
-{
-    char RegexStr[] = "# cd_num: ([0-9])";
-    pcre2_code *re = init_re(RegexStr);
-    pcre2_match_data *match_data;
-    int rc = 0;
-    re_match(re, &match_data, &rc, subject);
-    PCRE2_UCHAR8 *buffer = NULL;
-    PCRE2_SIZE size = 0;
-    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-    *cd_num = atoi((const char *)buffer);
-    pcre2_substring_free(buffer);
-    pcre2_match_data_free(match_data);
-    pcre2_code_free(re);
-}
-
-/* Parse atom Ids of coordinate atoms and store in **cd_ids
- */
-static void get_cd_info(char *subject, int *cd_num, int **cd_ids)
-{
-    get_cd_num(subject, cd_num);
-    char RegexStr[] = "# cd_ids: ([0-9,]+)";
-    pcre2_code *re = init_re(RegexStr);
-    pcre2_match_data *match_data;
-    int rc = 0;
-    re_match(re, &match_data, &rc, subject);
-    PCRE2_UCHAR8 *buffer = NULL;
-    PCRE2_SIZE size = 0;
-    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-    char *rest = NULL;
-    char *token;
-    *cd_ids = realloc(*cd_ids, sizeof(int) * (*cd_num));
-    int count = 0;
-    for (token = strtok_r((char *)buffer, ",", &rest); token;
-         token = strtok_r(NULL, ",", &rest))
-    {
-        (*cd_ids)[count++] = atoi(token);
-    }
-    pcre2_code_free(re);
-    pcre2_substring_free(buffer);
-    pcre2_match_data_free(match_data);
-}
-
-/* Get if the molecule is symmetric */
-static void get_symmetric_info(char *subject, int *bSym)
-{
-    char RegexStr[] = "# Symmetric: ([0-1])";
-    pcre2_code *re = init_re(RegexStr);
-    pcre2_match_data *match_data;
-    int rc = 0;
-    re_match(re, &match_data, &rc, subject);
-    PCRE2_UCHAR *buffer = NULL;
-    PCRE2_SIZE size = 0;
-    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-    *bSym = atoi((const char *)buffer);
-    pcre2_substring_free(buffer);
-    pcre2_match_data_free(match_data);
-    pcre2_code_free(re);
-}
-
-/* Store the stem atomId in the pointer */
-static void get_stem_arr(char *subject, int *stem_arr)
-{
-    char rg[] = "# stem_ids: ([0-9,]+)";
-    pcre2_code *re = init_re(rg);
-    pcre2_match_data *match_data;
-    int rc = 0;
-    re_match(re, &match_data, &rc, subject);
-    PCRE2_UCHAR8 *buffer = NULL;
-    PCRE2_SIZE size = 0;
-    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-    char *rest = NULL;
-    char *token;
-    int i = 0;
-    for (token = strtok_r((char *)buffer, ",", &rest); token && i < 2;
-         token = strtok_r(NULL, ",", &rest), ++i)
-    {
-        stem_arr[i] = atoi((const char *)token);
-    }
-    pcre2_code_free(re);
-    pcre2_substring_free(buffer);
-    pcre2_match_data_free(match_data);
-}
-
-/* Store the plane atomId in the pointer */
-static void get_plane_arr(char *subject, int *plane_arr)
-{
-    char rg[] = "# plane_ids: ([0-9,]+)";
-    pcre2_code *re = init_re(rg);
-    pcre2_match_data *match_data;
-    int rc = 0;
-    re_match(re, &match_data, &rc, subject);
-    PCRE2_UCHAR8 *buffer = NULL;
-    PCRE2_SIZE size = 0;
-    pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-    char *rest = NULL;
-    char *token;
-    int i = 0;
-    for (token = strtok_r((char *)buffer, ",", &rest); token && i < 3;
-         token = strtok_r(NULL, ",", &rest), ++i)
-    {
-        plane_arr[i] = atoi((const char *)token);
-    }
-    pcre2_code_free(re);
-    pcre2_substring_free(buffer);
-    pcre2_match_data_free(match_data);
-}
-
 /* Parse the lattice vectors */
-static void get_lattice_vectors(char *subject, Matrix **result)
+static void get_lattice_vectors(char *subject, matrix_double3x3 *result)
 {
-    *result = create_matrix(4, 3);
-    if (*result == NULL)
-    {
-        printf("Can't create matrix.\n");
-        return;
-    }
     char *RegexStr = ".*A3 \\(([0-9e. -]+)\\)\\)\r\n"
                      ".*B3 \\(([0-9e. -]+)\\)\\)\r\n"
                      ".*C3 \\(([0-9e. -]+)\\)\\)\r\n";
@@ -196,44 +72,23 @@ static void get_lattice_vectors(char *subject, Matrix **result)
     re_match(re, &match_data, &rc, subject);
     PCRE2_UCHAR8 *buffer = NULL;
     PCRE2_SIZE size = 0;
-    for (int j = 0; j < 3; ++j)
-    {
-        pcre2_substring_get_bynumber(match_data, j + 1, &buffer, &size);
-        char *rest = NULL;
-        char *token;
-        int i = 0;
-        for (token = strtok_r((char *)buffer, " ", &rest); token && i < 3;
-             token = strtok_r(NULL, " ", &rest), ++i)
-        {
-            (*result)->value[i][j] = atof((const char *)token);
-        }
-        pcre2_substring_free(buffer);
-    }
+    vec_double3 abc[3];
     for (int i = 0; i < 3; ++i)
     {
-        (*result)->value[3][i] = 1;
+        pcre2_substring_get_bynumber(match_data, i + 1, &buffer, &size);
+        char *rest = NULL;
+        char *token;
+        int j = 0;
+        for (token = strtok_r((char *)buffer, " ", &rest); token && j < 3;
+             token = strtok_r(NULL, " ", &rest), ++j)
+        {
+            abc[i].xyz[j] = atof((const char *)token);
+        }
+        (*result).columns[i] = vec_make_double3(abc[i].x, abc[i].y, abc[i].z);
+        pcre2_substring_free(buffer);
     }
     pcre2_code_free(re);
     pcre2_match_data_free(match_data);
-}
-
-/* Parse the upper atom Id
- * store in passed int pointer
- */
-static void get_upperAtomId(char *subject, int *upperAtomId)
-{
-    char RegexStr[] = "# Up_atom: ([0-9])";
-    pcre2_code *re = init_re(RegexStr);
-    pcre2_match_data *match_data;
-    int rc = 0;
-    re_match(re, &match_data, &rc, subject);
-    PCRE2_UCHAR8 *buffer = NULL;
-    PCRE2_SIZE size = 0;
-    pcre2_substring_get_bynumber_8(match_data, 1, &buffer, &size);
-    *upperAtomId = atoi((const char *)buffer);
-    pcre2_substring_free_8(buffer);
-    pcre2_match_data_free_8(match_data);
-    pcre2_code_free_8(re);
 }
 
 /* Match and parse all atoms
@@ -302,8 +157,8 @@ static Atom **get_all_atoms(char *subject, int *returnSize)
 /* Parse single atom block */
 static Atom *parse_atom(char *atom_block)
 {
-    char RegexStr[] = "\\(([0-9]+) Atom\\R.*ACL \"([0-9a-zA-Z "
-                      "]+).*\\R.*Label \"([a-zA-Z]+).*\r\n.*"
+    char RegexStr[] = "\\([0-9]+ Atom\\R.*ACL \"([0-9]+) ([a-zA-Z"
+                      "]+).*\\R.*Label \".*\r\n.*"
                       "XYZ \\(([0-9.e-]+) ([0-9.e-]+) ([0-9.e-]+).*\\R"
                       ".*Id ([0-9]+)";
     pcre2_code *re = init_re(RegexStr);
@@ -312,67 +167,47 @@ static Atom *parse_atom(char *atom_block)
     re_match(re, &match_data, &rc, atom_block);
     PCRE2_UCHAR8 *buffer = NULL;
     PCRE2_SIZE size = 0;
-    // Tree Id
     pcre2_substring_get_bynumber(match_data, 1, &buffer, &size);
-    int treeId = atoi((const char *)buffer);
-    pcre2_substring_free(buffer);
-    // Label
-    pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
-    char *label = strdup((const char *)buffer);
+    int elementId = atoi((const char *)buffer);
     pcre2_substring_free(buffer);
     // Element
-    pcre2_substring_get_bynumber(match_data, 3, &buffer, &size);
+    pcre2_substring_get_bynumber(match_data, 2, &buffer, &size);
     char *element = strdup((const char *)buffer);
     pcre2_substring_free(buffer);
     // XYZ matrix
-    Matrix *coord = create_matrix(4, 1);
+    vec_double3 coord;
     for (int i = 0; i < 3; ++i)
     {
-        pcre2_substring_get_bynumber(match_data, i + 4, &buffer, &size);
-        coord->value[i][0] = atof((const char *)buffer);
+        pcre2_substring_get_bynumber(match_data, i + 3, &buffer, &size);
+        coord.xyz[i] = atof((const char *)buffer);
         pcre2_substring_free(buffer);
     }
-    coord->value[3][0] = 1;
     // Atom Id
-    pcre2_substring_get_bynumber(match_data, 7, &buffer, &size);
+    pcre2_substring_get_bynumber(match_data, 6, &buffer, &size);
     int atomId = atoi((const char *)buffer);
+    pcre2_substring_free(buffer);
     // Create new Atom object
-    char *labelDup = strdup(label);
-    char *token, *rest;
-    token = strtok_r(labelDup, " ", &rest);
-    Atom *new = createAtom(element, label, coord, atomId, treeId);
-    new->elementId = atoi(token);
+    Atom *new = createAtom(element, coord, atomId, elementId);
     // Parse the element atomic number from ACL Label
     // Free memory
-    pcre2_substring_free(buffer);
+    free(element);
     pcre2_match_data_free(match_data);
     pcre2_code_free(re);
-    free(labelDup);
     return new;
 }
 
-Adsorbate *parse_molecule_from_file(char *fileName, char *name)
+Adsorbate *parse_adsorbate_from_file(char *fileName, char *name,
+                                     AdsInfo *adsInfo)
 {
     char *body = readWholeFile(fileName);
     int atom_nums = 0;
     Atom **atom_arr = get_all_atoms(body, &atom_nums);
-    Molecule *mol = NULL;
-    int cd_num = 0;
-    int *cd_arr = NULL;
-    int stem_arr[2];
-    int plane_arr[3];
-    int bSym = 0;
-    int upperAtomId = 0;
-    get_cd_info(body, &cd_num, &cd_arr);
-    get_stem_arr(body, stem_arr);
-    get_plane_arr(body, plane_arr);
-    get_symmetric_info(body, &bSym);
-    get_upperAtomId(body, &upperAtomId);
-    mol = createMolecule(name, atom_nums, atom_arr);
-    Adsorbate *ads = createAdsorbate(mol, cd_num, cd_arr, stem_arr, plane_arr,
-                                     bSym, upperAtomId);
-    free(cd_arr);
     free(body);
+    Molecule *mol = createMolecule(name, atom_nums, atom_arr);
+    Adsorbate *ads = createAdsorbate(
+        mol, adsInfo->coordAtoms_count, adsInfo->coordAtoms, adsInfo->stemAtoms,
+        adsInfo->planeAtoms, adsInfo->bSym, adsInfo->vertical,
+        adsInfo->upperAtomId, adsInfo->pathName);
     return ads;
 }
 
@@ -382,9 +217,9 @@ Lattice *parse_lattice_from_file(char *fileName, char *name)
     int atom_nums = 0;
     Atom **atom_arr = get_all_atoms(body, &atom_nums);
     Molecule *lat_mol = createMolecule(name, atom_nums, atom_arr);
-    Matrix *vectors;
-    get_lattice_vectors(body, &vectors);
-    Lattice *new = createLattice(lat_mol, vectors);
+    matrix_double3x3 latVectors;
+    get_lattice_vectors(body, &latVectors);
+    Lattice *new = createLattice(lat_mol, latVectors);
     free(body);
     return new;
 }

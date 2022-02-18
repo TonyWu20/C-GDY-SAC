@@ -1,6 +1,6 @@
 #pragma once
-#include "castep_database.h"
 #include "cell.h"
+#include "database/database.h"
 #include "lattice.h"
 #include "misc.h"
 #include "my_maths.h"
@@ -23,7 +23,7 @@ void write_kptaux(Cell *self);
 
 void write_trjaux(Cell *self);
 
-void copy_potentials(Cell *self, PotentialFile *table);
+void copy_potentials(Cell *self);
 
 void write_pbsScript(Cell *self);
 

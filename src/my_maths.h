@@ -55,54 +55,83 @@ typedef union
     };
 } vec_quatd;
 
+/* @abstract: Create a vector from three double values */
 static inline VEC_CFUNC vec_double3 vec_make_double3(double x, double y,
                                                      double z);
+/* @abstract: Create a vector from an array of three double values */
 static inline VEC_CFUNC vec_double3 vec_make_double3(double vec[3]);
+/* @abstract: Truncate a vec_double4, use its xyz in the new vector*/
 static inline VEC_CFUNC vec_double3 vec_make_double3(vec_double4 other);
+/* @abstract: Create a vector of 4 double vals */
 static inline VEC_CFUNC vec_double4 vec_make_double4(double x, double y,
                                                      double z, double w);
+/* @abstract: Create a 4d vector from a 3d vector, and specify the w */
 static inline VEC_CFUNC vec_double4 vec_make_double4(vec_double3 other,
                                                      double w);
+/* @abstract: Create a quaternion by giving the angle and rotation axis */
 static inline VEC_CFUNC vec_quatd vec_make_quaternion(double angle,
                                                       vec_double3 axis);
+/* @abstract: Create a quaternion by specifying the imaginary part and real
+ * part*/
 static inline VEC_CFUNC vec_quatd vec_make_quaternion(vec_double3 imag,
                                                       double real);
+/* @abstract: Create a quaternion from a 4d vector */
 static inline VEC_CFUNC vec_quatd vec_make_quaternion(vec_double4 other);
 
+/* @abstract: Dot product of two 3d vectors */
 static inline VEC_CFUNC double vec_dot(vec_double3 u, vec_double3 v);
+/* @abstract: Euclidean length */
 static inline VEC_CFUNC double vec_length(vec_double3 u);
+/* @abstract: Returns a normalized 3d vector */
 static inline VEC_CFUNC vec_double3 vec_normalize(vec_double3 u);
+/* @abstract: Returns the angle between 3d vectors u and v */
 static inline VEC_CFUNC double vec_angle_uv(vec_double3 u, vec_double3 v);
+/* @abstract: Returns the cross product of 3d vectors u and v */
 static inline VEC_CFUNC vec_double3 vec_cross(vec_double3 u, vec_double3 v);
+/* @abstract: Perform the rotation defined by the quaternion q on the
+ * 3d vector v */
 static inline VEC_CFUNC vec_double3 vec_act(vec_quatd q, vec_double3 v);
+/* @abstract: Perform the rotation defined by the quaternion q on the
+ * 3x3 matrix */
 static inline VEC_CFUNC matrix_double3x3 vec_act(vec_quatd q,
                                                  matrix_double3x3 m);
+/* @abstract: Returns the imaginary part of the quaternion */
 static inline VEC_CFUNC vec_double3 vec_imag(vec_quatd q);
+/* @abstract: Returns the real part of the quaternion */
 static inline VEC_CFUNC double vec_real(vec_quatd q);
+/* @abstract: Returns a 4 by 4 matrix describing a translation between
+ * the input *3d* vectors */
 static inline VEC_CFUNC matrix_double4x4 vec_translate(vec_double3 from,
                                                        vec_double3 to);
 
-/* Scale the vector
- * c = a*v;
- */
+/* @abstract: Scale the 3d vector c = a*v; */
 static inline VEC_CFUNC vec_double3 vec_mul(double a, vec_double3 v);
+/* @abstract: Scale the 4d vector c = a*v; */
 static inline VEC_CFUNC vec_double4 vec_mul(double a, vec_double4 v);
-/* c = a*x + b*y */
+/* @abstract: Linear combination of 3d vectors x and y
+ * c = a*x + b*y */
 static inline VEC_CFUNC vec_double3 vec_linear_comb(double a, vec_double3 x,
                                                     double b, vec_double3 y);
+/* @abstract: Linear combination of 4d vectors x and y
+ * c = a*x + b*y */
 static inline VEC_CFUNC vec_double4 vec_linear_comb(double a, vec_double4 x,
                                                     double b, vec_double4 y);
-/* c = x + y by vec_linear_comb */
+/* @abstract: c = x + y by vec_linear_comb (3d vector) */
 static inline VEC_CFUNC vec_double3 vec_add(vec_double3 x, vec_double3 y);
+/* @abstract: c = x + y by vec_linear_comb (4d vector) */
 static inline VEC_CFUNC vec_double4 vec_add(vec_double4 x, vec_double4 y);
-/* c = x - y by vec_linear_comb */
+/* @abstract: c = x - y by vec_linear_comb (3d vector) */
 static inline VEC_CFUNC vec_double3 vec_sub(vec_double3 x, vec_double3 y);
+/* @abstract: c = x - y by vec_linear_comb (4d vector) */
 static inline VEC_CFUNC vec_double4 vec_sub(vec_double4 x, vec_double4 y);
-/* Matrix vector multiplication */
+/* @abstract: 3 by 3 Matrix and 3d vector multiplication */
 static inline VEC_CFUNC vec_double3 vec_mul(matrix_double3x3 mat_3x3,
                                             vec_double3 u3);
+/* @abstract: 4 by 4 Matrix and 4d vector multiplication */
 static inline VEC_CFUNC vec_double4 vec_mul(matrix_double4x4 mat_4x4,
                                             vec_double4 u4);
+/* @abstract: Fractional coordinate matrix */
+static inline VEC_CFUNC matrix_double3x3 vec_fracCoordMat(matrix_double3x3 u);
 
 /* Implementation */
 static inline VEC_CFUNC vec_double3 vec_make_double3(double x, double y,
@@ -381,6 +410,34 @@ static inline VEC_CFUNC matrix_double3x3 vec_act(vec_quatd q,
  * Returns: rounded double
 
  */
+static inline VEC_CFUNC matrix_double3x3 vec_fracCoordMat(matrix_double3x3 u)
+{
+    vec_double3 a, b, c;
+    a = u.i;
+    b = u.j;
+    c = u.k;
+    double aLen = vec_length(a);
+    double bLen = vec_length(b);
+    double cLen = vec_length(c);
+    double alpha = vec_angle_uv(b, c);
+    double beta = vec_angle_uv(a, c);
+    double gamma = vec_angle_uv(a, b);
+    double vol = vec_dot(a, vec_cross(b, c));
+    vec_double3 x_cart = vec_make_double3(1 / aLen, 0, 0);
+    vec_double3 y_cart = vec_make_double3(-cos(gamma) / (aLen * sin(gamma)),
+                                          1 / (bLen * sin(gamma)), 0);
+    vec_double3 z_cart =
+        vec_make_double3(bLen * cLen * (cos(alpha) * cos(gamma) - cos(beta)) /
+                             (vol * sin(gamma)),
+                         aLen * cLen * (cos(beta) * cos(gamma) - cos(alpha)) /
+                             (vol * sin(gamma)),
+                         aLen * bLen * sin(gamma) / vol);
+    matrix_double3x3 toFrac;
+    toFrac.i = x_cart;
+    toFrac.j = y_cart;
+    toFrac.k = z_cart;
+    return toFrac;
+}
 static inline int roundupBiggerTenth(int number);
 static inline int roundupBiggerTenth(int number)
 {

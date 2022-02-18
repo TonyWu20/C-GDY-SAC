@@ -5,7 +5,7 @@ static char *exportFileName(Cell *self, const char *format,
                             const char *desiredName)
 {
     char *exportDir = self->lattice->vtable->exportDir(
-        self->lattice, self->lattice->pathName); /* Malloced String Created */
+        self->lattice); /* Malloced String Created */
     int fileNameLen = 1 + snprintf(NULL, 0, format, exportDir, desiredName);
     char *ret = malloc(fileNameLen);
     snprintf(ret, fileNameLen, format, exportDir, desiredName);
@@ -15,14 +15,22 @@ static char *exportFileName(Cell *self, const char *format,
 
 int getFinalCutoffEnergy(Cell *cell)
 {
-    CastepInfo *table = cell->infoTab;
+    HashNode *elmTable = cell->lookupTable;
     int energy = 0;
     for (int i = 0; i < cell->elmNums; ++i)
     {
-        CastepInfo *item = find_item(table, cell->elmLists[i]);
-        int fineEnergy = parse_fineCutoffEnergy(item->info->potential_file);
+        char *key = cell->elmLists[i];
+        if (strlen(key) > 2)
+        {
+            printf("Key error in getFinalCutoffEnergy: %s\n", key);
+        }
+        ElmInfo *item = find_item_by_str(elmTable, key)->val;
+        char *potPath = NULL;
+        asprintf(&potPath, "./Potentials/%s", item->potFile);
+        int fineEnergy = parse_fineCutoffEnergy(potPath);
         int ultraFineEnergy = roundupBiggerTenth(fineEnergy * 1.1);
         energy = (ultraFineEnergy > energy) ? ultraFineEnergy : energy;
+        free(potPath);
     }
     return energy;
 }
@@ -30,6 +38,10 @@ int getFinalCutoffEnergy(Cell *cell)
 int parse_fineCutoffEnergy(const char *fileName)
 {
     FILE *f = fopen(fileName, "r");
+    if (!f)
+    {
+        printf("Open Potential File %s failed\n", fileName);
+    }
     int n = 4;
     char str[16];
     for (int i = 0; i < n; ++i)
@@ -54,8 +66,11 @@ char *formatParam(char *template, int spin, double cutoff_energy)
 void write_param(Cell *self)
 {
     double cutoff_energy = getFinalCutoffEnergy(self);
-    CastepInfo *metal = find_item(self->infoTab, self->lattice->metal_symbol);
-    int spin = metal->info->spin;
+    Atom *metalAtom = self->lattice->mol->vtable->get_atom_by_Id(
+        self->lattice->mol, self->lattice->metal_site_id);
+    ElmInfo *metal =
+        find_item_by_str(self->lookupTable, metalAtom->element)->val;
+    int spin = metal->spin;
     char template_geom[] =
         "task : GeometryOptimization\n"
         "comment : CASTEP calculation from Materials Studio\n"
@@ -97,9 +112,8 @@ void write_param(Cell *self)
         "popn_bond_cutoff : 3.000000000000000\n"
         "pdos_calculate_weights : true";
     char *newGeomParam = formatParam(template_geom, spin, cutoff_energy);
-    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
-                                                       self->lattice->pathName);
-    char *stemName = self->lattice->_mol->name;
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice);
+    char *stemName = self->lattice->mol->name;
     char *geomParamName = exportFileName(self, "%s%s.param", stemName);
     FILE *geomParam = fopen(geomParamName, "w");
     fputs(newGeomParam, geomParam);
@@ -160,9 +174,8 @@ void write_kptaux(Cell *self)
                         "%BLOCK KPOINT_IMAGES\n"
                         "   1   1\n"
                         "%ENDBLOCK KPOINT_IMAGES";
-    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
-                                                       self->lattice->pathName);
-    char *stemName = self->lattice->_mol->name;
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice);
+    char *stemName = self->lattice->mol->name;
     char *kptauxName = exportFileName(self, "%s%s.kptaux", stemName);
     FILE *kptauxFile = fopen(kptauxName, "w");
     free(kptauxName);
@@ -178,9 +191,8 @@ void write_kptaux(Cell *self)
 
 void write_trjaux(Cell *self)
 {
-    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
-                                                       self->lattice->pathName);
-    char *stemName = self->lattice->_mol->name;
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice);
+    char *stemName = self->lattice->mol->name;
     char *trjauxName = exportFileName(self, "%s%s.trjaux", stemName);
     free(exportDir);
     FILE *trjauxFile = fopen(trjauxName, "w");
@@ -190,14 +202,13 @@ void write_trjaux(Cell *self)
         "# Correspond to atom IDs which will be used in exported .msi file\n"
         "# required for animation/analysis of trajectory within Cerius2.\n";
     fputs(trjauxHeader, trjauxFile);
-    int atomNum = self->lattice->_mol->atomNum;
-    Molecule *mPtr = self->lattice->_mol;
+    int atomNum = self->lattice->mol->atomNum;
+    Molecule *mPtr = self->lattice->mol;
     for (int i = 0; i < atomNum; ++i)
     {
         Atom *curAtom = mPtr->atom_arr[i];
-        int lineLen = 1 + snprintf(NULL, 0, "%d\n", curAtom->atomId);
-        char *line = malloc(lineLen);
-        snprintf(line, lineLen, "%d\n", curAtom->atomId);
+        char *line = NULL;
+        asprintf(&line, "%d\n", curAtom->atomId);
         fputs(line, trjauxFile);
         free(line);
     }
@@ -207,25 +218,29 @@ void write_trjaux(Cell *self)
     fclose(trjauxFile);
 }
 
-void copy_potentials(Cell *self, PotentialFile *table)
+void copy_potentials(Cell *self)
 {
-    char *exportDir = self->lattice->vtable->exportDir(self->lattice,
-                                                       self->lattice->pathName);
+    char *exportDir = self->lattice->vtable->exportDir(self->lattice);
     for (int i = 0; i < self->elmNums; ++i)
     {
-        PotentialFile *potItem = find_PotItem(table, self->elmLists[i]);
-        char *potential_stem = strrchr(potItem->potential_file, '/') + 1;
-        char *potPath = exportFileName(self, "%s%s", potential_stem);
+        ElmInfo *elmInfo =
+            find_item_by_str(self->lookupTable, self->elmLists[i])->val;
+        char *potPath = exportFileName(self, "%s%s", elmInfo->potFile);
         struct stat s;
         if (stat(potPath, &s) == 0)
         {
             free(potPath);
             continue;
         }
+        char *potSrc;
+        asprintf(&potSrc, "./Potentials/%s", elmInfo->potFile);
+        char *potContent = readWholeFile(potSrc);
+        free(potSrc);
         FILE *copiedPotFile = fopen(potPath, "w");
         free(potPath);
-        fputs(potItem->fileContent, copiedPotFile);
+        fputs(potContent, copiedPotFile);
         fclose(copiedPotFile);
+        free(potContent);
     }
     free(exportDir);
 }
@@ -233,7 +248,7 @@ void copy_potentials(Cell *self, PotentialFile *table)
 void write_pbsScript(Cell *self)
 {
     char *exportDir = self->lattice->vtable->exportDir(
-        self->lattice, self->lattice->pathName); /* Malloced String Created */
+        self->lattice); /* Malloced String Created */
     char *pbsScriptTemplate = readWholeFile(
         "./resource/pbs_template.sh"); /* Malloced String Created */
     char *pathName = exportFileName(self, "%s%s",
@@ -245,9 +260,9 @@ void write_pbsScript(Cell *self)
     free(pbsScriptTemplate); /* Malloced String Freed */
     char cmdFormat[] = "mpirun --mca btl ^tcp --hostfile hostfile "
                        "/home/bhuang/castep.mpi %s\n";
-    int cmdLen = 1 + snprintf(NULL, 0, cmdFormat, self->lattice->_mol->name);
+    int cmdLen = 1 + snprintf(NULL, 0, cmdFormat, self->lattice->mol->name);
     char *cmdLine = malloc(cmdLen); /* Malloced String Created */
-    snprintf(cmdLine, cmdLen, cmdFormat, self->lattice->_mol->name);
+    snprintf(cmdLine, cmdLen, cmdFormat, self->lattice->mol->name);
     fputs(cmdLine, script);
     free(cmdLine); /* Malloced String Freed */
     fputs("rm ./hostfile", script);
@@ -257,7 +272,7 @@ void write_pbsScript(Cell *self)
 void write_SMCastepExtension(Cell *self)
 {
     char *fileName = exportFileName(self, "%sSMCastep_Extension_%s.xms",
-                                    self->lattice->_mol->name);
+                                    self->lattice->mol->name);
     char *content = readWholeFile("./resource/SMCastep_Extension.xms");
     FILE *ext = fopen(fileName, "w");
     free(fileName);

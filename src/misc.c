@@ -1,5 +1,4 @@
 #include "misc.h"
-#include "tasks.h"
 #include <errno.h>
 
 void printProgress(int cur, int total, double percentage, char *name)

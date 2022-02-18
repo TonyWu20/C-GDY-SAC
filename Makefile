@@ -117,6 +117,32 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named my_maths
+
+# Build rule for target.
+my_maths: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 my_maths
+.PHONY : my_maths
+
+# fast build rule for target.
+my_maths/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/build
+.PHONY : my_maths/fast
+
+#=============================================================================
+# Target rules for targets named database
+
+# Build rule for target.
+database: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 database
+.PHONY : database
+
+# fast build rule for target.
+database/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/build
+.PHONY : database/fast
+
+#=============================================================================
 # Target rules for targets named msi_modeling
 
 # Build rule for target.
@@ -168,19 +194,6 @@ test.o/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/build
 .PHONY : test.o/fast
 
-#=============================================================================
-# Target rules for targets named test_math.o
-
-# Build rule for target.
-test_math.o: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_math.o
-.PHONY : test_math.o
-
-# fast build rule for target.
-test_math.o/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_math.o.dir/build.make CMakeFiles/test_math.o.dir/build
-.PHONY : test_math.o/fast
-
 src/assemble.o: src/assemble.c.o
 .PHONY : src/assemble.o
 
@@ -229,30 +242,6 @@ src/atom.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/atom.c.s
 .PHONY : src/atom.c.s
 
-src/castep_database.o: src/castep_database.c.o
-.PHONY : src/castep_database.o
-
-# target to build an object file
-src/castep_database.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_database.c.o
-.PHONY : src/castep_database.c.o
-
-src/castep_database.i: src/castep_database.c.i
-.PHONY : src/castep_database.i
-
-# target to preprocess a source file
-src/castep_database.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_database.c.i
-.PHONY : src/castep_database.c.i
-
-src/castep_database.s: src/castep_database.c.s
-.PHONY : src/castep_database.s
-
-# target to generate assembly for a file
-src/castep_database.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/castep_database.c.s
-.PHONY : src/castep_database.c.s
-
 src/cell.o: src/cell.c.o
 .PHONY : src/cell.o
 
@@ -276,6 +265,78 @@ src/cell.s: src/cell.c.s
 src/cell.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/cell.c.s
 .PHONY : src/cell.c.s
+
+src/database/ads_database.o: src/database/ads_database.c.o
+.PHONY : src/database/ads_database.o
+
+# target to build an object file
+src/database/ads_database.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/ads_database.c.o
+.PHONY : src/database/ads_database.c.o
+
+src/database/ads_database.i: src/database/ads_database.c.i
+.PHONY : src/database/ads_database.i
+
+# target to preprocess a source file
+src/database/ads_database.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/ads_database.c.i
+.PHONY : src/database/ads_database.c.i
+
+src/database/ads_database.s: src/database/ads_database.c.s
+.PHONY : src/database/ads_database.s
+
+# target to generate assembly for a file
+src/database/ads_database.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/ads_database.c.s
+.PHONY : src/database/ads_database.c.s
+
+src/database/database.o: src/database/database.c.o
+.PHONY : src/database/database.o
+
+# target to build an object file
+src/database/database.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/database.c.o
+.PHONY : src/database/database.c.o
+
+src/database/database.i: src/database/database.c.i
+.PHONY : src/database/database.i
+
+# target to preprocess a source file
+src/database/database.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/database.c.i
+.PHONY : src/database/database.c.i
+
+src/database/database.s: src/database/database.c.s
+.PHONY : src/database/database.s
+
+# target to generate assembly for a file
+src/database/database.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/database.c.s
+.PHONY : src/database/database.c.s
+
+src/database/lattice_database.o: src/database/lattice_database.c.o
+.PHONY : src/database/lattice_database.o
+
+# target to build an object file
+src/database/lattice_database.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/lattice_database.c.o
+.PHONY : src/database/lattice_database.c.o
+
+src/database/lattice_database.i: src/database/lattice_database.c.i
+.PHONY : src/database/lattice_database.i
+
+# target to preprocess a source file
+src/database/lattice_database.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/lattice_database.c.i
+.PHONY : src/database/lattice_database.c.i
+
+src/database/lattice_database.s: src/database/lattice_database.c.s
+.PHONY : src/database/lattice_database.s
+
+# target to generate assembly for a file
+src/database/lattice_database.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/database.dir/build.make CMakeFiles/database.dir/src/database/lattice_database.c.s
+.PHONY : src/database/lattice_database.c.s
 
 src/lattice.o: src/lattice.c.o
 .PHONY : src/lattice.o
@@ -331,6 +392,7 @@ src/misc.o: src/misc.c.o
 # target to build an object file
 src/misc.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/misc.c.o
 .PHONY : src/misc.c.o
 
 src/misc.i: src/misc.c.i
@@ -339,6 +401,7 @@ src/misc.i: src/misc.c.i
 # target to preprocess a source file
 src/misc.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/misc.c.i
 .PHONY : src/misc.c.i
 
 src/misc.s: src/misc.c.s
@@ -347,6 +410,7 @@ src/misc.s: src/misc.c.s
 # target to generate assembly for a file
 src/misc.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/misc.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/misc.c.s
 .PHONY : src/misc.c.s
 
 src/molecule.o: src/molecule.c.o
@@ -378,7 +442,7 @@ src/my_maths.o: src/my_maths.c.o
 
 # target to build an object file
 src/my_maths.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/my_maths.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.c.o
 .PHONY : src/my_maths.c.o
 
 src/my_maths.i: src/my_maths.c.i
@@ -386,7 +450,7 @@ src/my_maths.i: src/my_maths.c.i
 
 # target to preprocess a source file
 src/my_maths.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/my_maths.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.c.i
 .PHONY : src/my_maths.c.i
 
 src/my_maths.s: src/my_maths.c.s
@@ -394,7 +458,7 @@ src/my_maths.s: src/my_maths.c.s
 
 # target to generate assembly for a file
 src/my_maths.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/msi_modeling.dir/build.make CMakeFiles/msi_modeling.dir/src/my_maths.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_maths.dir/build.make CMakeFiles/my_maths.dir/src/my_maths.c.s
 .PHONY : src/my_maths.c.s
 
 src/param.o: src/param.c.o
@@ -402,6 +466,7 @@ src/param.o: src/param.c.o
 
 # target to build an object file
 src/param.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/param.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.o
 .PHONY : src/param.c.o
 
@@ -410,6 +475,7 @@ src/param.i: src/param.c.i
 
 # target to preprocess a source file
 src/param.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/param.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.i
 .PHONY : src/param.c.i
 
@@ -418,6 +484,7 @@ src/param.s: src/param.c.s
 
 # target to generate assembly for a file
 src/param.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/castepSeedGen.dir/build.make CMakeFiles/castepSeedGen.dir/src/param.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/param.c.s
 .PHONY : src/param.c.s
 
@@ -469,30 +536,6 @@ src/tasks.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/task_control.dir/build.make CMakeFiles/task_control.dir/src/tasks.c.s
 .PHONY : src/tasks.c.s
 
-src/test.o: src/test.c.o
-.PHONY : src/test.o
-
-# target to build an object file
-src/test.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_math.o.dir/build.make CMakeFiles/test_math.o.dir/src/test.c.o
-.PHONY : src/test.c.o
-
-src/test.i: src/test.c.i
-.PHONY : src/test.i
-
-# target to preprocess a source file
-src/test.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_math.o.dir/build.make CMakeFiles/test_math.o.dir/src/test.c.i
-.PHONY : src/test.c.i
-
-src/test.s: src/test.c.s
-.PHONY : src/test.s
-
-# target to generate assembly for a file
-src/test.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_math.o.dir/build.make CMakeFiles/test_math.o.dir/src/test.c.s
-.PHONY : src/test.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -502,22 +545,29 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... castepSeedGen"
+	@echo "... database"
 	@echo "... msi_modeling"
+	@echo "... my_maths"
 	@echo "... task_control"
 	@echo "... test.o"
-	@echo "... test_math.o"
 	@echo "... src/assemble.o"
 	@echo "... src/assemble.i"
 	@echo "... src/assemble.s"
 	@echo "... src/atom.o"
 	@echo "... src/atom.i"
 	@echo "... src/atom.s"
-	@echo "... src/castep_database.o"
-	@echo "... src/castep_database.i"
-	@echo "... src/castep_database.s"
 	@echo "... src/cell.o"
 	@echo "... src/cell.i"
 	@echo "... src/cell.s"
+	@echo "... src/database/ads_database.o"
+	@echo "... src/database/ads_database.i"
+	@echo "... src/database/ads_database.s"
+	@echo "... src/database/database.o"
+	@echo "... src/database/database.i"
+	@echo "... src/database/database.s"
+	@echo "... src/database/lattice_database.o"
+	@echo "... src/database/lattice_database.i"
+	@echo "... src/database/lattice_database.s"
 	@echo "... src/lattice.o"
 	@echo "... src/lattice.i"
 	@echo "... src/lattice.s"
@@ -542,9 +592,6 @@ help:
 	@echo "... src/tasks.o"
 	@echo "... src/tasks.i"
 	@echo "... src/tasks.s"
-	@echo "... src/test.o"
-	@echo "... src/test.i"
-	@echo "... src/test.s"
 .PHONY : help
 
 
