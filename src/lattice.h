@@ -2,21 +2,11 @@
 #include "atom.h"
 #include "molecule.h"
 
-struct carbon_site
-{
-    char *name;
-    int id;
-};
-
 struct _Lattice
 {
     Molecule *mol;
     matrix_double3x3 lattice_vectors;
-    struct carbon_site carbon_sites[7];
     int metal_site_id;
-    int metal_order;
-    char *metal_family;
-    char *metal_symbol;
     char *attached_adsName;
     char *pathName;
     struct Lattice_vtable *vtable;
@@ -33,6 +23,7 @@ struct Lattice_vtable
     /* Rotate lattice to standard orientation "C along Z, A in XZ plane"
      */
     void (*rotate_to_standard_orientation)(Lattice *self);
+    void (*modify_metal)(Lattice *self, const char *metalSymbol, int elementId);
     char *(*exportDir)(Lattice *self, char *pathName);
     void (*export_msi)(Lattice *self, char *pathName);
     void (*destroy)(Lattice *self);
@@ -42,6 +33,10 @@ struct Lattice_vtable
  * Molecule object, with adding lattice_vectors (3x3 column-major matrix)
  */
 Lattice *createLattice(Molecule *mol, matrix_double3x3 lattice_vectors);
+
+/* Change the element of the metal atom */
+void lattice_modify_metal_element(Lattice *self, const char *metal_symbol,
+                                  int elementId);
 
 /* Fill metal info after initialization */
 void lattice_metal_info(Lattice *self);
@@ -73,8 +68,7 @@ vec_double3 lattice_get_carbon_metal_vector(Lattice *self, int);
  * of the atoms in mol will be updated to follow the order in current Lattice.
  * Returns a new Lattice struct pointer for future exports
  */
-Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName,
-                                 char *pathName);
+Lattice *lattice_attach_molecule(Lattice *self, Adsorbate *ads, char *newName);
 
 /* Rotate lattice to standard orientation "C along Z, A in XZ plane"
  */
@@ -85,5 +79,7 @@ char *get_carbon_site_name(int siteId);
 /* Format and export lattice contents to .msi
  * if dest == NULL, use default
  */
-void lattice_export_MSI(Lattice *self, char *pathName);
-char *lattice_export_dest(Lattice *self, char *pathName);
+void lattice_export_MSI(Lattice *self);
+
+/* Generate export destination */
+char *lattice_export_dest(Lattice *self);
