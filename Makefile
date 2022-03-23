@@ -182,17 +182,17 @@ task_control/fast:
 .PHONY : task_control/fast
 
 #=============================================================================
-# Target rules for targets named test.o
+# Target rules for targets named main.o
 
 # Build rule for target.
-test.o: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test.o
-.PHONY : test.o
+main.o: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main.o
+.PHONY : main.o
 
 # fast build rule for target.
-test.o/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/build
-.PHONY : test.o/fast
+main.o/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/build
+.PHONY : main.o/fast
 
 src/assemble.o: src/assemble.c.o
 .PHONY : src/assemble.o
@@ -367,7 +367,7 @@ src/main.o: src/main.c.o
 
 # target to build an object file
 src/main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.c.o
 .PHONY : src/main.c.o
 
 src/main.i: src/main.c.i
@@ -375,7 +375,7 @@ src/main.i: src/main.c.i
 
 # target to preprocess a source file
 src/main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.c.i
 .PHONY : src/main.c.i
 
 src/main.s: src/main.c.s
@@ -383,7 +383,7 @@ src/main.s: src/main.c.s
 
 # target to generate assembly for a file
 src/main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.o.dir/build.make CMakeFiles/test.o.dir/src/main.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.o.dir/build.make CMakeFiles/main.o.dir/src/main.c.s
 .PHONY : src/main.c.s
 
 src/misc.o: src/misc.c.o
@@ -546,10 +546,10 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... castepSeedGen"
 	@echo "... database"
+	@echo "... main.o"
 	@echo "... msi_modeling"
 	@echo "... my_maths"
 	@echo "... task_control"
-	@echo "... test.o"
 	@echo "... src/assemble.o"
 	@echo "... src/assemble.i"
 	@echo "... src/assemble.s"
