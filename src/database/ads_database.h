@@ -6,8 +6,7 @@ extern int task_cd2_sym[7][2];
 extern int task_cd2_asym[14][2];
 extern int task_cd1[7][2];
 
-typedef struct
-{
+typedef struct {
     char *name;
     int *coordAtoms;
     unsigned coordAtoms_count;
@@ -18,12 +17,12 @@ typedef struct
     bool vertical;
     bool bSym;
     int upperAtomId;
+    int atomNums;
     char *pathName;
 } AdsInfo;
 
 typedef struct AdsTableYAML AdsTableYAML;
-struct AdsTableYAML
-{
+struct AdsTableYAML {
     AdsInfo *adsInfoItem;
     unsigned adsInfoItem_count;
     void (*destroy)(AdsTableYAML **self);

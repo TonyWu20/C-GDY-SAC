@@ -2,8 +2,7 @@
 #include "cyaml/cyaml.h"
 #include <stdio.h>
 #define NULLSITE 255
-enum
-{
+enum {
     C1 = 41,
     C2 = 42,
     C3 = 54,
@@ -29,6 +28,7 @@ static const cyaml_schema_field_t ads_info_field_schema[] = {
     CYAML_FIELD_BOOL("vertical", CYAML_FLAG_DEFAULT, AdsInfo, vertical),
     CYAML_FIELD_BOOL("bSym", CYAML_FLAG_DEFAULT, AdsInfo, bSym),
     CYAML_FIELD_UINT("upperAtomId", CYAML_FLAG_DEFAULT, AdsInfo, upperAtomId),
+    CYAML_FIELD_UINT("atomNums", CYAML_FLAG_DEFAULT, AdsInfo, atomNums),
     CYAML_FIELD_STRING_PTR("pathName", CYAML_FLAG_POINTER, AdsInfo, pathName, 0,
                            CYAML_UNLIMITED),
     CYAML_FIELD_END,
@@ -55,30 +55,25 @@ static const cyaml_config_t config = {
     .log_level = CYAML_LOG_WARNING, /* Logging errors and warnings only. */
 };
 
-AdsTableYAML *load_adsTableYAML(void)
-{
+AdsTableYAML *load_adsTableYAML(void) {
     cyaml_err_t err;
     AdsTableYAML *adsTableYAML;
     err = cyaml_load_file("./src/database/ads_table.yaml", &config,
                           &ads_table_schema, (void **)&adsTableYAML, NULL);
-    if (err != CYAML_OK)
-    {
+    if (err != CYAML_OK) {
         printf("ERROR: %s\n", cyaml_strerror(err));
         return NULL;
     }
     adsTableYAML->destroy = destroy_adsTableYAML;
     return adsTableYAML;
 }
-void destroy_adsTableYAML(AdsTableYAML **adsTableYAML)
-{
+void destroy_adsTableYAML(AdsTableYAML **adsTableYAML) {
     cyaml_free(&config, &ads_table_schema, *adsTableYAML, 0);
 }
 
-HashNode *init_adsInfoTable(AdsTableYAML *adsTableYAML)
-{
+HashNode *init_adsInfoTable(AdsTableYAML *adsTableYAML) {
     HashNode *hashTab = NULL;
-    for (int i = 0; i < adsTableYAML->adsInfoItem_count; ++i)
-    {
+    for (int i = 0; i < adsTableYAML->adsInfoItem_count; ++i) {
         AdsInfo *curPtr = &adsTableYAML->adsInfoItem[i];
         add_str_keyptr_item(&hashTab, curPtr->name, (void *)curPtr);
     }

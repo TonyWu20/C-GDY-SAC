@@ -1,7 +1,7 @@
-#include "tasks.h"
 #include "misc.h"
 #include "param.h"
 #include "parser.h"
+#include "tasks.h"
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,11 +10,10 @@
 #include <unistd.h>
 /* static char *findBaseByElementId(int i); */
 
-#define TOTAL_ELEMENT_NUM 1
+#define TOTAL_ELEMENT_NUM 44
 #define TOTAL_MODELS (231 * TOTAL_ELEMENT_NUM)
 
-enum
-{
+enum {
     C1 = 41,
     C2 = 42,
     C3 = 54,
@@ -30,21 +29,24 @@ int task_cd1[][2] = {{C1, NULLSITE}, {C2, NULLSITE}, {C3, NULLSITE},
                      {C4, NULLSITE}, {NR, NULLSITE}, {FR, NULLSITE},
                      {M, NULLSITE}};
 
-Adsorbate *getCurrentAds(AdsTableYAML *adsTableYAML, int adsId)
-{
+Adsorbate *getCurrentAds(AdsTableYAML *adsTableYAML, int adsId) {
     AdsInfo curAdsInfo = adsTableYAML->adsInfoItem[adsId];
     char *path;
     asprintf(&path, "./C2_pathways_ads/%s_path/%s.msi", curAdsInfo.pathName,
              curAdsInfo.name);
     Adsorbate *ads =
         parse_adsorbate_from_file(path, curAdsInfo.name, &curAdsInfo);
+    if (ads->mol->atomNum != curAdsInfo.atomNums) {
+        printf("Parse error for %s: Inconsistent atom number!",
+               curAdsInfo.name);
+        return NULL;
+    }
     free(path);
     return ads;
 }
 
 void exportAll(Lattice *base, Adsorbate *ads, int c1, int c2,
-               HashNode *elmTable, int *progress)
-{
+               HashNode *elmTable, int *progress) {
     Lattice *result = Add_mol_to_lattice(base, ads, c1, c2, 1.4);
     result->vtable->export_msi(result);
     Cell *cell = createCell(result, elmTable);
@@ -58,8 +60,7 @@ void exportAll(Lattice *base, Adsorbate *ads, int c1, int c2,
 }
 
 void generator(ElmTableYAML *elmTableYAML, char **elements,
-               AdsTableYAML *adsTableYAML, int *progress)
-{
+               AdsTableYAML *adsTableYAML, int *progress) {
     HashNode *elmTable = init_ElmInfoTable(elmTableYAML);
     int adsNums = adsTableYAML->adsInfoItem_count;
     int curElmId = 0;
@@ -84,6 +85,9 @@ void generator(ElmTableYAML *elmTableYAML, char **elements,
                     base->vtable->modify_metal(base, nextElm->key,
                                                 nextElmId);
                     Adsorbate *ads = getCurrentAds(adsTableYAML, j);
+                    if (ads == NULL) {
+                        exit(1);
+                    }
                     switch (ads->coordAtomNum)
                     {
                     case 2:
