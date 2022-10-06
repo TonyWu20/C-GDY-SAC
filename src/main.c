@@ -11,8 +11,7 @@
 #include "tasks.h"
 #include <time.h>
 
-void test_hash()
-{
+void test_hash() {
     AdsTableYAML *adsTableYAML = load_adsTableYAML();
     HashNode *adsTable = init_adsInfoTable(adsTableYAML);
     HashNode *item = find_item_by_str(adsTable, "C2H4");
@@ -26,23 +25,31 @@ void test_hash()
     adsTableYAML->destroy(&adsTableYAML);
 }
 
-void test_lat()
-{
+void test_lat() {
     Lattice *lat =
         parse_lattice_from_file("./msi_models/3d/SAC_GDY_V.msi", "SAC_GDY_V");
-    for (int i = 0; i < 3; ++i)
-    {
+    for (int i = 0; i < 3; ++i) {
         printf("%f, %f, %f\n", lat->lattice_vectors.columns[i].x,
                lat->lattice_vectors.columns[i].y,
                lat->lattice_vectors.columns[i].z);
     }
     lat->vtable->rotate_to_standard_orientation(lat);
     printf("Rotate to standard orientation\n");
-    for (int i = 0; i < 3; ++i)
-    {
+    for (int i = 0; i < 3; ++i) {
         printf("%f, %f, %f\n", lat->lattice_vectors.columns[i].x,
                lat->lattice_vectors.columns[i].y,
                lat->lattice_vectors.columns[i].z);
+    }
+    simd_double3x3 frac_mat = fracCoordMat(lat->lattice_vectors);
+    printf("Fractional coordinate matrix\n");
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (j == 0)
+                printf("[ ");
+            printf("%f ", frac_mat.columns[i][j]);
+            if (j == 2)
+                printf("]\n");
+        }
     }
     double alpha = simd_vector_angle(lat->lattice_vectors.columns[1],
                                      lat->lattice_vectors.columns[2]);
@@ -100,8 +107,7 @@ void test_lat()
 /*     elmTableYAML->destroy(&elmTableYAML); */
 /* } */
 
-void test_tasks()
-{
+void test_tasks() {
     char *elements[] = {"Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
                         "Zn", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
                         "Ag", "Cd", "Hf", "Ta", "W",  "Re", "Os", "Ir", "Pt",
@@ -115,8 +121,8 @@ void test_tasks()
     adsTableYAML->destroy(&adsTableYAML);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     test_tasks();
+    /* test_lat(); */
     return 0;
 }
